@@ -16,3 +16,90 @@ input[type='number']::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+@font-face {
+  font-family: 'fustat';
+  src: url('../../public/fonts/Fustat-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'fustat-light';
+  src: url('../../public/fonts/Fustat-Light.ttf') format('truetype');
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'fustat-bold';
+  src: url('../../public/fonts/Fustat-Bold.ttf') format('truetype');
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'fustat-medium';
+  src: url('../../public/fonts/Fustat-Medium.ttf') format('truetype');
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'fustat-semi-bold';
+  src: url('../../public/fonts/Fustat-SemiBold.ttf') format('truetype');
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'fustat-extra-bold';
+  src: url('../../public/fonts/Fustat-ExtraBold.ttf') format('truetype');
+  font-style: normal;
+  font-display: swap;
+}
+
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    scroll-behavior: smooth;
+}
+
+
+html {
+  font-size: 62.5%;
+  scroll-behavior: smooth;
+}
+
+
+h1,
+h2,
+h3,
+h4,
+h5,
+p {
+
+  font-family: fustat;
+
+}
+
+h4{
+  font-family: fustat-light;
+  font-size: 20px;
+}
+
+a {
+  text-decoration: none;
+  color: black; 
+}
+
+li{
+  list-style-type: none;
+}
+
+main{
+  padding: 0 4rem;
+}

@@ -1,0 +1,50 @@
+.filterContainer {
+  position: fixed;
+  bottom: 10%;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 50;
+  pointer-events: none;
+
+}
+
+.filterList {
+  display: flex;
+  gap: 1rem;
+  pointer-events: auto;
+}
+
+.filterItem {
+  display: inline-flex;
+  padding: 2px 15px;
+  gap: 10px;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: 0.2s;
+  border: 1px solid #1F2021;
+  background: rgba(255, 255, 255, 0.80);
+  width: auto;
+  height: 35px;
+}
+
+.filterItem {
+  cursor: pointer;
+  padding: 10px 16px;
+  transition: background-color 0.3s ease;
+  text-transform: lowercase;
+  color: #1F2021;
+}
+
+.filterItem:hover {
+  background-color: #1F2021;
+  color: white;
+}
+
+.active {
+  background-color: #1F2021;
+  color: white;
+  border: solid 1px white;
+
+}

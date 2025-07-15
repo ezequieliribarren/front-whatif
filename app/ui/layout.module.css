@@ -1,0 +1,28 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: top;
+    width: 100%;
+    padding: 2rem 4rem;
+}
+
+.navbar nav {
+    display: flex;
+}
+
+.navbar nav li {
+    margin-left: 4rem;
+    font-size: 50px;
+}
+
+.navbar nav li .link{
+    text-decoration: none;
+    list-style: none;
+    color: black;
+    font-family: fustat-semi-bold;
+
+}
+
+.logo {
+    width: 45rem;
+}

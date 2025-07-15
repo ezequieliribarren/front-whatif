@@ -1,33 +1,148 @@
-import AcmeLogo from '@/app/ui/acme-logo';
-import { ArrowRightIcon } from '@heroicons/react/24/outline';
-import Link from 'next/link';
+'use client';
+
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import styles from './ui/home.module.css';
+import FilterBar from './components/filterBar';
+
+type ProjectCategory = {
+  id: string;
+  name: string;
+  slug: string;
+};
+
+type ProjectType = {
+  id: string;
+  name: string;
+  slug: string;
+};
+
+type Project = {
+  id: string;
+  title: string;
+  slug: string;
+  featured?: boolean;
+  categories?: ProjectCategory[];
+  types?: ProjectType[];
+  imagenDestacada?: {
+    url: string;
+    alt?: string;
+    width?: number;
+    height?: number;
+  };
+};
 
 export default function Page() {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [filtered, setFiltered] = useState<Project[]>([]);
+  const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [visibleProjects, setVisibleProjects] = useState<string[]>([]);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    async function fetchProjects() {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/projects?&depth=1`,
+        { cache: 'no-store' }
+      );
+      const data = await res.json();
+
+      setProjects(data.docs);
+      setFiltered(data.docs.filter((p: Project) => p.featured));
+    }
+    fetchProjects();
+  }, []);
+
+  useEffect(() => {
+    if (selectedType) {
+      setFiltered(
+        projects.filter(
+          (p) => p.featured && p.types?.some((t) => t.slug === selectedType)
+        )
+      );
+    } else {
+      setFiltered(projects.filter((p) => p.featured));
+    }
+  }, [selectedType, projects]);
+
+  // Animar entrada con fade-in escalonado cuando cambia filtered
+  useEffect(() => {
+    setVisibleProjects([]);
+    filtered.forEach((project, i) => {
+      setTimeout(() => {
+        setVisibleProjects((prev) => [...prev, project.slug]);
+      }, i * 150);
+    });
+  }, [filtered]);
+
+  // Navegar a detalle usando el id en la URL
+const goToProject = (id: string) => {
+  router.push(`/work/${id}`);
+};
+
   return (
-    <main className="flex min-h-screen flex-col p-6">
-      <div className="flex h-20 shrink-0 items-end rounded-lg bg-blue-500 p-4 md:h-52">
-        {/* <AcmeLogo /> */}
-      </div>
-      <div className="mt-4 flex grow flex-col gap-4 md:flex-row">
-        <div className="flex flex-col justify-center gap-6 rounded-lg bg-gray-50 px-6 py-10 md:w-2/5 md:px-20">
-          <p className={`text-xl text-gray-800 md:text-3xl md:leading-normal`}>
-            <strong>Welcome to Acme.</strong> This is the example for the{' '}
-            <a href="https://nextjs.org/learn/" className="text-blue-500">
-              Next.js Learn Course
-            </a>
-            , brought to you by Vercel.
-          </p>
-          <Link
-            href="/login"
-            className="flex items-center gap-5 self-start rounded-lg bg-blue-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-400 md:text-base"
-          >
-            <span>Log in</span> <ArrowRightIcon className="w-5 md:w-6" />
-          </Link>
+    <main className={styles.projectList}>
+      <FilterBar onFilterChange={setSelectedType} />
+
+      {filtered.map((project, index) => (
+        <div
+          key={project.id}
+          className={`${styles.projectCard} ${
+            index % 2 === 0 ? styles.leftImage : styles.rightImage
+          } ${visibleProjects.includes(project.slug) ? styles.show : ''}`}
+        >
+          {project.imagenDestacada?.url && (
+            <div>
+              <div
+                className={styles.imageContainer}
+                style={{ cursor: 'pointer' }}
+                onClick={() => goToProject(project.id)}
+                title={`Ver proyecto: ${project.title}`}
+              >
+                <div className={styles.overlay}>
+                  <span className={styles.plusIcon}>+</span>
+                </div>
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${project.imagenDestacada.url}`}
+                  alt={project.imagenDestacada.alt || project.title}
+                  width={project.imagenDestacada.width || 800}
+                  height={project.imagenDestacada.height || 600}
+                  className={styles.projectCardImage}
+                />
+              </div>
+              <div className={styles.projectInfoRow}>
+                <div>
+                  <h2 className={styles.h2Home}>{project.title}</h2>
+                </div>
+
+                <div className={styles.projectDetails}>
+                  <div>
+                    <h3>{new Date().getFullYear()}</h3>
+                  </div>
+                  <div>
+                    <h3 className={styles.h3Category}>
+                      {project.categories && project.categories.length > 0
+                        ? project.categories.map((t) => t.name).join(', ')
+                        : 'Sin Categoría'}
+                    </h3>
+                  </div>
+                  <div>
+                    <h3>
+                      {project.types && project.types.length > 0
+                        ? project.types.map((t) => t.name).join(', ')
+                        : 'Sin tipo'}
+                    </h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className={styles.emptyHalf}></div>
         </div>
-        <div className="flex items-center justify-center p-6 md:w-3/5 md:px-28 md:py-12">
-          {/* Add Hero Images Here */}
-        </div>
-      </div>
+      ))}
     </main>
   );
 }
