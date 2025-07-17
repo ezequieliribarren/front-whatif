@@ -78,20 +78,21 @@ export default function Page() {
   }, [filtered]);
 
   // Navegar a detalle usando el id en la URL
-const goToProject = (id: string) => {
-  router.push(`/work/${id}`);
-};
+  const goToProject = (id: string) => {
+    router.push(`/work/${id}`);
+  };
 
   return (
-    <main className={styles.projectList}>
+    <main className={styles.projectList}> 
+    
       <FilterBar onFilterChange={setSelectedType} />
 
       {filtered.map((project, index) => (
+       <section> 
         <div
           key={project.id}
-          className={`${styles.projectCard} ${
-            index % 2 === 0 ? styles.leftImage : styles.rightImage
-          } ${visibleProjects.includes(project.slug) ? styles.show : ''}`}
+          className={`${styles.projectCard} ${index % 2 === 0 ? styles.leftImage : styles.rightImage
+            } ${visibleProjects.includes(project.slug) ? styles.show : ''}`}
         >
           {project.imagenDestacada?.url && (
             <div>
@@ -99,16 +100,14 @@ const goToProject = (id: string) => {
                 className={styles.imageContainer}
                 style={{ cursor: 'pointer' }}
                 onClick={() => goToProject(project.id)}
-                title={`Ver proyecto: ${project.title}`}
+                title={`${project.title}`}
               >
                 <div className={styles.overlay}>
                   <span className={styles.plusIcon}>+</span>
                 </div>
-                <Image
+                <img
                   src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${project.imagenDestacada.url}`}
                   alt={project.imagenDestacada.alt || project.title}
-                  width={project.imagenDestacada.width || 800}
-                  height={project.imagenDestacada.height || 600}
                   className={styles.projectCardImage}
                 />
               </div>
@@ -142,6 +141,7 @@ const goToProject = (id: string) => {
 
           <div className={styles.emptyHalf}></div>
         </div>
+       </section>
       ))}
     </main>
   );

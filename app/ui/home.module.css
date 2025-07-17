@@ -1,4 +1,3 @@
-/* IMAGENES EL 50% Y HEIGHT AUTO */
 .h2Home {
   color: #1F2021;
   font-size: 33px;
@@ -32,13 +31,12 @@
 .leftImage {
   flex-direction: row-reverse;
   padding-left: 2rem;
-  margin-top: -7rem;
 }
 
 .rightImage {
   flex-direction: row;
   padding-right: 2rem;
-  margin-top: -7rem;
+  margin-top: -28rem;
 }
 
 .projectCardImage {
@@ -57,7 +55,7 @@
 
 
 .emptyHalf {
-  flex: 1 1 50%;
+  flex: 1 1 100%;
 }
 
 
@@ -96,6 +94,7 @@
   display: flex;
   flex-direction: column;
   opacity: 0;
+  text-align: right;
 
 
 }
@@ -117,5 +116,6 @@
   text-align: center;
   padding: 1rem;
   z-index: 105;
+  text-align: right;
 
 }

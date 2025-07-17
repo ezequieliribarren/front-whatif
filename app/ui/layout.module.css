@@ -4,6 +4,11 @@
     align-items: top;
     width: 100%;
     padding: 2rem 4rem;
+    background-color: transparent;
+    transition: all 0.3s ease;
+    z-index: 999;
+    position: fixed;
+
 }
 
 .navbar nav {
@@ -15,7 +20,7 @@
     font-size: 50px;
 }
 
-.navbar nav li .link{
+.navbar nav li .link {
     text-decoration: none;
     list-style: none;
     color: black;
@@ -24,5 +29,46 @@
 }
 
 .logo {
-    width: 45rem;
+    width: 28rem;
+}
+
+
+/* EFECTO DEL NAVBAR */
+
+.navbarScrolled {
+  position: fixed;
+  top: -20px;
+  background: transparent;
+  transition: background 0.4s ease, top 0.4s ease;
+}
+
+.navLinks {
+  display: flex;
+  gap: 2rem;
+  position: relative;
+  transition: top 0.4s ease;
+}
+
+.linksDown {
+  top: 0;
+}
+
+.linksUp {
+  top: -35px;
+}
+
+.link {
+  color: black;
+  text-decoration: none;
+  transition: color 0.4s ease;
+}
+
+.logoWrapper {
+  position: relative;
+  transition: top 0.4s ease;
+  top: 0;
+}
+
+.logoUp {
+  top: -105px;
 }
