@@ -1,46 +1,56 @@
-import { notFound } from 'next/navigation';
-import ProjectClient from '../../components/projectClient';
+import { notFound } from 'next/navigation'
+import ProjectClient from '../../components/projectClient'
+
+interface Params {
+  id: string
+}
+
+interface Props {
+  params: Params
+}
 
 async function getProject(id: string) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/projects/${id}`,
     { cache: 'no-store' }
-  );
+  )
 
-  if (!res.ok) return null;
+  if (!res.ok) return null
 
-  const project = await res.json();
+  const project = await res.json()
 
   // Unificar galería con fotos y videos
-  const photos = project.photos?.map((p: any) => ({
-    url: p.url,
-    alt: p.alt,
-    width: p.width,
-    height: p.height,
-    mimeType: p.mimeType,
-  })) || [];
+  const photos =
+    project.photos?.map((p: any) => ({
+      url: p.url,
+      alt: p.alt,
+      width: p.width,
+      height: p.height,
+      mimeType: p.mimeType,
+    })) || []
 
-  const videos = project.videos?.map((v: any) => ({
-    url: v.url,
-    alt: v.alt,
-    width: undefined,
-    height: undefined,
-    mimeType: v.mimeType,
-  })) || [];
+  const videos =
+    project.videos?.map((v: any) => ({
+      url: v.url,
+      alt: v.alt,
+      width: undefined,
+      height: undefined,
+      mimeType: v.mimeType,
+    })) || []
 
-  project.galeria = [...photos, ...videos];
+  project.galeria = [...photos, ...videos]
 
-  return project;
+  return project
 }
 
-export default async function ProjectPage({ params }: { params: { id: string } }) {
-  console.log('Params ID recibido:', params.id);
+export default async function ProjectPage({ params }: Props) {
+  console.log('Params ID recibido:', params.id)
 
-  const project = await getProject(params.id);
+  const project = await getProject(params.id)
 
   if (!project) {
-    notFound();
+    notFound()
   }
 
-  return <ProjectClient project={project} />;
+  return <ProjectClient project={project} />
 }
