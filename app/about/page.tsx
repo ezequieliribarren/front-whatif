@@ -10,17 +10,23 @@ type TeamMember = {
   image?: {
     url: string;
   };
+  detail?: string;
 };
 
 export default function Page() {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [teamMember, setTeamMember] = useState<TeamMember | null>(null);
 
   useEffect(() => {
     async function fetchTeamMembers() {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/team-members?sort=order`);
         const data = await res.json();
+
+        const team = data.docs.find((member: TeamMember) => member.name === 'Team') || null;
+        setTeamMember(team);
+
         const filtered = data.docs.filter((member: TeamMember) => member.name !== 'Team');
         setTeamMembers(filtered);
       } catch (err) {
@@ -46,11 +52,11 @@ export default function Page() {
           {isEvenRow ? (
             <>
               <CellImage member={memberA} boxWidth={boxWidth} boxHeight={boxHeight} setHoveredId={setHoveredId} />
-              <CellInfo member={memberA} boxWidth={boxWidth} boxHeight={boxHeight} hoveredId={hoveredId} />
+              <CellInfo member={memberA} boxWidth={boxWidth} boxHeight={boxHeight} hoveredId={hoveredId} arrowDirection="left" />
               {memberB ? (
                 <>
                   <CellImage member={memberB} boxWidth={boxWidth} boxHeight={boxHeight} setHoveredId={setHoveredId} />
-                  <CellInfo member={memberB} boxWidth={boxWidth} boxHeight={boxHeight} hoveredId={hoveredId} />
+                  <CellInfo member={memberB} boxWidth={boxWidth} boxHeight={boxHeight} hoveredId={hoveredId} arrowDirection="left" />
                 </>
               ) : (
                 <>
@@ -61,11 +67,11 @@ export default function Page() {
             </>
           ) : (
             <>
-              <CellInfo member={memberA} boxWidth={boxWidth} boxHeight={boxHeight} hoveredId={hoveredId} />
+              <CellInfo member={memberA} boxWidth={boxWidth} boxHeight={boxHeight} hoveredId={hoveredId} arrowDirection="right" />
               <CellImage member={memberA} boxWidth={boxWidth} boxHeight={boxHeight} setHoveredId={setHoveredId} />
               {memberB ? (
                 <>
-                  <CellInfo member={memberB} boxWidth={boxWidth} boxHeight={boxHeight} hoveredId={hoveredId} />
+                  <CellInfo member={memberB} boxWidth={boxWidth} boxHeight={boxHeight} hoveredId={hoveredId} arrowDirection="right" />
                   <CellImage member={memberB} boxWidth={boxWidth} boxHeight={boxHeight} setHoveredId={setHoveredId} />
                 </>
               ) : (
@@ -83,50 +89,51 @@ export default function Page() {
     return rows;
   };
 
-const CellImage = ({
-  member,
-  boxWidth,
-  boxHeight,
-  setHoveredId,
-}: {
-  member: TeamMember;
-  boxWidth: number;
-  boxHeight: number;
-  setHoveredId: React.Dispatch<React.SetStateAction<string | null>>;
-}) => (
-  <div
-    className={styles.imageContainer}
-    style={{ width: boxWidth, height: boxHeight }}
-    onMouseEnter={() => setHoveredId(member.id)}
-    onMouseLeave={() => setHoveredId(null)}
-    key={member.id + '-img'}
-  >
-    {member.image?.url ? (
-      <>
-        <img
-          src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${member.image.url}`}
-          alt={member.name}
-          className={styles.image}
-        />
-        <div className={styles.overlay}></div>
-      </>
-    ) : (
-      <div className={styles.noImage}>Sin imagen</div>
-    )}
-  </div>
-);
-
+  const CellImage = ({
+    member,
+    boxWidth,
+    boxHeight,
+    setHoveredId,
+  }: {
+    member: TeamMember;
+    boxWidth: number;
+    boxHeight: number;
+    setHoveredId: React.Dispatch<React.SetStateAction<string | null>>;
+  }) => (
+    <div
+      className={styles.imageContainer}
+      style={{ width: boxWidth, height: boxHeight }}
+      onMouseEnter={() => setHoveredId(member.id)}
+      onMouseLeave={() => setHoveredId(null)}
+      key={member.id + '-img'}
+    >
+      {member.image?.url ? (
+        <>
+          <img
+            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${member.image.url}`}
+            alt={member.name}
+            className={styles.image}
+          />
+          <div className={styles.overlay}></div>
+        </>
+      ) : (
+        <div className={styles.noImage}>Sin imagen</div>
+      )}
+    </div>
+  );
 
   const CellInfo = ({
     member,
     boxWidth,
     boxHeight,
     hoveredId,
+    arrowDirection,
   }: {
     member: TeamMember;
     boxWidth: number;
     boxHeight: number;
     hoveredId: string | null;
+    arrowDirection: 'left' | 'right';
   }) => (
     <div
       className={styles.infoContainer}
@@ -138,7 +145,21 @@ const CellImage = ({
       }}
       key={member.id + '-info'}
     >
-      <h3 className={styles.name}>{member.name}</h3>
+      <div
+        className={styles.nameContainer}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          flexDirection: arrowDirection === 'left' ? 'row-reverse' : 'row',
+        }}
+      >
+        <h3 className={styles.name}>{member.name}</h3>
+        <img
+          src={arrowDirection === 'left' ? '/arrow-left.png' : '/arrow-right.png'}
+          alt="Arrow"
+        />
+      </div>
       <p className={styles.role}>{member.role}</p>
     </div>
   );
@@ -156,20 +177,27 @@ const CellImage = ({
         {/* Hero */}
         <section className="flex flex-row w-full relative py-10 gap-8">
           <div className="w-1/2">
-            <img
-              className="w-full h-auto max-h-[600px] object-cover"
-              alt="Team photo"
-              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/media/file/img38.png`}
-            />
+            {teamMember?.image?.url ? (
+              <img
+                className="w-full h-auto max-h-[600px] object-cover"
+                alt={teamMember.name}
+                src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${teamMember.image.url}`}
+              />
+            ) : (
+              <div>No image available</div>
+            )}
           </div>
           <div className="w-1/2 flex flex-col justify-between">
             <div>
               <h1 className="font-light text-gray-800 text-[32px] mb-4 font-sans">
                 Construimos imaginarios colectivos
               </h1>
-              <p className="font-normal text-black text-sm max-w-[442px] leading-relaxed font-serif">
-                {/* texto */}
-              </p>
+              
+        <p className="font-normal text-black text-sm max-w-[442px] leading-relaxed font-serif whitespace-pre-line">
+  {teamMember?.detail}
+</p>
+
+
             </div>
             <h2 className="font-light text-gray-800 text-[32px] text-right font-sans">
               que configuran nuestro cotidiano.

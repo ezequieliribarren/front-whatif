@@ -1,35 +1,68 @@
 .imageContainer {
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.imageContainer:hover .overlay {
+    display: none;
 }
 
 .overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(230, 232, 232, 0.25);
-  backdrop-filter: blur(12.5px);
-  z-index: 2;
-  pointer-events: none;
+    position: absolute;
+    inset: 0;
+    background: rgba(230, 232, 232, 0.25);
+    backdrop-filter: blur(12.5px);
+    z-index: 2;
+    pointer-events: none;
 }
 
 .noImage {
-  width: 100%;
-  height: 100%;
-  background-color: #ccc;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #666;
-  font-size: 14px;
+    width: 100%;
+    height: 100%;
+    background-color: #ccc;
+    font-size: 14px;
+}
+
+.infoContainer {
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+}
+.nameContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.name {
+    color: var(--DARK-GREY, #1F2021);
+    text-align: right;
+    font-family: Fustat;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 30px;
+}
+
+.role {
+    color: var(--DARK-GREY, #1F2021);
+    text-align: right;
+    font-family: Fustat;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
 }
