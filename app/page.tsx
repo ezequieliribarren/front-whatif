@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import styles from './ui/home.module.css';
 import FilterBar from './components/filterBar';

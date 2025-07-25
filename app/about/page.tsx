@@ -10,8 +10,36 @@ type TeamMember = {
   image?: {
     url: string;
   };
-  detail?: string;
+  detail?: any; // lo ponemos any porque es un objeto Lexical
 };
+
+// Función para convertir el richText Lexical a HTML simple
+function serializeLexicalToHtml(richText: any): string {
+  if (!richText?.root?.children) return '';
+
+  return richText.root.children
+    .map((paragraph: any) => {
+      if (!paragraph.children) return '';
+
+      // Para cada hijo dentro del párrafo
+      const htmlContent = paragraph.children
+        .map((node: any) => {
+          if (node.type === 'text') {
+            // texto plano, escapá si querés seguridad extra
+            return node.text;
+          } else if (node.type === 'linebreak') {
+            // salto de línea
+            return '<br />';
+          }
+          // otros tipos ignorados por ahora
+          return '';
+        })
+        .join('');
+
+      return `<p>${htmlContent}</p>`;
+    })
+    .join('');
+}
 
 export default function Page() {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
@@ -21,7 +49,9 @@ export default function Page() {
   useEffect(() => {
     async function fetchTeamMembers() {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/team-members?sort=order`);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/team-members?sort=order`
+        );
         const data = await res.json();
 
         const team = data.docs.find((member: TeamMember) => member.name === 'Team') || null;
@@ -51,12 +81,34 @@ export default function Page() {
         <React.Fragment key={`row-${i}`}>
           {isEvenRow ? (
             <>
-              <CellImage member={memberA} boxWidth={boxWidth} boxHeight={boxHeight} setHoveredId={setHoveredId} />
-              <CellInfo member={memberA} boxWidth={boxWidth} boxHeight={boxHeight} hoveredId={hoveredId} arrowDirection="left" />
+              <CellImage
+                member={memberA}
+                boxWidth={boxWidth}
+                boxHeight={boxHeight}
+                setHoveredId={setHoveredId}
+              />
+              <CellInfo
+                member={memberA}
+                boxWidth={boxWidth}
+                boxHeight={boxHeight}
+                hoveredId={hoveredId}
+                arrowDirection="left"
+              />
               {memberB ? (
                 <>
-                  <CellImage member={memberB} boxWidth={boxWidth} boxHeight={boxHeight} setHoveredId={setHoveredId} />
-                  <CellInfo member={memberB} boxWidth={boxWidth} boxHeight={boxHeight} hoveredId={hoveredId} arrowDirection="left" />
+                  <CellImage
+                    member={memberB}
+                    boxWidth={boxWidth}
+                    boxHeight={boxHeight}
+                    setHoveredId={setHoveredId}
+                  />
+                  <CellInfo
+                    member={memberB}
+                    boxWidth={boxWidth}
+                    boxHeight={boxHeight}
+                    hoveredId={hoveredId}
+                    arrowDirection="left"
+                  />
                 </>
               ) : (
                 <>
@@ -67,12 +119,34 @@ export default function Page() {
             </>
           ) : (
             <>
-              <CellInfo member={memberA} boxWidth={boxWidth} boxHeight={boxHeight} hoveredId={hoveredId} arrowDirection="right" />
-              <CellImage member={memberA} boxWidth={boxWidth} boxHeight={boxHeight} setHoveredId={setHoveredId} />
+              <CellInfo
+                member={memberA}
+                boxWidth={boxWidth}
+                boxHeight={boxHeight}
+                hoveredId={hoveredId}
+                arrowDirection="right"
+              />
+              <CellImage
+                member={memberA}
+                boxWidth={boxWidth}
+                boxHeight={boxHeight}
+                setHoveredId={setHoveredId}
+              />
               {memberB ? (
                 <>
-                  <CellInfo member={memberB} boxWidth={boxWidth} boxHeight={boxHeight} hoveredId={hoveredId} arrowDirection="right" />
-                  <CellImage member={memberB} boxWidth={boxWidth} boxHeight={boxHeight} setHoveredId={setHoveredId} />
+                  <CellInfo
+                    member={memberB}
+                    boxWidth={boxWidth}
+                    boxHeight={boxHeight}
+                    hoveredId={hoveredId}
+                    arrowDirection="right"
+                  />
+                  <CellImage
+                    member={memberB}
+                    boxWidth={boxWidth}
+                    boxHeight={boxHeight}
+                    setHoveredId={setHoveredId}
+                  />
                 </>
               ) : (
                 <>
@@ -164,9 +238,7 @@ export default function Page() {
     </div>
   );
 
-  const EmptyCell = () => (
-    <div style={{ width: boxWidth, height: boxHeight }} />
-  );
+  const EmptyCell = () => <div style={{ width: boxWidth, height: boxHeight }} />;
 
   return (
     <div className="bg-white flex justify-center w-full">
@@ -192,12 +264,16 @@ export default function Page() {
               <h1 className="font-light text-gray-800 text-[32px] mb-4 font-sans">
                 Construimos imaginarios colectivos
               </h1>
-              
-        <p className="font-normal text-black text-sm max-w-[442px] leading-relaxed font-serif whitespace-pre-line">
-  {teamMember?.detail}
-</p>
 
-
+              {/* Acá convertimos y mostramos el richText */}
+              <div
+                className={styles.description}
+                dangerouslySetInnerHTML={{
+                  __html: teamMember?.detail
+                    ? serializeLexicalToHtml(teamMember.detail)
+                    : '',
+                }}
+              />
             </div>
             <h2 className="font-light text-gray-800 text-[32px] text-right font-sans">
               que configuran nuestro cotidiano.
@@ -239,7 +315,36 @@ export default function Page() {
             <span className="text-lg font-normal">Our Dossier</span>
           </button>
         </section>
+        {/* Contact Section */}
+        <section className={styles.contactSection}>  <div className={styles.contact}>
+          <h2>Contact</h2></div>
+          <div className={styles.contactGrid}>
+            <div>
+              <h4>MAPS</h4>
+              <p>C/ Aldepa, 2 Local 4, Esquina,<br />C/ Matilde Hernández, 28025,<br />Madrid</p>
+            </div>
+            <div>
+              <h4>E-MAIL</h4>
+              <p>hi@whatif-arch.com</p>
+            </div>
+            <div>
+              <h4>PHONE</h4>
+              <p>+34 697 266 914</p>
+            </div>
+            <div>
+              <h4>INSTAGRAM</h4>
+              <p>@whatif_architecture</p>
+            </div>
+          </div>
+        </section>
+
+           <section className="w-full h-[90px]">
+      <div className="fixed w-full h-[90px] top-0 left-0 bg-dark-grey z-10" />
+    </section>
+
       </div>
     </div>
+
+
   );
 }

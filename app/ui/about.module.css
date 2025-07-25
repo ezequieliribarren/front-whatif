@@ -1,3 +1,11 @@
+.description {
+    color: #000;
+    font-size: 14px;
+    font-weight: 400;
+    white-space: pre-line;
+
+}
+
 .imageContainer {
     position: relative;
     overflow: hidden;
@@ -35,11 +43,12 @@
 }
 
 .infoContainer {
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
+
 .nameContainer {
     display: flex;
     align-items: center;
@@ -65,4 +74,48 @@ align-items: center;
     font-style: normal;
     font-weight: 300;
     line-height: normal;
+}
+
+
+.contactSection {
+    padding-top: 30px;
+    border-top: 1px solid #ccc;
+}
+
+.contact {
+    display: flex;
+    justify-content: end;
+}
+
+.contact h2{
+    font-size: 40px;
+    font-weight: 300;
+}
+
+.contactGrid {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 30px 40px;
+}
+
+.contactGrid h4 {
+    font-family: 'Fustat', sans-serif;
+    font-size: 14px;
+    color: #1f2021;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.contactGrid p {
+    font-family: 'Fustat', sans-serif;
+    font-size: 14px;
+    color: #1f2021;
+    font-weight: 400;
+    line-height: 1.5;
+    margin: 0;
 }
