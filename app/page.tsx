@@ -86,8 +86,8 @@ export default function Page() {
     
       <FilterBar onFilterChange={setSelectedType} />
 
-      {filtered.map((project, index) => (
-       <section> 
+     {filtered.map((project, index) => (
+  <section key={project.id}> 
         <div
           key={project.id}
           className={`${styles.projectCard} ${index % 2 === 0 ? styles.leftImage : styles.rightImage

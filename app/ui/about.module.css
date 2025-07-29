@@ -2,8 +2,15 @@
     color: #000;
     font-size: 14px;
     font-weight: 400;
+    height: auto;
     white-space: pre-line;
+    margin: 1.5rem 0;
 
+}
+
+.containerAbout{
+    display: flex;
+    flex-direction: column;
 }
 
 .imageContainer {
@@ -49,6 +56,34 @@
     align-items: center;
 }
 
+.aboutCompressed {
+  max-height: 350px !important;
+  overflow: hidden;
+  transition: max-height 0.5s ease;
+}
+
+.aboutCompressed .description {
+  display: none;
+}
+
+.aboutCompressed .h1 {
+margin: 0 !important;
+padding: 0 !important;
+}
+.aboutCompressed .h2 {
+margin: 0 !important;
+padding: 0 !important;
+}
+
+/* Estado normal */
+.sectionAbout {
+  max-height: 1000px;
+  overflow: hidden;
+  transition: max-height 0.5s ease;
+  margin-top: -45px; /* para subirla 40px */
+}
+
+
 .nameContainer {
     display: flex;
     align-items: center;
@@ -80,6 +115,7 @@
 .contactSection {
     padding-top: 30px;
     border-top: 1px solid #ccc;
+    width: 100%;
 }
 
 .contact {
@@ -118,4 +154,33 @@
     font-weight: 400;
     line-height: 1.5;
     margin: 0;
+}
+
+.footer {
+  background-color: #1f1f1f;
+  width: 100%;
+  padding: 2rem 0;
+}
+
+.footerContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.footerContent h3 {
+  color: white;
+  font-weight: 300;
+  font-size: 12px;
+  font-family: 'Fustat', sans-serif;
+  letter-spacing: 0.15em;
+  margin: 0;
+}
+
+.footerContent span {
+  color: white;
+  font-size: 50px;
+  font-weight: 100 !important;
 }
