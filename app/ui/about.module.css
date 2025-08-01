@@ -1,186 +1,230 @@
 .description {
-    color: #000;
-    font-size: 14px;
-    font-weight: 400;
-    height: auto;
-    white-space: pre-line;
-    margin: 1.5rem 0;
-
+  color: #000;
+  font-size: 18px;
+  font-weight: 400;
+  height: auto;
+  white-space: pre-line;
+  margin: 1.5rem 0;
 }
 
-.containerAbout{
-    display: flex;
-    flex-direction: column;
+.containerAbout {
+  width: 100%;
+  min-height: 100vh;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 0 1rem;
 }
 
 .imageContainer {
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background: #f5f5f5;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Elimina el border-radius */
+  border-radius: 0;
 }
 
 .imageContainer:hover .overlay {
-    display: none;
-}
-
-.overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(230, 232, 232, 0.25);
-    backdrop-filter: blur(12.5px);
-    z-index: 2;
-    pointer-events: none;
-}
-
-.noImage {
-    width: 100%;
-    height: 100%;
-    background-color: #ccc;
-    font-size: 14px;
-}
-
-.infoContainer {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.aboutCompressed {
-  max-height: 350px !important;
-  overflow: hidden;
-  transition: max-height 0.5s ease;
-}
-
-.aboutCompressed .description {
   display: none;
 }
 
-.aboutCompressed .h1 {
-margin: 0 !important;
-padding: 0 !important;
-}
-.aboutCompressed .h2 {
-margin: 0 !important;
-padding: 0 !important;
-}
-
-/* Estado normal */
-.sectionAbout {
-  max-height: 1000px;
-  overflow: hidden;
-  transition: max-height 0.5s ease;
-  margin-top: -45px; /* para subirla 40px */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  z-index: 2;
+  pointer-events: none;
 }
 
+.noImage {
+  width: 100%;
+  height: 100%;
+  background-color: #ccc;
+  color: #aaa;
+  font-size: 18px;
+  text-align: center;
+}
+
+.infoContainer {
+  background: #fafafa;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 24px;
+  transition: opacity 0.3s;
+}
 
 .nameContainer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 8px;
 }
 
 .name {
-    color: var(--DARK-GREY, #1F2021);
-    text-align: right;
-    font-family: Fustat;
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 30px;
+  color: var(--DARK-GREY, #1F2021);
+  text-align: right;
+  font-family: Fustat;
+  font-size: 22px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 30px;
+  margin: 0;
 }
 
 .role {
-    color: var(--DARK-GREY, #1F2021);
-    text-align: right;
-    font-family: Fustat;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 300;
-    line-height: normal;
+  color: var(--DARK-GREY, #1F2021);
+  text-align: right;
+  font-family: Fustat;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 300;
+  line-height: normal;
+  margin: 0;
 }
 
-
 .contactSection {
-    padding-top: 30px;
-    border-top: 1px solid #ccc;
-    width: 100%;
+  margin-top: 48px;
+  padding: 32px 0;
+  background: #f7f7f7;
+  border-top: 1px solid #ccc;
+  width: 100%;
 }
 
 .contact {
-    display: flex;
-    justify-content: end;
+  text-align: center;
+  margin-bottom: 24px;
 }
 
-.contact h2{
-    font-size: 40px;
-    font-weight: 300;
+.contact h2 {
+  font-size: 40px;
+  font-weight: 300;
 }
 
 .contactGrid {
-    margin-top: 30px;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-    max-width: 1440px;
-    margin: 0 auto;
-    padding: 30px 40px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 30px 40px;
 }
 
 .contactGrid h4 {
-    font-family: 'Fustat', sans-serif;
-    font-size: 14px;
-    color: #1f2021;
-    font-weight: 700;
-    text-transform: uppercase;
-    margin-bottom: 8px;
+  font-family: 'Fustat', sans-serif;
+  font-size: 16px;
+  color: #1f2021;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 8px;
 }
 
 .contactGrid p {
-    font-family: 'Fustat', sans-serif;
-    font-size: 14px;
-    color: #1f2021;
-    font-weight: 400;
-    line-height: 1.5;
-    margin: 0;
+  font-family: 'Fustat', sans-serif;
+  font-size: 15px;
+  color: #444;
+  font-weight: 400;
+  line-height: 1.5;
+  margin: 0;
 }
 
+.description p {
+  padding: 12px 0 12px 0;
+}
+
+/* Footer */
 .footer {
-  background-color: #1f1f1f;
-  width: 100%;
-  padding: 2rem 0;
+  background: #222;
+  color: #fff;
+  padding: 32px 0;
+  margin-top: 48px;
 }
 
 .footerContent {
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 1.5rem;
+  justify-content: center;
+  gap: 32px;
   flex-wrap: wrap;
 }
 
 .footerContent h3 {
-  color: white;
-  font-weight: 300;
-  font-size: 12px;
-  font-family: 'Fustat', sans-serif;
-  letter-spacing: 0.15em;
+  font-size: 18px;
+  font-weight: 400;
   margin: 0;
+  text-align: center;
 }
 
 .footerContent span {
-  color: white;
-  font-size: 50px;
-  font-weight: 100 !important;
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 12px;
+}
+
+.quienesSomos { }
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .sectionAbout {
+    flex-direction: column !important;
+    gap: 24px !important;
+    align-items: flex-start !important;
+    padding-top: 15rem !important;
+  }
+.quienesSomos {
+    flex-direction: column-reverse !important;
+  }
+
+  .imageContainer,
+  .infoContainer {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 220px;
+    margin-bottom: 12px;
+  }
+
+  .contactGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .description{
+    padding: 0 1.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .sectionAbout {
+    padding: 12px 0;
+  }
+
+  .description {
+    font-size: 16px;
+  }
+
+  .contactGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .footerContent {
+    gap: 12px;
+  }
 }

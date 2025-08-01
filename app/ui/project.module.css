@@ -159,3 +159,53 @@
   font-weight: bold;
   border-bottom: 2px solid black;
 }
+
+
+@media screen and (max-width: 1024px) {
+  .container {
+    flex-direction: column-reverse;
+    height: auto;
+  }
+
+  .carouselSection {
+    width: 100%;
+    height: auto;
+    align-items: center;
+  }
+
+  .slider {
+    width: 100%;
+    margin: 0;
+  }
+
+
+  .media {
+    height: auto;
+    max-height: 60vh;
+  }
+
+  .menuProject {
+    margin-top: 1rem;
+    margin-right: 0;
+    width: 100%;
+  }
+
+  .menuProject ul {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .sidebar {
+    width: 100%;
+    padding: 2rem;
+    box-sizing: border-box;
+    height: auto;
+  }
+
+  .buttonTextContainer {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+}

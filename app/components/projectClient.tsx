@@ -108,7 +108,7 @@ export default function ProjectClient({ project }: Props) {
             <p><strong>Premios:</strong> {project.awards || 'No especificado'}</p>
           </div>
 
-          <div>
+          <div className={styles.buttonTextContainer}>
            <button
   onClick={() => {
     if (projectHasText) setShowDescription(!showDescription);

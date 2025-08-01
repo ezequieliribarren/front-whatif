@@ -3,6 +3,9 @@
 import React, { useEffect, useState } from 'react';
 import styles from '@/app/ui/about.module.css';
 
+// Si no tienes react-responsive, instálalo con: npm install react-responsive
+import { useMediaQuery } from 'react-responsive';
+
 type TeamMember = {
   id: string;
   name: string;
@@ -43,9 +46,13 @@ export default function Page() {
   const [teamMember, setTeamMember] = useState<TeamMember | null>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [altTitles, setAltTitles] = useState(false);
 
   const boxWidth = 324;
   const boxHeight = 486;
+
+  // Detectar si es tablet o móvil
+  const isTabletOrMobile = useMediaQuery({ maxWidth: 1024 });
 
   useEffect(() => {
     async function fetchTeamMembers() {
@@ -75,6 +82,30 @@ export default function Page() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Alternancia automática de hover cada 3 segundos (solo desktop)
+  useEffect(() => {
+    if (!isTabletOrMobile && teamMembers.length > 0) {
+      let idx = 0;
+      const interval = setInterval(() => {
+        setHoveredId(teamMembers[idx % teamMembers.length].id);
+        idx++;
+      }, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [teamMembers, isTabletOrMobile]);
+
+  // Alternar títulos cada 3 segundos solo en tablet/mobile
+  useEffect(() => {
+    if (isTabletOrMobile) {
+      const interval = setInterval(() => {
+        setAltTitles(prev => !prev);
+      }, 3000);
+      return () => clearInterval(interval);
+    } else {
+      setAltTitles(false);
+    }
+  }, [isTabletOrMobile]);
+
   const CellImage = ({
     member,
     boxWidth,
@@ -89,8 +120,9 @@ export default function Page() {
     <div
       className={styles.imageContainer}
       style={{ width: boxWidth, height: boxHeight }}
-      onMouseEnter={() => setHoveredId(member.id)}
-      onMouseLeave={() => setHoveredId(null)}
+      // Solo activa hover en desktop
+      onMouseEnter={() => !isTabletOrMobile && setHoveredId(member.id)}
+      onMouseLeave={() => !isTabletOrMobile && setHoveredId(null)}
       key={member.id + '-img'}
     >
       {member.image?.url ? (
@@ -114,20 +146,22 @@ export default function Page() {
     boxHeight,
     hoveredId,
     arrowDirection,
+    alwaysVisible = false,
   }: {
     member: TeamMember;
     boxWidth: number;
     boxHeight: number;
     hoveredId: string | null;
     arrowDirection: 'left' | 'right';
+    alwaysVisible?: boolean;
   }) => (
     <div
       className={styles.infoContainer}
       style={{
         width: boxWidth,
         height: boxHeight,
-        opacity: hoveredId === member.id ? 1 : 0,
-        pointerEvents: hoveredId === member.id ? 'auto' : 'none',
+        opacity: alwaysVisible || hoveredId === member.id ? 1 : 0,
+        pointerEvents: alwaysVisible || hoveredId === member.id ? 'auto' : 'none',
       }}
       key={member.id + '-info'}
     >
@@ -157,14 +191,35 @@ export default function Page() {
 
   const EmptyCell = () => <div style={{ width: boxWidth, height: boxHeight }} />;
 
+  // Grid alternando imagen-descripción y descripción-imagen en tablet/móvil (solo un par por fila)
+  const renderGridCellsResponsive = () => {
+    return teamMembers.map((member, idx) => {
+      const isEvenRow = idx % 2 === 0;
+      return (
+        <div key={`row-resp-${idx}`} className="flex flex-row w-full mb-4">
+          {isEvenRow ? (
+            <>
+              <CellImage {...{ member, boxWidth, boxHeight, setHoveredId }} />
+              <CellInfo {...{ member, boxWidth, boxHeight, hoveredId, arrowDirection: 'left', alwaysVisible: true }} />
+            </>
+          ) : (
+            <>
+              <CellInfo {...{ member, boxWidth, boxHeight, hoveredId, arrowDirection: 'right', alwaysVisible: true }} />
+              <CellImage {...{ member, boxWidth, boxHeight, setHoveredId }} />
+            </>
+          )}
+        </div>
+      );
+    });
+  };
+
+  // Grid original para desktop
   const renderGridCells = () => {
     const rows: React.ReactNode[] = [];
-
     for (let i = 0; i < teamMembers.length; i += 2) {
       const memberA = teamMembers[i];
       const memberB = teamMembers[i + 1];
       const isEvenRow = (i / 2) % 2 === 0;
-
       rows.push(
         <React.Fragment key={`row-${i}`}>
           {isEvenRow ? (
@@ -203,7 +258,6 @@ export default function Page() {
         </React.Fragment>
       );
     }
-
     return rows;
   };
 
@@ -211,66 +265,93 @@ export default function Page() {
     <div className={styles.containerAbout}>
       <div className="flex justify-center w-full">
         <div className="w-full" style={{ width: boxWidth * 4 + 12 }}>
-
           {/* About comprimido con scroll */}
-          <section
-            className={`flex flex-row w-full relative gap-8 transition-all duration-500 ${styles.sectionAbout} ${
-              scrolled ? styles.aboutCompressed : ''
-            }`}
-          >
-            <div className="w-1/2">
+          {isTabletOrMobile ? (
+            <section className={`flex flex-col w-full relative gap-4 ${styles.sectionAbout}`}>
+              <h1 className="font-light text-gray-800 text-[32px] font-sans text-center">
+                {altTitles
+                  ? <><span className="font-bold">Explore</span> present(s)</>
+                  : 'Construimos imaginarios colectivos'}
+              </h1>
               {teamMember?.image?.url ? (
                 <img
-                  className="w-full h-auto max-h-[600px] object-cover"
+                  className="w-full h-auto max-h-[400px] object-cover"
                   alt={teamMember.name}
                   src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${teamMember.image.url}`}
                 />
               ) : (
                 <div>No image available</div>
               )}
-            </div>
-
-            <div
-              className="w-1/2 flex flex-col justify-center"
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
+              <h2 className="font-light text-gray-800 text-[32px] text-center font-sans">
+                {altTitles
+                  ? <><span className="font-bold">build</span> futures</>
+                  : 'que configuran nuestro cotidiano.'}
+              </h2>
+              <div
+                className={styles.description}
+                dangerouslySetInnerHTML={{
+                  __html: teamMember?.detail
+                    ? serializeLexicalToHtml(teamMember.detail)
+                    : '',
+                }}
+              />
+            </section>
+          ) : (
+            <section
+              className={`flex flex-row w-full relative gap-8 transition-all duration-500 ${styles.sectionAbout} ${
+                scrolled ? styles.aboutCompressed : ''
+              }`}
             >
-              <div>
-                <h1 className="font-light text-gray-800 text-[32px] font-sans">
+              <div className="w-1/2">
+                {teamMember?.image?.url ? (
+                  <img
+                    className="w-full h-auto max-h-[600px] object-cover"
+                    alt={teamMember.name}
+                    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${teamMember.image.url}`}
+                  />
+                ) : (
+                  <div>No image available</div>
+                )}
+              </div>
+              <div
+                className="w-1/2 flex flex-col justify-center"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+              >
+                <div>
+                  <h1 className="font-light text-gray-800 text-[32px] font-sans">
+                    {isHovered ? (
+                      <>
+                        <span className="font-bold">Explore</span> present(s)
+                      </>
+                    ) : (
+                      'Construimos imaginarios colectivos'
+                    )}
+                  </h1>
+                  <div
+                    className={styles.description}
+                    dangerouslySetInnerHTML={{
+                      __html: teamMember?.detail
+                        ? serializeLexicalToHtml(teamMember.detail)
+                        : '',
+                    }}
+                  />
+                </div>
+                <h2 className="font-light text-gray-800 text-[32px] text-right font-sans">
                   {isHovered ? (
                     <>
-                      <span className="font-bold">Explore</span> present(s)
+                      <span className="font-bold">build</span> futures
                     </>
                   ) : (
-                    'Construimos imaginarios colectivos'
+                    'que configuran nuestro cotidiano.'
                   )}
-                </h1>
-
-                <div
-                  className={styles.description}
-                  dangerouslySetInnerHTML={{
-                    __html: teamMember?.detail
-                      ? serializeLexicalToHtml(teamMember.detail)
-                      : '',
-                  }}
-                />
+                </h2>
               </div>
-
-              <h2 className="font-light text-gray-800 text-[32px] text-right font-sans">
-                {isHovered ? (
-                  <>
-                    <span className="font-bold">build</span> futures
-                  </>
-                ) : (
-                  'que configuran nuestro cotidiano.'
-                )}
-              </h2>
-            </div>
-          </section>
+            </section>
+          )}
 
           {/* Quiénes somos - sección debajo */}
-          <section className="flex flex-row w-full relative py-10 gap-8">
-            <div className="w-1/2">
+<section className={`flex flex-row w-full relative py-10 gap-8 ${styles.quienesSomos}`}>            <div className="w-1/2">
               <p className={styles.description}>
                 Somos un equipo formado por arquitectxs y diseñadorxs interdisciplinares encargadxs de hacer tangibles las ideas.
               </p>
@@ -282,7 +363,10 @@ export default function Page() {
             </div>
           </section>
 
-          <section className="grid grid-cols-4 gap-4 py-10">{renderGridCells()}</section>
+          {/* Grid responsive */}
+          <section className={isTabletOrMobile ? "py-10" : "grid grid-cols-4 gap-4 py-10"}>
+            {isTabletOrMobile ? renderGridCellsResponsive() : renderGridCells()}
+          </section>
 
           <section className="flex justify-center py-10">
             <button

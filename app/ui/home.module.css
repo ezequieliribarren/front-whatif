@@ -12,7 +12,7 @@
   display: flex;
   flex-direction: column;
 }
- 
+
 .projectCard {
   display: flex;
   width: 100%;
@@ -86,9 +86,9 @@
 .plusIcon {
   font-size: 98px;
   font-weight: 100 !important;
-  color: #FFFFFF ;
+  color: #FFFFFF;
   z-index: 3;
-  font-family:'Times New Roman', Times, serif;
+  font-family: 'Times New Roman', Times, serif;
 }
 
 .projectDetails {
@@ -119,4 +119,91 @@
   z-index: 105;
   text-align: right;
 
+}
+
+
+
+@media (max-width: 1024px) {
+  
+  .projectCard {
+    flex-direction: column !important;
+    margin-top: 4rem;
+    padding: 0;
+    margin: 0;
+  }
+
+  .imageContainer {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    flex: none;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    
+  }
+
+  .projectCardImage {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+
+  .emptyHalf {
+    display: none;
+  }
+
+  .overlay {
+    display: none;
+  }
+
+  .projectInfoRow {
+    flex-direction: column;
+    justify-content: left;
+    align-items: start;
+    text-align: left;
+    padding: 1.5rem 1rem;
+    background-color: #fff;
+  }
+
+  .projectDetails {
+    opacity: 1;
+    margin-top: 0.5rem;
+    text-align: left;
+  }
+
+  .projectDetails h3 {
+    font-size: 16px;
+  }
+
+  .h2Home {
+    font-size: 24px;
+    margin-top: 1rem;
+  }
+
+.overlay {
+  top: auto !important;
+  right: auto !important;
+  left: 0 !important;
+  bottom: 0 !important;
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  backdrop-filter: blur(9px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1 !important;
+  transition: none;
+  z-index: 2;
+}
+
+
+  .plusIcon {
+    font-weight: bold;
+  }
+
+  /* Anular el hover en mobile */
+  .imageContainer:hover .overlay {
+    opacity: 1;
+  }
 }

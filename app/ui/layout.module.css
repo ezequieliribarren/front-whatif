@@ -1,35 +1,35 @@
 .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: top;
-    width: 100%;
-    padding: 2rem 4rem;
-    background-color: transparent;
-    transition: all 0.3s ease;
-    z-index: 999;
-    position: fixed;
+  display: flex;
+  justify-content: space-between;
+  align-items: top;
+  width: 100%;
+  padding: 2rem 4rem;
+  background-color: transparent;
+  transition: all 0.3s ease;
+  z-index: 999;
+  position: fixed;
 
 }
 
 .navbar nav {
-    display: flex;
+  display: flex;
 }
 
 .navbar nav li {
-    margin-left: 4rem;
-    font-size: 50px;
+  margin-left: 4rem;
+  font-size: 50px;
 }
 
 .navbar nav li .link {
-    text-decoration: none;
-    list-style: none;
-    color: black;
-    font-family: fustat-semi-bold;
+  text-decoration: none;
+  list-style: none;
+  color: black;
+  font-family: fustat-semi-bold;
 
 }
 
 .logo {
-    width: 28rem;
+  width: 28rem;
 }
 
 
@@ -71,4 +71,97 @@
 
 .logoUp {
   top: -105px;
+}
+
+
+/* Ocultar icono por defecto */
+.menuIcon {
+  display: none;
+  cursor: pointer;
+  color: black;
+  z-index: 1001;
+  background: transparent;
+}
+
+/* Menú lateral oculto por defecto */
+.mobileMenu {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 3rem;
+  transition: right 0.4s ease-in-out;
+  z-index: 1000;
+  padding: 2rem;
+}
+
+.mobileMenu li {
+  list-style: none;
+}
+
+.mobileMenu .link {
+  font-size: 36px;
+  text-decoration: none;
+  color: black;
+  font-family: fustat-semi-bold;
+}
+
+/* Cuando el menú se abre */
+.menuOpen {
+  right: 0;
+}
+
+.closeButton {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: transparent;
+  border: none;
+  color: black;
+  z-index: 1002;
+  cursor: pointer;
+}
+
+.logoMobile {
+  width: 12rem !important;
+}
+
+/* Media query para mostrar menú hamburguesa */
+@media (max-width: 1024px) {
+
+  .navLinks {
+    display: none !important;
+  }
+
+  .mobileMenu .link {
+    font-size: 70px;
+
+  }
+
+  .mobileMenu li {
+    margin: 8rem 0;
+    text-align: center;
+  }
+
+  .menuIcon {
+    display: block;
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+  }
+
+  .logo {
+    width: 18rem;
+  }
+
+  .navbar {
+    padding: 2rem 2rem;
+  }
 }

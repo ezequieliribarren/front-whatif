@@ -107,3 +107,15 @@ main{
 section{
   padding-top: 15rem;
 }
+
+
+@media (max-width: 1024px) {
+  
+  main {
+    padding: 0 1rem;
+  }
+
+  section {
+    padding-top: 5rem;
+  }
+}
