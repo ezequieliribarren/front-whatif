@@ -25,11 +25,11 @@
   height: 30rem;
 }
 
-.row h4{
+.row h4 {
   font-size: 20px;
 }
 
-.row h3{
+.row h3 {
   font-size: 20px;
 }
 
@@ -62,7 +62,7 @@
   text-decoration: none;
 }
 
-.titleLink h2{
+.titleLink h2 {
   font-size: 24px;
   font-weight: 600;
   text-transform: uppercase;
@@ -115,4 +115,68 @@
   font-size: 3rem;
   color: black;
   font-weight: 100;
+}
+
+.cardMobile {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 16px;
+  background: #fff;
+  width: 100%;
+  padding: 0 2rem;
+  box-sizing: border-box;
+
+}
+
+.cardImgMobile {
+  width: 100%;
+  aspect-ratio: 2.5/1;
+  background-size: cover;
+  background-position: center;
+  height: 12rem;
+}
+
+.cardInfoMobile {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cardMetaMobile {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  font-size: 16px;
+  color: #222;
+}
+
+.plusIcon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 3rem;
+  color: white;
+  pointer-events: none;
+  z-index: 2;
+}
+
+@media (max-width: 1024px) {
+  .headerRow {
+    display: none !important;
+  }
+
+  .titleLink {
+    text-transform: uppercase;
+    font-weight: 600;
+    color: black;
+    font-size: 24px;
+  }
+
+  /* Solo la category en uppercase */
+  .cardMetaMobile span.category {
+    text-transform: uppercase;
+  }
 }

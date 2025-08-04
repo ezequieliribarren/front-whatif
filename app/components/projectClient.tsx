@@ -1,5 +1,5 @@
 'use client';
-
+import '@google/model-viewer';
 import { useState } from 'react';
 import Slider from 'react-slick';
 import styles from '../ui/project.module.css';
@@ -101,11 +101,21 @@ export default function ProjectClient({ project }: Props) {
 
         <div className={styles.details}>
           <div>
-            <p><strong>Location:</strong> {project.location || 'No especificado'}</p>
-            <p><strong>Client:</strong> {project.client || 'No especificado'}</p>
-            <p><strong>Built area:</strong> {project.area || 'No especificado'}</p>
-            <p><strong>Agencia:</strong> {project.agency || 'No especificado'}</p>
-            <p><strong>Premios:</strong> {project.awards || 'No especificado'}</p>
+            {project.location && (
+              <p><strong>Location:</strong> {project.location}</p>
+            )}
+            {project.client && (
+              <p><strong>Client:</strong> {project.client}</p>
+            )}
+            {project.area && (
+              <p><strong>Built area:</strong> {project.area}</p>
+            )}
+            {project.agency && (
+              <p><strong>Agencia:</strong> {project.agency}</p>
+            )}
+            {project.awards && (
+              <p><strong>Premios:</strong> {project.awards}</p>
+            )}
           </div>
 
           <div className={styles.buttonTextContainer}>

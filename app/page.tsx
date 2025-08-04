@@ -102,7 +102,17 @@ export default function Page() {
                 title={`${project.title}`}
               >
                 <div className={styles.overlay}>
-                  <span className={styles.plusIcon}>+</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="58"
+                    height="58"
+                    viewBox="0 0 38 38"
+                    fill="none"
+                    className={styles.plusIcon}
+                  >
+                    <path d="M18.748 0V37.5" stroke="white" strokeWidth="2"/>
+                    <path d="M37.5 18.7478L0 18.7478" stroke="white" strokeWidth="2"/>
+                  </svg>
                 </div>
                 <img
                   src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${project.imagenDestacada.url}`}

@@ -6,9 +6,24 @@
   display: flex;
   justify-content: center;
   z-index: 50;
-  pointer-events: none;
-
 }
+
+.filterToggle {
+  pointer-events: auto;
+}
+
+.filterMenu {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  display: grid;
+  grid-template-columns: repeat(3, min-content);
+  gap: 12px;
+  z-index: 100;
+}
+
 
 .filterList {
   display: flex;
@@ -18,21 +33,14 @@
 
 .filterItem {
   display: inline-flex;
-  padding: 2px 15px;
+  padding: 10px 16px;
   gap: 10px;
   flex-shrink: 0;
   cursor: pointer;
-  transition: 0.2s;
+  transition: background-color 0.3s ease;
   border: 1px solid #1F2021;
   background: rgba(255, 255, 255, 0.80);
-  width: auto;
   height: 35px;
-}
-
-.filterItem {
-  cursor: pointer;
-  padding: 10px 16px;
-  transition: background-color 0.3s ease;
   text-transform: lowercase;
   color: #1F2021;
 }
@@ -47,4 +55,24 @@
   color: white;
   border: solid 1px white;
 
+}
+
+@media (max-width: 1024px) {
+  .filterContainer {
+    justify-content: center;
+  }
+
+  .filterMenu {
+    justify-items: center;
+    gap: 0.5rem;
+  }
+
+  .filterList {
+    gap: 0;
+  }
+
+  .filterItem {
+    justify-content: center;
+    gap: 0;
+  }
 }
