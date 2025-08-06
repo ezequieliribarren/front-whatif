@@ -56,6 +56,33 @@ function extractPlainText(lexicalData: any): string {
   return extract(nodes);
 }
 
+// Flechas personalizadas para el slider
+const CustomPrevArrow = (props: any) => {
+  const { className, style, onClick } = props;
+  return (
+    <div
+      className={`${className} ${styles.customArrow} ${styles.leftArrow}`}
+      style={{ ...style }}
+      onClick={onClick}
+    >
+      <img src="/left-arrow.png" alt="Previous" />
+    </div>
+  );
+};
+
+const CustomNextArrow = (props: any) => {
+  const { className, style, onClick } = props;
+  return (
+    <div
+      className={`${className} ${styles.customArrow} ${styles.rightArrow}`}
+      style={{ ...style }}
+      onClick={onClick}
+    >
+      <img src="/right-arrow.png" alt="Next" />
+    </div>
+  );
+};
+
 export default function ProjectClient({ project }: Props) {
   const [activeType, setActiveType] = useState<'photos' | 'drawings' | 'renders' | 'videos' | 'models3D'>('photos');
   const [showDescription, setShowDescription] = useState(false);
@@ -68,6 +95,8 @@ export default function ProjectClient({ project }: Props) {
     slidesToScroll: 1,
     arrows: true,
     adaptiveHeight: true,
+    prevArrow: <CustomPrevArrow />,
+    nextArrow: <CustomNextArrow />,
   };
 
   const mediaMap: Record<string, Media[] | { url: string }[] | undefined> = {
@@ -119,20 +148,20 @@ export default function ProjectClient({ project }: Props) {
           </div>
 
           <div className={styles.buttonTextContainer}>
-           <button
-  onClick={() => {
-    if (projectHasText) setShowDescription(!showDescription);
-  }}
-  disabled={!projectHasText}
-  className={`${styles.buttonText} ${!projectHasText ? styles.disabledButton : ''}`}
->
-  <h3>{showDescription ? 'x' : 'text'}</h3>
-</button>
+            <button
+              onClick={() => {
+                if (projectHasText) setShowDescription(!showDescription);
+              }}
+              disabled={!projectHasText}
+              className={`${styles.buttonText} ${!projectHasText ? styles.disabledButton : ''}`}
+            >
+              <h3>{showDescription ? 'x' : 'text'}</h3>
+            </button>
 
             {showDescription && (
               <div className={`${styles.description} ${showDescription ? styles.open : ''}`}>
-  <p>{descriptionText}</p>
-</div>
+                <p>{descriptionText}</p>
+              </div>
             )}
           </div>
         </div>

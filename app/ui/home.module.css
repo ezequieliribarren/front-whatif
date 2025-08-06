@@ -122,9 +122,32 @@
 }
 
 
+.projectDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 
 @media (max-width: 1024px) {
-  
+
+  .projectDetails {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .projectDate {
+    display: none;
+  }
+
+  .projectCategory,
+  .projectType {
+    flex: 1 1 auto;
+  }
+
   .projectCard {
     flex-direction: column !important;
     margin-top: 4rem;
@@ -139,7 +162,7 @@
     padding: 0;
     margin: 0;
     position: relative;
-    
+
   }
 
   .projectCardImage {
@@ -180,22 +203,22 @@
     margin-top: 1rem;
   }
 
-.overlay {
-  top: auto !important;
-  right: auto !important;
-  left: 0 !important;
-  bottom: 0 !important;
-  position: absolute;
-  width: 90px;
-  height: 90px;
-  backdrop-filter: blur(9px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 1 !important;
-  transition: none;
-  z-index: 2;
-}
+  .overlay {
+    top: auto !important;
+    right: auto !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    backdrop-filter: blur(9px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1 !important;
+    transition: none;
+    z-index: 2;
+  }
 
 
   .plusIcon {

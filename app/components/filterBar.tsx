@@ -52,13 +52,12 @@ export default function FilterBar({ onFilterChange }: FilterBarProps) {
       <div className={styles.filterContainer} ref={containerRef}>
         {/* Botón Filters */}
         <div
-          className={`${styles.filterItem} ${styles.filterToggle}`}
+          className={`${styles.filterToggle}`}
           onClick={() => setOpen((prev) => !prev)}
           style={{ cursor: 'pointer', userSelect: 'none' }}
         >
-          <h4>
-            Filters{' '}
-            <span style={{ transform: open ? 'rotate(180deg)' : 'none', display: 'inline-block', transition: 'transform 0.2s' }}>^</span>
+          <h4 className={styles.filterTitle}>
+         <span><img src={open ? '/down.png' : '/up.png'} alt="toggle icon" /></span> Filters
           </h4>
         </div>
         {/* Menú flotante de filtros */}

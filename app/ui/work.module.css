@@ -120,12 +120,13 @@
 .cardMobile {
   display: flex;
   flex-direction: column;
-  border-bottom: 1px solid #ccc;
   margin-bottom: 16px;
   background: #fff;
   width: 100%;
-  padding: 0 2rem;
+  padding: 0 1.5rem;
   box-sizing: border-box;
+  border-top: 1px solid black;
+
 
 }
 
@@ -135,6 +136,7 @@
   background-size: cover;
   background-position: center;
   height: 12rem;
+
 }
 
 .cardInfoMobile {
@@ -163,7 +165,20 @@
   z-index: 2;
 }
 
+
+  .colCategory h3 {
+    font-family: fustat;
+    font-size: 16px;
+  }
+    .colType h3 {
+    font-family: fustat;
+    font-size: 16px;
+  }
+
 @media (max-width: 1024px) {
+  .container{
+    padding: 12rem 0;
+  }
   .headerRow {
     display: none !important;
   }
@@ -179,4 +194,5 @@
   .cardMetaMobile span.category {
     text-transform: uppercase;
   }
+
 }

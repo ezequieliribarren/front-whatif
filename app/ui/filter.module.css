@@ -10,6 +10,19 @@
 
 .filterToggle {
   pointer-events: auto;
+  border: 0.747px solid #1F2021;
+  background: rgba(255, 255, 255, 0.90);
+  display: inline-flex;
+  padding: 10px 16px;
+  gap: 10px;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border: 1px solid #1F2021;
+  background: rgba(255, 255, 255, 0.80);
+  height: 35px;
+  text-transform: lowercase;
+  color: #1F2021;
 }
 
 .filterMenu {
@@ -55,6 +68,15 @@
   color: white;
   border: solid 1px white;
 
+}
+
+.filterTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: fustat-bold;
 }
 
 @media (max-width: 1024px) {

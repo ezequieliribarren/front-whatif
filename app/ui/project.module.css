@@ -160,6 +160,39 @@
   border-bottom: 2px solid black;
 }
 
+.customArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}
+
+.customArrow img {
+  width: 100%;
+  height: auto;
+}
+
+.leftArrow {
+  left: 10px;
+}
+
+.rightArrow {
+  right: 10px;
+}
+
+.slider {
+  position: relative;
+  z-index: 1;
+}
+
+.menuProject {
+  position: relative;
+  z-index: 2;
+}
+
 
 @media screen and (max-width: 1024px) {
   .container {

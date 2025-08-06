@@ -125,25 +125,25 @@ export default function Page() {
                   <h2 className={styles.h2Home}>{project.title}</h2>
                 </div>
 
-                <div className={styles.projectDetails}>
-                  <div>
-                    <h3>{new Date().getFullYear()}</h3>
-                  </div>
-                  <div>
-                    <h3 className={styles.h3Category}>
-                      {project.categories && project.categories.length > 0
-                        ? project.categories.map((t) => t.name).join(', ')
-                        : 'Sin Categoría'}
-                    </h3>
-                  </div>
-                  <div>
-                    <h3>
-                      {project.types && project.types.length > 0
-                        ? project.types.map((t) => t.name).join(', ')
-                        : 'Sin tipo'}
-                    </h3>
-                  </div>
-                </div>
+<div className={styles.projectDetails}>
+  <div className={styles.projectDate}>
+    <h3>{new Date().getFullYear()}</h3>
+  </div>
+  <div className={styles.projectCategory}>
+    <h3 className={styles.h3Category}>
+      {project.categories && project.categories.length > 0
+        ? project.categories.map((t) => t.name).join(', ')
+        : 'Sin Categoría'}
+    </h3>
+  </div>
+  <div className={styles.projectType}>
+    <h3>
+      {project.types && project.types.length > 0
+        ? project.types.map((t) => t.name).join(', ')
+        : 'Sin tipo'}
+    </h3>
+  </div>
+</div>
               </div>
             </div>
           )}
