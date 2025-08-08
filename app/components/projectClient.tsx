@@ -2,6 +2,7 @@
 import '@google/model-viewer';
 import { useState } from 'react';
 import Slider from 'react-slick';
+import Link from 'next/link';
 import styles from '../ui/project.module.css';
 
 import 'slick-carousel/slick/slick.css';
@@ -31,14 +32,13 @@ type Project = {
   renders?: Media[];
   videos?: Media[];
   models3D?: { url: string }[];
-  text?: any; // Rich text Lexical JSON
+  text?: any;
 };
 
 type Props = {
   project: Project;
 };
 
-// Extrae texto plano del JSON de Lexical
 function extractPlainText(lexicalData: any): string {
   if (!lexicalData?.root?.children) return '';
   const nodes = lexicalData.root.children;
@@ -56,7 +56,6 @@ function extractPlainText(lexicalData: any): string {
   return extract(nodes);
 }
 
-// Flechas personalizadas para el slider
 const CustomPrevArrow = (props: any) => {
   const { className, style, onClick } = props;
   return (
@@ -130,21 +129,11 @@ export default function ProjectClient({ project }: Props) {
 
         <div className={styles.details}>
           <div>
-            {project.location && (
-              <p><strong>Location:</strong> {project.location}</p>
-            )}
-            {project.client && (
-              <p><strong>Client:</strong> {project.client}</p>
-            )}
-            {project.area && (
-              <p><strong>Built area:</strong> {project.area}</p>
-            )}
-            {project.agency && (
-              <p><strong>Agencia:</strong> {project.agency}</p>
-            )}
-            {project.awards && (
-              <p><strong>Premios:</strong> {project.awards}</p>
-            )}
+            {project.location && <p><strong>Location:</strong> {project.location}</p>}
+            {project.client && <p><strong>Client:</strong> {project.client}</p>}
+            {project.area && <p><strong>Built area:</strong> {project.area}</p>}
+            {project.agency && <p><strong>Agencia:</strong> {project.agency}</p>}
+            {project.awards && <p><strong>Premios:</strong> {project.awards}</p>}
           </div>
 
           <div className={styles.buttonTextContainer}>
@@ -167,38 +156,51 @@ export default function ProjectClient({ project }: Props) {
         </div>
       </aside>
 
-      <div className={styles.carouselSection}>
-        {filteredMedia.length > 0 && (
-          <Slider {...settings} className={styles.slider}>
-            {filteredMedia.map((media: any, index: number) => (
-              <div key={index} className={styles.slide}>
-                {'mimeType' in media && media.mimeType?.includes('video') ? (
-                  <video
-                    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${media.url}`}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className={styles.media}
-                  />
-                ) : 'url' in media && typeof media.url === 'string' && !('mimeType' in media) ? (
-                  <iframe
-                    src={media.url}
-                    title={`3D model ${index + 1}`}
-                    className={styles.media}
-                  />
-                ) : (
-                  <img
-                    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${media.url}`}
-                    alt={media.alt || project.title}
-                    className={styles.media}
-                    style={{ objectFit: 'contain' }}
-                  />
-                )}
-              </div>
-            ))}
-          </Slider>
-        )}
+{/* Dentro del div .carouselSection */}
+<div className={styles.carouselSection}>
+  {/* Botón Back dentro del contenedor del slider */}
+  <div className={styles.backButton}>
+    <Link href="/work" scroll={false}>
+      <div className={styles.backContent}>
+        <img src="/left-arrow.png" alt="Back" />
+        <span>back</span>
+      </div>
+    </Link>
+  </div>
+
+  {/* Slider */}
+  {filteredMedia.length > 0 && (
+    <Slider {...settings} className={styles.slider}>
+      {filteredMedia.map((media: any, index: number) => (
+        <div key={index} className={styles.slide}>
+          {'mimeType' in media && media.mimeType?.includes('video') ? (
+            <video
+              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${media.url}`}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className={styles.media}
+            />
+          ) : 'url' in media && typeof media.url === 'string' && !('mimeType' in media) ? (
+            <iframe
+              src={media.url}
+              title={`3D model ${index + 1}`}
+              className={styles.media}
+            />
+          ) : (
+            <img
+              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${media.url}`}
+              alt={media.alt || project.title}
+              className={styles.media}
+              style={{ objectFit: 'contain' }}
+            />
+          )}
+        </div>
+      ))}
+    </Slider>
+  )}
+
 
         <div className={styles.menuProject}>
           <ul>

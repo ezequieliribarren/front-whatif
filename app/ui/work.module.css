@@ -44,7 +44,7 @@
 }
 
 .colTitle {
-  width: 20rem;
+  width: 25rem;
   margin-right: 3rem;
 }
 
@@ -60,11 +60,13 @@
 
 .titleLink {
   text-decoration: none;
+  text-transform: uppercase;
+  font-family: fustat-bold !important;
 }
 
 .titleLink h2 {
   font-size: 24px;
-  font-weight: 600;
+  font-family: fustat-bold !important;
   text-transform: uppercase;
   color: black;
 }
@@ -79,12 +81,13 @@
 }
 
 .headerRow {
-  pointer-events: none;
   cursor: default;
+  z-index: 10;
+  position: relative;
 }
 
 .headerRow:hover {
-  height: 5.57rem;
+  height: 7rem !important;
 }
 
 /* Capa clickeable invisible arriba de la fila */
@@ -95,7 +98,7 @@
 }
 
 .colImg {
-  position: absolute;
+  position: relative;
   right: 0;
   top: 0;
   height: 100%;
@@ -105,9 +108,47 @@
   background-repeat: no-repeat;
   transition: opacity 0.6s ease, transform 0.6s ease;
   z-index: 1;
+  cursor: pointer;
+  overflow: hidden;
 }
 
-.row:hover .overlay {
+/* Overlay oscuro para opacar la imagen al hacer hover en la fila */
+.colImg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0,0,0,0);
+  z-index: 2;
+  pointer-events: none;
+  transition: background-color 0.6s ease;
+  opacity: 0;
+}
+
+.row:hover .colImg::before {
+  background-color: rgba(0,0,0,0.4);
+  opacity: 0.5;
+}
+
+/* Imagen plus centrada */
+.colImg::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 58px;
+  height: 58px;
+  background-image: url('/plus.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.row:hover .colImg::after {
   opacity: 1;
 }
 
@@ -126,8 +167,6 @@
   padding: 0 1.5rem;
   box-sizing: border-box;
   border-top: 1px solid black;
-
-
 }
 
 .cardImgMobile {
@@ -136,7 +175,6 @@
   background-size: cover;
   background-position: center;
   height: 12rem;
-
 }
 
 .cardInfoMobile {
@@ -165,20 +203,21 @@
   z-index: 2;
 }
 
+.colCategory h3 {
+  font-family: fustat;
+  font-size: 16px;
+}
 
-  .colCategory h3 {
-    font-family: fustat;
-    font-size: 16px;
-  }
-    .colType h3 {
-    font-family: fustat;
-    font-size: 16px;
-  }
+.colType h3 {
+  font-family: fustat;
+  font-size: 16px;
+}
 
 @media (max-width: 1024px) {
-  .container{
+  .container {
     padding: 12rem 0;
   }
+
   .headerRow {
     display: none !important;
   }
@@ -194,5 +233,4 @@
   .cardMetaMobile span.category {
     text-transform: uppercase;
   }
-
 }

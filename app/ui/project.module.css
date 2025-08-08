@@ -94,6 +94,7 @@
   align-items: flex-end;
   box-sizing: border-box;
   overflow: hidden;
+  position: relative;
 }
 
 .media {
@@ -162,12 +163,22 @@
 
 .customArrow {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 5;
+  bottom: 0;
   width: 40px;
   height: 40px;
   cursor: pointer;
+  z-index: 5;
+  top: auto; /* para anular el top: 50% */
+  transform: none; /* anulamos el translateY para que no suba */
+}
+
+.leftArrow {
+  left: 0;
+  bottom: 0;
+}
+
+.rightArrow {
+  right: 50px; /* o el espacio que quieras a la derecha de la izquierda */
 }
 
 .customArrow img {
@@ -193,6 +204,41 @@
   z-index: 2;
 }
 
+.backButton {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+  z-index: 10;
+   mix-blend-mode: difference;
+
+}
+
+.backContent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  cursor: pointer;
+  background: transparent;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+ 
+  transition: opacity 0.3s ease;  
+  font-family: fustat;
+  font-size: 20px !important;
+  text-decoration: none !important;
+}
+
+.backContent:hover {
+  opacity: 0.7;
+}
+
+.backContent img {
+  width: 18px;
+  height: 18px;
+  filter: invert(1); 
+}
 
 @media screen and (max-width: 1024px) {
   .container {
