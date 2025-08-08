@@ -30,22 +30,55 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Elimina el border-radius */
-  border-radius: 0;
+  filter: none;
+  transition: filter 0.3s ease;
 }
 
-.imageContainer:hover .overlay {
-  display: none;
+.imageContainer:not(:hover) .image {
+  filter: blur(8px); /* o el valor que desees */
 }
+
 
 .overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.08);
-  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
   z-index: 2;
+  background: rgba(255, 255, 255, 0.2); /* opcional */
+  backdrop-filter: blur(2px); /* sutil glass effect encima */
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 1;
+}
+
+/* Al hacer hover, quitamos blur de imagen y ocultamos overlay */
+.imageContainer:hover .image {
+  filter: none;
+}
+
+.imageContainer:hover .overlay {
+  opacity: 0;
+}
+
+.svgOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(4px); /* Aplica blur al fondo */
+  transition: opacity 0.3s ease;
+}
+
+.imageContainer:hover .svgOverlay {
+  opacity: 0;
   pointer-events: none;
 }
+
 
 .noImage {
   width: 100%;
@@ -116,6 +149,8 @@
 .contact h2 {
   font-size: 40px;
   font-weight: 300;
+  text-align: right;
+  padding-right: 1rem;
 }
 
 .contactGrid {
@@ -177,8 +212,6 @@
   font-weight: 700;
   margin: 0 12px;
 }
-
-.quienesSomos { }
 
 /* Responsive */
 @media (max-width: 1024px) {

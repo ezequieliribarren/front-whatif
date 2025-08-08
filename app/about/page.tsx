@@ -126,14 +126,19 @@ export default function Page() {
       key={member.id + '-img'}
     >
       {member.image?.url ? (
-        <>
-          <img
-            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${member.image.url}`}
-            alt={member.name}
-            className={styles.image}
-          />
-          <div className={styles.overlay}></div>
-        </>
+<>
+  <img
+    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${member.image.url}`}
+    alt={member.name}
+    className={styles.image}
+  />
+  <div className={styles.svgOverlay}>
+    {/* Puedes reemplazar esto por un <svg> real si lo prefieres en línea */}
+    <img src="/plus.png" alt="Overlay pattern" />
+  </div>
+  <div className={styles.overlay}></div>
+</>
+
       ) : (
         <div className={styles.noImage}>Sin imagen</div>
       )}
@@ -176,7 +181,7 @@ export default function Page() {
       >
         <h3 className={styles.name}>{member.name}</h3>
         <img
-          src={arrowDirection === 'left' ? '/arrow-left.png' : '/arrow-right.png'}
+          src={arrowDirection === 'left' ? '/left-arrow.png' : '/right-arrow.png'}
           alt="Arrow"
         />
       </div>
