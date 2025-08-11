@@ -136,71 +136,69 @@ export default function ProjectClient({ project }: Props) {
             {project.awards && <p><strong>Premios:</strong> {project.awards}</p>}
           </div>
 
+          {/* Descripción por encima del botón */}
+          {projectHasText && (
+            <div className={`${styles.description} ${showDescription ? styles.open : ''}`}>
+              <p>{descriptionText}</p>
+            </div>
+          )}
+
           <div className={styles.buttonTextContainer}>
             <button
-              onClick={() => {
-                if (projectHasText) setShowDescription(!showDescription);
-              }}
+              onClick={() => projectHasText && setShowDescription(!showDescription)}
               disabled={!projectHasText}
               className={`${styles.buttonText} ${!projectHasText ? styles.disabledButton : ''}`}
             >
               <h3>{showDescription ? 'x' : 'text'}</h3>
             </button>
-
-            {showDescription && (
-              <div className={`${styles.description} ${showDescription ? styles.open : ''}`}>
-                <p>{descriptionText}</p>
-              </div>
-            )}
           </div>
         </div>
       </aside>
 
-{/* Dentro del div .carouselSection */}
-<div className={styles.carouselSection}>
-  {/* Botón Back dentro del contenedor del slider */}
-  <div className={styles.backButton}>
-    <Link href="/work" scroll={false}>
-      <div className={styles.backContent}>
-        <img src="/left-arrow.png" alt="Back" />
-        <span>back</span>
-      </div>
-    </Link>
-  </div>
-
-  {/* Slider */}
-  {filteredMedia.length > 0 && (
-    <Slider {...settings} className={styles.slider}>
-      {filteredMedia.map((media: any, index: number) => (
-        <div key={index} className={styles.slide}>
-          {'mimeType' in media && media.mimeType?.includes('video') ? (
-            <video
-              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${media.url}`}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className={styles.media}
-            />
-          ) : 'url' in media && typeof media.url === 'string' && !('mimeType' in media) ? (
-            <iframe
-              src={media.url}
-              title={`3D model ${index + 1}`}
-              className={styles.media}
-            />
-          ) : (
-            <img
-              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${media.url}`}
-              alt={media.alt || project.title}
-              className={styles.media}
-              style={{ objectFit: 'contain' }}
-            />
-          )}
+      {/* Dentro del div .carouselSection */}
+      <div className={styles.carouselSection}>
+        {/* Botón Back */}
+        <div className={styles.backButton}>
+          <Link href="/work" scroll={false}>
+            <div className={styles.backContent}>
+              <img src="/left-arrow.png" alt="Back" />
+              <span>back</span>
+            </div>
+          </Link>
         </div>
-      ))}
-    </Slider>
-  )}
 
+        {/* Slider */}
+        {filteredMedia.length > 0 && (
+          <Slider {...settings} className={styles.slider}>
+            {filteredMedia.map((media: any, index: number) => (
+              <div key={index} className={styles.slide}>
+                {'mimeType' in media && media.mimeType?.includes('video') ? (
+                  <video
+                    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${media.url}`}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className={styles.media}
+                  />
+                ) : 'url' in media && typeof media.url === 'string' && !('mimeType' in media) ? (
+                  <iframe
+                    src={media.url}
+                    title={`3D model ${index + 1}`}
+                    className={styles.media}
+                  />
+                ) : (
+                  <img
+                    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${media.url}`}
+                    alt={media.alt || project.title}
+                    className={styles.media}
+                    style={{ objectFit: 'contain' }}
+                  />
+                )}
+              </div>
+            ))}
+          </Slider>
+        )}
 
         <div className={styles.menuProject}>
           <ul>

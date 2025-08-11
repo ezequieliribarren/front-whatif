@@ -1,10 +1,15 @@
 .description {
   color: #000;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 400;
   height: auto;
   white-space: pre-line;
   margin: 1.5rem 0;
+}
+
+
+.description p {
+  padding: 12px 0 12px 0;
 }
 
 .containerAbout {
@@ -15,6 +20,7 @@
   flex-direction: column;
   padding: 0 1rem;
 }
+
 
 .imageContainer {
   position: relative;
@@ -35,9 +41,8 @@
 }
 
 .imageContainer:not(:hover) .image {
-  filter: blur(8px); /* o el valor que desees */
+  filter: blur(8px);
 }
-
 
 .overlay {
   position: absolute;
@@ -48,13 +53,12 @@
   pointer-events: none;
   transition: opacity 0.3s ease;
   z-index: 2;
-  background: rgba(255, 255, 255, 0.2); /* opcional */
-  backdrop-filter: blur(2px); /* sutil glass effect encima */
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
   opacity: 1;
 }
 
-/* Al hacer hover, quitamos blur de imagen y ocultamos overlay */
 .imageContainer:hover .image {
   filter: none;
 }
@@ -70,7 +74,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  backdrop-filter: blur(4px); /* Aplica blur al fondo */
+  backdrop-filter: blur(4px);
   transition: opacity 0.3s ease;
 }
 
@@ -79,7 +83,6 @@
   pointer-events: none;
 }
 
-
 .noImage {
   width: 100%;
   height: 100%;
@@ -87,6 +90,9 @@
   color: #aaa;
   font-size: 18px;
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .infoContainer {
@@ -114,7 +120,7 @@
 .name {
   color: var(--DARK-GREY, #1F2021);
   text-align: right;
-  font-family: Fustat;
+  font-family: Fustat, sans-serif;
   font-size: 22px;
   font-style: normal;
   font-weight: 600;
@@ -125,7 +131,7 @@
 .role {
   color: var(--DARK-GREY, #1F2021);
   text-align: right;
-  font-family: Fustat;
+  font-family: Fustat, sans-serif;
   font-size: 16px;
   font-style: normal;
   font-weight: 300;
@@ -133,10 +139,35 @@
   margin: 0;
 }
 
+.sectionFormer h2 {
+  font-size: 35px;
+  font-weight: 300;
+  text-align: right;
+  padding-right: 1rem;
+}
+
+.formerNamesContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* espacio entre nombres */
+  font-size: 16px;
+  font-weight: 500;
+  margin: 2.5rem 0;
+  color: #333;
+  justify-content: flex-start;
+  font-family: fustat, sans-serif;
+}
+
+.formerName {
+  white-space: nowrap; /* que cada nombre no se corte */
+  font-size: 16px !important;
+  font-family: fustat-semi-bold, sans-serif;
+  cursor: pointer;
+}
+
 .contactSection {
   margin-top: 48px;
   padding: 32px 0;
-  background: #f7f7f7;
   border-top: 1px solid #ccc;
   width: 100%;
 }
@@ -147,7 +178,7 @@
 }
 
 .contact h2 {
-  font-size: 40px;
+  font-size: 35px;
   font-weight: 300;
   text-align: right;
   padding-right: 1rem;
@@ -180,11 +211,26 @@
   margin: 0;
 }
 
-.description p {
-  padding: 12px 0 12px 0;
+.buttonSelected {
+  color: #fff;
+  border: 1px solid #000;
+  font-family: fustat, sans-serif;
+  cursor: pointer;
+  user-select: none;
+  background-color: transparent;
+  transition: background-color 0.3s ease;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
 }
 
-/* Footer */
+.buttonSelected span {
+  font-size: 16px !important;
+}
+
+.buttonSelected:hover {
+  background-color: transparent;
+}
+
 .footer {
   background: #222;
   color: #fff;
@@ -221,8 +267,14 @@
     align-items: flex-start !important;
     padding-top: 15rem !important;
   }
-.quienesSomos {
+
+  .quienesSomos {
     flex-direction: column-reverse !important;
+    text-align: center;
+  }
+
+  .quienesSomos div{
+    width: 100% !important;
   }
 
   .imageContainer,
@@ -238,7 +290,7 @@
     gap: 16px;
   }
 
-  .description{
+  .description {
     padding: 0 1.5rem;
   }
 }

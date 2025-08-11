@@ -47,17 +47,17 @@
 }
 
 .description {
-  max-height: 0;
   overflow: hidden;
-  transition: max-height 0.5s ease;
-  font-size: 12px;
-  max-width: 90%;
-  margin-top: 0.5rem;
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: max-height 0.5s ease, opacity 0.5s ease, transform 0.5s ease;
 }
 
 .description.open {
-  max-height: 600px;
-  /* ajustá según el contenido máximo esperado */
+  max-height: 500px; /* altura máxima suficiente para el texto */
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .disabledButton {

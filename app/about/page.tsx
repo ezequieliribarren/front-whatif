@@ -1,9 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import styles from '@/app/ui/about.module.css';
-
-// Si no tienes react-responsive, instálalo con: npm install react-responsive
 import { useMediaQuery } from 'react-responsive';
 
 type TeamMember = {
@@ -27,7 +25,7 @@ function serializeLexicalToHtml(richText: any): string {
       const htmlContent = paragraph.children
         .map((node: any) => {
           if (node.type === 'text') {
-            return node.text;
+            return node.text.trim();
           } else if (node.type === 'linebreak') {
             return '<br />';
           }
@@ -35,8 +33,9 @@ function serializeLexicalToHtml(richText: any): string {
         })
         .join('');
 
-      return `<p>${htmlContent}</p>`;
+      return htmlContent.trim() ? `<p>${htmlContent}</p>` : '';
     })
+    .filter(Boolean)
     .join('');
 }
 
@@ -45,8 +44,15 @@ export default function Page() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [teamMember, setTeamMember] = useState<TeamMember | null>(null);
   const [isHovered, setIsHovered] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const [altTitles, setAltTitles] = useState(false);
+  const [formerMembers, setFormerMembers] = useState<TeamMember[]>([]);
+  const [hoverFormerId, setHoverFormerId] = useState<string | null>(null);
+  
+
+  // Estado para scroll up/down y controlar altura y descripción
+  const [containerHeight, setContainerHeight] = useState<'auto' | '35rem'>('auto');
+  const [showDescription, setShowDescription] = useState(true);
+  const lastScrollY = useRef(0);
 
   const boxWidth = 324;
   const boxHeight = 486;
@@ -54,32 +60,59 @@ export default function Page() {
   // Detectar si es tablet o móvil
   const isTabletOrMobile = useMediaQuery({ maxWidth: 1024 });
 
+  // Detectar scroll y dirección (sobre containerAbout)
+useEffect(() => {
+  const SCROLL_THRESHOLD = 120; // píxeles para que empiece a comprimirse
+
+  const handleScroll = () => {
+    const currentScrollY = window.scrollY;
+
+    if (currentScrollY > lastScrollY.current && currentScrollY > SCROLL_THRESHOLD) {
+      // Scroll down y pasamos el umbral: comprimimos
+      setContainerHeight('35rem');
+      setShowDescription(false);
+    } else if (currentScrollY < SCROLL_THRESHOLD) {
+      // Scroll arriba o no llegamos al umbral: expandimos
+      setContainerHeight('auto');
+      setShowDescription(true);
+    }
+    lastScrollY.current = currentScrollY;
+  };
+
+  window.addEventListener('scroll', handleScroll, { passive: true });
+
+  return () => window.removeEventListener('scroll', handleScroll);
+}, []);
+
+
   useEffect(() => {
-    async function fetchTeamMembers() {
+    async function fetchData() {
       try {
-        const res = await fetch(
+        // Fetch de miembros activos
+        const resActive = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/team-members?sort=order`
         );
-        const data = await res.json();
+        const dataActive = await resActive.json();
 
-        const team = data.docs.find((member: TeamMember) => member.name === 'Team') || null;
+        // Filtrar el miembro "Team"
+        const team = dataActive.docs.find((member: TeamMember) => member.name === 'Team') || null;
         setTeamMember(team);
 
-        const filtered = data.docs.filter((member: TeamMember) => member.name !== 'Team');
+        // Guardar el resto
+        const filtered = dataActive.docs.filter((member: TeamMember) => member.name !== 'Team');
         setTeamMembers(filtered);
+
+        // Fetch de ex-miembros
+        const resFormer = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/former-members?limit=100&sort=order`
+        );
+        const dataFormer = await resFormer.json();
+        setFormerMembers(dataFormer.docs || []);
       } catch (err) {
-        console.error('Error fetching team members:', err);
+        console.error('Error fetching team/former members:', err);
       }
     }
-    fetchTeamMembers();
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 1);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    fetchData();
   }, []);
 
   // Alternancia automática de hover cada 3 segundos (solo desktop)
@@ -120,25 +153,22 @@ export default function Page() {
     <div
       className={styles.imageContainer}
       style={{ width: boxWidth, height: boxHeight }}
-      // Solo activa hover en desktop
       onMouseEnter={() => !isTabletOrMobile && setHoveredId(member.id)}
       onMouseLeave={() => !isTabletOrMobile && setHoveredId(null)}
       key={member.id + '-img'}
     >
       {member.image?.url ? (
-<>
-  <img
-    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${member.image.url}`}
-    alt={member.name}
-    className={styles.image}
-  />
-  <div className={styles.svgOverlay}>
-    {/* Puedes reemplazar esto por un <svg> real si lo prefieres en línea */}
-    <img src="/plus.png" alt="Overlay pattern" />
-  </div>
-  <div className={styles.overlay}></div>
-</>
-
+        <>
+          <img
+            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${member.image.url}`}
+            alt={member.name}
+            className={styles.image}
+          />
+          <div className={styles.svgOverlay}>
+            <img src="/plus.png" alt="Overlay pattern" />
+          </div>
+          <div className={styles.overlay}></div>
+        </>
       ) : (
         <div className={styles.noImage}>Sin imagen</div>
       )}
@@ -185,18 +215,12 @@ export default function Page() {
           alt="Arrow"
         />
       </div>
-      <p
-        className={styles.role}
-        style={{ display: scrolled ? 'none' : 'block' }}
-      >
-        {member.role}
-      </p>
+      <p className={styles.role}>{member.role}</p>
     </div>
   );
 
   const EmptyCell = () => <div style={{ width: boxWidth, height: boxHeight }} />;
 
-  // Grid alternando imagen-descripción y descripción-imagen en tablet/móvil (solo un par por fila)
   const renderGridCellsResponsive = () => {
     return teamMembers.map((member, idx) => {
       const isEvenRow = idx % 2 === 0;
@@ -218,7 +242,6 @@ export default function Page() {
     });
   };
 
-  // Grid original para desktop
   const renderGridCells = () => {
     const rows: React.ReactNode[] = [];
     for (let i = 0; i < teamMembers.length; i += 2) {
@@ -267,15 +290,21 @@ export default function Page() {
   };
 
   return (
-    <div className={styles.containerAbout}>
+    <div
+      className={styles.containerAbout}
+style={{ height: containerHeight, transition: 'height 0.6s ease-in-out' }}
+    >
       <div className="flex justify-center w-full">
         <div className="w-full" style={{ width: boxWidth * 4 + 12 }}>
-          {/* About comprimido con scroll */}
           {isTabletOrMobile ? (
             <section className={`flex flex-col w-full relative gap-4 ${styles.sectionAbout}`}>
               <h1 className="font-light text-gray-800 text-[32px] font-sans text-center">
                 {altTitles
-                  ? <><span className="font-bold">Explore</span> present(s)</>
+                  ? (
+                    <>
+                      <span className="font-bold">Explore</span> present(s)
+                    </>
+                  )
                   : 'Construimos imaginarios colectivos'}
               </h1>
               {teamMember?.image?.url ? (
@@ -289,23 +318,28 @@ export default function Page() {
               )}
               <h2 className="font-light text-gray-800 text-[32px] text-center font-sans">
                 {altTitles
-                  ? <><span className="font-bold">build</span> futures</>
+                  ? (
+                    <>
+                      <span className="font-bold">build</span> futures
+                    </>
+                  )
                   : 'que configuran nuestro cotidiano.'}
               </h2>
-              <div
-                className={styles.description}
-                dangerouslySetInnerHTML={{
-                  __html: teamMember?.detail
-                    ? serializeLexicalToHtml(teamMember.detail)
-                    : '',
-                }}
-              />
+              {showDescription && (
+                <div
+                  className={styles.description}
+                  dangerouslySetInnerHTML={{
+                    __html: teamMember?.detail
+                      ? serializeLexicalToHtml(teamMember.detail)
+                      : '',
+                  }}
+                />
+              )}
             </section>
           ) : (
             <section
-              className={`flex flex-row w-full relative gap-8 transition-all duration-500 ${styles.sectionAbout} ${
-                scrolled ? styles.aboutCompressed : ''
-              }`}
+              className={`flex flex-row w-full relative gap-8 transition-all duration-500 ${styles.sectionAbout}`}
+              style={{ height: containerHeight, overflow: 'hidden' }}
             >
               <div className="w-1/2">
                 {teamMember?.image?.url ? (
@@ -322,6 +356,7 @@ export default function Page() {
                 className="w-1/2 flex flex-col justify-center"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
+                style={{ overflow: 'hidden' }}
               >
                 <div>
                   <h1 className="font-light text-gray-800 text-[32px] font-sans">
@@ -333,14 +368,16 @@ export default function Page() {
                       'Construimos imaginarios colectivos'
                     )}
                   </h1>
-                  <div
-                    className={styles.description}
-                    dangerouslySetInnerHTML={{
-                      __html: teamMember?.detail
-                        ? serializeLexicalToHtml(teamMember.detail)
-                        : '',
-                    }}
-                  />
+                  {showDescription && (
+                    <div
+                      className={styles.description}
+                      dangerouslySetInnerHTML={{
+                        __html: teamMember?.detail
+                          ? serializeLexicalToHtml(teamMember.detail)
+                          : '',
+                      }}
+                    />
+                  )}
                 </div>
                 <h2 className="font-light text-gray-800 text-[32px] text-right font-sans">
                   {isHovered ? (
@@ -356,7 +393,8 @@ export default function Page() {
           )}
 
           {/* Quiénes somos - sección debajo */}
-<section className={`flex flex-row w-full relative py-10 gap-8 ${styles.quienesSomos}`}>            <div className="w-1/2">
+          <section className={`flex flex-row w-full relative py-10 gap-8 ${styles.quienesSomos}`}>
+            <div className="w-1/2">
               <p className={styles.description}>
                 Somos un equipo formado por arquitectxs y diseñadorxs interdisciplinares encargadxs de hacer tangibles las ideas.
               </p>
@@ -369,13 +407,66 @@ export default function Page() {
           </section>
 
           {/* Grid responsive */}
-          <section className={isTabletOrMobile ? "py-10" : "grid grid-cols-4 gap-4 py-10"}>
+          <section className={isTabletOrMobile ? 'py-10' : 'grid grid-cols-4 gap-4 py-10'}>
             {isTabletOrMobile ? renderGridCellsResponsive() : renderGridCells()}
+          </section>
+
+          {/* Former members con hover para imagen */}
+          <section className={styles.sectionFormer}>
+            <h2>Former team members</h2>
+            <div style={{ position: 'relative' }} className={styles.formerNamesContainer}>
+              {formerMembers.map((m, i) => (
+                <div
+                  key={m.id}
+                  style={{ display: 'inline-block', position: 'relative', marginRight: '8px' }}
+                  onMouseEnter={() => setHoverFormerId(m.id)}
+                  onMouseLeave={() => setHoverFormerId(null)}
+                >
+                  <h4 className={styles.formerName} style={{ cursor: 'pointer' }}>
+                    {m.name}
+                    {i < formerMembers.length - 1 && ','}
+                  </h4>
+
+                  {/* Imagen grande en hover */}
+                  {hoverFormerId === m.id && m.image?.url && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        bottom: '100%',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        marginBottom: '8px',
+                        width: '200px',
+                        height: '200px',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+                        overflow: 'hidden',
+                        opacity: 1,
+                        transition: 'opacity 0.3s ease',
+                        zIndex: 10,
+                        backgroundColor: '#fff',
+                      }}
+                    >
+                      <img
+                        src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${m.image.url}`}
+                        alt={m.name}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          display: 'block',
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </section>
 
           <section className="flex justify-center py-10">
             <button
-              className="flex items-center gap-2.5 px-4 py-1 border border-black text-black font-serif hover:bg-black hover:text-white transition-colors rounded"
+              className={`flex items-center gap-2.5 px-4 py-1 border border-black text-black font-serif hover:bg-black hover:text-white transition-colors rounded ${styles.buttonSelected}`}
               type="button"
             >
               <svg
@@ -386,9 +477,10 @@ export default function Page() {
                 stroke="currentColor"
                 strokeWidth={2}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 12v8m0-8V4m0 0L8 8m4-4l4 4" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8 12l4 4m0 0l4-4m-4 4V4" />
               </svg>
-              <span className="text-lg font-normal">Our Dossier</span>
+              <span className="text-lg font-normal">Selected Work</span>
             </button>
           </section>
 
