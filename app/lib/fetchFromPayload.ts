@@ -1,5 +1,5 @@
 // lib/fetchFromPayload.ts
-const API_URL = process.env.PAYLOAD_API_URL || 'http://localhost:3000/api';
+const API_URL = process.env.PAYLOAD_API_URL || 'http://69.62.110.55/api';
 
 export async function fetchFromPayload<T>(path: string): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
