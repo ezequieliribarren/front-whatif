@@ -149,7 +149,8 @@
 .formerNamesContainer {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px; /* espacio entre nombres */
+  gap: 10px;
+  /* espacio entre nombres */
   font-size: 16px;
   font-weight: 500;
   margin: 2.5rem 0;
@@ -159,7 +160,8 @@
 }
 
 .formerName {
-  white-space: nowrap; /* que cada nombre no se corte */
+  white-space: nowrap;
+  /* que cada nombre no se corte */
   font-size: 16px !important;
   font-family: fustat-semi-bold, sans-serif;
   cursor: pointer;
@@ -273,7 +275,7 @@
     text-align: center;
   }
 
-  .quienesSomos div{
+  .quienesSomos div {
     width: 100% !important;
   }
 
@@ -292,6 +294,35 @@
 
   .description {
     padding: 0 1.5rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .imageContainer:not(:hover) .image {
+    filter: none !important;
+  }
+
+  .contactGrid {
+
+    display: flex;
+    align-items: start;
+    gap: 10px;
+    justify-content: space-between;
+  }
+
+  .up {
+    margin-bottom: 3rem;
+    height: 10rem;
+  }
+
+  .bottom {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+  }
+
+  .contact {
+    text-align: left;
   }
 }
 

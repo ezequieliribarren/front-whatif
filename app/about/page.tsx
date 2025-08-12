@@ -139,41 +139,47 @@ useEffect(() => {
     }
   }, [isTabletOrMobile]);
 
-  const CellImage = ({
-    member,
-    boxWidth,
-    boxHeight,
-    setHoveredId,
-  }: {
-    member: TeamMember;
-    boxWidth: number;
-    boxHeight: number;
-    setHoveredId: React.Dispatch<React.SetStateAction<string | null>>;
-  }) => (
-    <div
-      className={styles.imageContainer}
-      style={{ width: boxWidth, height: boxHeight }}
-      onMouseEnter={() => !isTabletOrMobile && setHoveredId(member.id)}
-      onMouseLeave={() => !isTabletOrMobile && setHoveredId(null)}
-      key={member.id + '-img'}
-    >
-      {member.image?.url ? (
-        <>
-          <img
-            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${member.image.url}`}
-            alt={member.name}
-            className={styles.image}
-          />
-          <div className={styles.svgOverlay}>
-            <img src="/plus.png" alt="Overlay pattern" />
-          </div>
-          <div className={styles.overlay}></div>
-        </>
-      ) : (
-        <div className={styles.noImage}>Sin imagen</div>
-      )}
-    </div>
-  );
+const CellImage = ({
+  member,
+  boxWidth,
+  boxHeight,
+  setHoveredId,
+}: {
+  member: TeamMember;
+  boxWidth: number;
+  boxHeight: number;
+  setHoveredId: React.Dispatch<React.SetStateAction<string | null>>;
+}) => (
+  <div
+    className={styles.imageContainer}
+    style={{ width: boxWidth, height: boxHeight }}
+    onMouseEnter={() => !isTabletOrMobile && setHoveredId(member.id)}
+    onMouseLeave={() => !isTabletOrMobile && setHoveredId(null)}
+    key={member.id + '-img'}
+  >
+    {member.image?.url ? (
+      <>
+        <img
+          src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${member.image.url}`}
+          alt={member.name}
+          className={styles.image}
+        />
+        
+        {/* Overlay y plus icon solo en desktop */}
+        {!isTabletOrMobile && (
+          <>
+            <div className={styles.svgOverlay}>
+              <img src="/plus.png" alt="Overlay pattern" />
+            </div>
+            <div className={styles.overlay}></div>
+          </>
+        )}
+      </>
+    ) : (
+      <div className={styles.noImage}>Sin imagen</div>
+    )}
+  </div>
+);
 
   const CellInfo = ({
     member,
@@ -484,35 +490,39 @@ style={{ height: containerHeight, transition: 'height 0.6s ease-in-out' }}
             </button>
           </section>
 
-          <section className={styles.contactSection}>
-            <div className={styles.contact}>
-              <h2>Contact</h2>
-            </div>
-            <div className={styles.contactGrid}>
-              <div>
-                <h4>MAPS</h4>
-                <p>
-                  C/ Aldepa, 2 Local 4, Esquina,
-                  <br />
-                  C/ Matilde Hernández, 28025,
-                  <br />
-                  Madrid
-                </p>
-              </div>
-              <div>
-                <h4>E-MAIL</h4>
-                <p>hi@whatif-arch.com</p>
-              </div>
-              <div>
-                <h4>PHONE</h4>
-                <p>+34 697 266 914</p>
-              </div>
-              <div>
-                <h4>INSTAGRAM</h4>
-                <p>@whatif_architecture</p>
-              </div>
-            </div>
-          </section>
+<section className={styles.contactSection}>
+  <div className={styles.contact}>
+    <h2>Contact</h2>
+  </div>
+  <div className={styles.contactGrid}>
+    <div>
+          <div className={styles.up}>
+      <h4>MAPS</h4>
+      <p>
+        C/ Aldapa, 2 Local 4, Esquina,<br />
+        C/ Matilde Hernández, 28025,<br />
+        Madrid
+      </p>
+    </div>
+    <div className={styles.bottom}>
+      <h4>E-MAIL</h4>
+      <p>hi@whatif-arch.com</p>
+    </div>
+    </div>
+<div>
+   <div className={styles.up}>
+      <h4>PHONE</h4>
+      <p>+34 697 266 914</p>
+    </div>
+    <div className={styles.bottom}>
+      <h4>INSTAGRAM</h4>
+      <p>@whatif_architecture</p>
+    </div>
+  </div>
+</div>
+   
+</section>
+
         </div>
       </div>
 
