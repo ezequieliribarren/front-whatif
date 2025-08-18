@@ -11,6 +11,7 @@
 .projectList {
   display: flex;
   flex-direction: column;
+  padding-top: 30rem;
 }
 
 .projectCard {
@@ -19,6 +20,7 @@
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.4s ease, transform 0.4s ease;
+  height: auto !important;
 }
 
 
@@ -31,32 +33,27 @@
 .leftImage {
   flex-direction: row-reverse;
   padding-left: 2rem;
+  height: 100% !important;
+  margin-top: -30rem;
 }
 
 .rightImage {
   flex-direction: row;
   padding-right: 2rem;
   margin-top: -28rem;
-}
+  height: auto !important;
 
-.projectCardImage {
-  width: 100%;
-  flex: 1 1 50%;
-  object-fit: contain;
-  display: block;
-}
-
-
-.imageContainer {
-  position: relative;
-  flex: 1 1 50%;
-  aspect-ratio: 4 / 3;
 }
 
 
 .emptyHalf {
-  flex: 1 1 100%;
+  flex: 1 1 155%;
 }
+
+.imageContainer{
+  position: relative;
+}
+
 
 
 .overlay {
@@ -70,7 +67,7 @@
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: 2;
-
+  height: 100% !important;
 }
 
 
@@ -97,11 +94,10 @@
   opacity: 0;
   text-align: right;
 
-
 }
 
 .projectDetails h3 {
-  font-size: 19px;
+  font-size: 18px;
   font-family: fustat-light;
   color: #1F2021;
 }
@@ -113,9 +109,9 @@
 .projectInfoRow {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  text-align: center;
-  padding: 1rem;
+  align-items: start;
+  text-align: start;
+  margin-top: 4rem;
   z-index: 105;
   text-align: right;
 
@@ -128,6 +124,17 @@
   gap: 0.5rem;
 }
 
+@media (max-width: 1482px) {
+.emptyHalf {
+  flex: 1 1 185%;
+}
+}
+
+@media (max-width: 1260px) {
+.emptyHalf {
+  flex: 1 1 215%;
+}
+}
 
 @media (max-width: 1024px) {
 
@@ -175,10 +182,6 @@
     display: none;
   }
 
-  .overlay {
-    display: none;
-  }
-
   .projectInfoRow {
     flex-direction: column;
     justify-content: left;
@@ -186,6 +189,7 @@
     text-align: left;
     padding: 1.5rem 1rem;
     background-color: #fff;
+    margin-top: 1rem !important;
   }
 
   .projectDetails {
@@ -203,6 +207,10 @@
     margin-top: 1rem;
   }
 
+.projectCardImage{
+  height: 100% !important;
+}
+
   .overlay {
     top: auto !important;
     right: auto !important;
@@ -210,7 +218,7 @@
     bottom: 0 !important;
     position: absolute;
     width: 90px;
-    height: 90px;
+    height: 90px !important;
     backdrop-filter: blur(9px);
     display: flex;
     align-items: center;
