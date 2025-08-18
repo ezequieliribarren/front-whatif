@@ -300,11 +300,16 @@
     gap: 24px !important;
     align-items: flex-start !important;
     padding-top: 15rem !important;
-    max-height: 180rem !important;
+    max-height: none !important;
+    height: 170rem !important;
   }
 
-  .sectionAbout h2{
-    height: 5rem;
+  .sectionAbout h1{
+    height: 5rem !important;
+  }
+    .sectionAbout h2{
+    height: 2rem !important;
+    margin-bottom: 2rem;
   }
 
   .quienesSomos {

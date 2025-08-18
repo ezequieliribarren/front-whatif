@@ -55,7 +55,8 @@
 }
 
 .description.open {
-  max-height: 500px; /* altura máxima suficiente para el texto */
+  max-height: 500px;
+  /* altura máxima suficiente para el texto */
   opacity: 1;
   transform: translateY(0);
 }
@@ -162,10 +163,6 @@
 }
 
 
-.slick-arrow {
-  opacity: 0 !important;
-}
-
 .customArrow {
   position: absolute;
   bottom: 0;
@@ -173,7 +170,7 @@
   height: 40px;
   cursor: pointer;
   z-index: 5;
-  transform: none; /* anulamos el translateY para que no suba */
+  transform: none;
 }
 
 .customArrow img {
@@ -189,11 +186,19 @@
 .rightArrow {
   top: 85% !important;
   right: 0 !important;
+  background: transparent !important;
+}
+
+.rightArrow::before{
+  content: none !important;
+}
+.leftArrow::before {
+  content: none !important;
 }
 
 .slider {
-  position: relative;
-  z-index: 1;
+  position: relative !important;
+  z-index: 1 !important;
 }
 
 .menuProject {
@@ -206,7 +211,7 @@
   top: 40px;
   right: 40px;
   z-index: 10;
-   mix-blend-mode: difference;
+  mix-blend-mode: difference;
 
 }
 
@@ -220,8 +225,8 @@
   color: white;
   font-size: 14px;
   font-weight: 500;
- 
-  transition: opacity 0.3s ease;  
+
+  transition: opacity 0.3s ease;
   font-family: fustat;
   font-size: 20px !important;
   text-decoration: none !important;
@@ -234,7 +239,7 @@
 .backContent img {
   width: 18px;
   height: 18px;
-  filter: invert(1); 
+  filter: invert(1);
 }
 
 @media screen and (max-width: 1024px) {
