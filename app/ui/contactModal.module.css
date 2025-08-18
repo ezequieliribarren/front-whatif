@@ -1,0 +1,112 @@
+/* Estilos del Modal de Contacto */
+
+/* Contenedor principal del modal */
+.contactModal {
+  position: fixed;
+  bottom: -100%;
+  left: 0;
+  width: 100%;
+  height: auto;
+  min-height: 40vh;
+  background-color: #000;
+  color: white;
+  padding: 4rem 2rem;
+  transition: bottom 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Clase que se activa cuando el modal está abierto */
+.modalOpen {
+  bottom: 0;
+}
+
+.modalHeader {
+  position: absolute; 
+  top: 2rem;
+  width: 100%;
+  max-width: 900px; 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem; 
+  z-index: 1001;
+}
+
+/* Botón de cierre (ahora a la izquierda) */
+.modalCloseButton {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+/* Título de "Contact" (a la derecha) */
+.contactHeading {
+  font-family: fustat-light !important;
+  font-size: 3rem !important;
+  margin: 0; /* Elimina márgenes por defecto */
+}
+
+
+/* Contenedor de los detalles de contacto */
+.contactDetails {
+  display: grid;
+  grid-template-columns: repeat(2, 2fr) !important;
+  gap: 2rem;
+  width: 100%;
+}
+
+/* Sección individual de contacto (MAPS, E-MAIL, etc.) */
+.contactSection {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Títulos de las secciones */
+.contactTitle {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  font-family: fustat-semi-bold;
+}
+
+/* Información de contacto */
+.contactInfo {
+  font-size: 1.5rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Media query para móviles */
+@media (max-width: 768px) {
+  .contactModal {
+    padding: 3rem 1.5rem;
+    min-height: 50vh;
+  }
+
+  .modalHeader {
+    padding: 0 1.5rem;
+  }
+
+  .contactHeading {
+    font-size: 2rem;
+  }
+
+  .contactDetails {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .contactTitle {
+    font-size: 2rem;
+  }
+
+  .contactInfo {
+    font-size: 1.2rem;
+  }
+}

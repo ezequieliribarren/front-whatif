@@ -84,10 +84,12 @@
   cursor: default;
   z-index: 10;
   position: relative;
+  height: 5rem;
 }
 
 .headerRow:hover {
-  height: 7rem !important;
+  height: 5rem !important;
+  pointer-events: none;
 }
 
 /* Capa clickeable invisible arriba de la fila */

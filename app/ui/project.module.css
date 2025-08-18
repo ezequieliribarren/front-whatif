@@ -161,6 +161,11 @@
   border-bottom: 2px solid black;
 }
 
+
+.slick-arrow {
+  opacity: 0 !important;
+}
+
 .customArrow {
   position: absolute;
   bottom: 0;
@@ -168,17 +173,7 @@
   height: 40px;
   cursor: pointer;
   z-index: 5;
-  top: auto; /* para anular el top: 50% */
   transform: none; /* anulamos el translateY para que no suba */
-}
-
-.leftArrow {
-  left: 0;
-  bottom: 0;
-}
-
-.rightArrow {
-  right: 50px; /* o el espacio que quieras a la derecha de la izquierda */
 }
 
 .customArrow img {
@@ -187,11 +182,13 @@
 }
 
 .leftArrow {
-  left: 10px;
+  top: 85% !important;
+  left: 0 !important;
 }
 
 .rightArrow {
-  right: 10px;
+  top: 85% !important;
+  right: 0 !important;
 }
 
 .slider {

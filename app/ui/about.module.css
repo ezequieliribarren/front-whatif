@@ -141,8 +141,8 @@
 
 .nameContainer {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: left;
+  justify-content: left;
   width: 100%;
   font-size: 22px;
   font-weight: 600;
@@ -280,24 +280,31 @@
 
 .footerContent h3 {
   font-size: 18px;
-  font-weight: 400;
   margin: 0;
   text-align: center;
+  font-family: fustat-light;
 }
 
 .footerContent span {
   font-size: 22px;
-  font-weight: 700;
   margin: 0 12px;
 }
 
 /* Responsive */
 @media (max-width: 1024px) {
+.containerAbout{
+  height: 90rem;
+}
   .sectionAbout {
     flex-direction: column !important;
     gap: 24px !important;
     align-items: flex-start !important;
     padding-top: 15rem !important;
+    max-height: 180rem !important;
+  }
+
+  .sectionAbout h2{
+    height: 5rem;
   }
 
   .quienesSomos {
@@ -318,13 +325,34 @@
   }
 
   .contactGrid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 2fr 2fr;
     gap: 16px;
   }
 
   .description {
     padding: 0 1.5rem;
   }
+
+  .footerContent{
+    gap: 4px !important;
+  }
+
+  .footer h3{
+    font-size: 16px; 
+  }
+
+  .sectionFormer{
+    padding: 1rem;
+  }
+
+  .sectionFormer h2{
+    text-align: left;
+  }
+
+  .quienesSomos {
+    padding: 1rem;
+  }
+
 }
 
 @media (max-width: 1024px) {

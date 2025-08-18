@@ -6,20 +6,22 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import styles from './ui/layout.module.css';
 import { useEffect, useState } from 'react';
 import { HiOutlineMenu, HiOutlineX } from 'react-icons/hi';
+import ContactModal from './components/contactModal'; // Importa el componente ContactModal
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const [isScrollingDown, setIsScrollingDown] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [contactModalOpen, setContactModalOpen] = useState(false);
 
-useEffect(() => {
-  const checkIsMobile = () => setIsMobile(window.innerWidth <= 1024);
-  checkIsMobile();
+  useEffect(() => {
+    const checkIsMobile = () => setIsMobile(window.innerWidth <= 1024);
+    checkIsMobile();
 
-  window.addEventListener('resize', checkIsMobile);
-  return () => window.removeEventListener('resize', checkIsMobile);
-}, []);
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
 
   useEffect(() => {
     setScrollY(window.scrollY);
@@ -58,11 +60,11 @@ useEffect(() => {
         <div className={`${styles.navbar} ${scrollY > 5 ? styles.navbarScrolled : styles.navbarInitial}`}>
           <div className={`${styles.logoWrapper} ${isScrollingDown ? styles.logoUp : ''}`}>
             <Link href="/">
-           <img
- className={`${styles.logo} ${isMobile ? styles.logoMobile : ''}`}
-  src={isMobile ? '/logo-simple.png' : '/logo.png'}
-  alt="Logo"
-/>
+              <img
+                className={`${styles.logo} ${isMobile ? styles.logoMobile : ''}`}
+                src={isMobile ? '/logo-simple.png' : '/logo.png'}
+                alt="Logo"
+              />
             </Link>
           </div>
 
@@ -78,20 +80,26 @@ useEffect(() => {
           </div>
         </div>
 
-       {/* Menú lateral mobile */}
-<div className={`${styles.mobileMenu} ${menuOpen ? styles.menuOpen : ''}`}>
-  <button className={styles.closeButton} onClick={() => setMenuOpen(false)}>
-    <HiOutlineX size={36} />
-  </button>
+        {/* Menú lateral mobile */}
+        <div className={`${styles.mobileMenu} ${menuOpen ? styles.menuOpen : ''}`}>
+          <button className={styles.closeButton} onClick={() => setMenuOpen(false)}>
+            <HiOutlineX size={36} />
+          </button>
 
-  <ul>
-    <li><Link className={styles.link} href="/work" onClick={() => setMenuOpen(false)}>WORK</Link></li>
-    <li><Link className={styles.link} href="/about" onClick={() => setMenuOpen(false)}>ABOUT</Link></li>
-        <li><Link className={styles.link} href="/" onClick={() => setMenuOpen(false)}>CONTACT</Link></li>
-  </ul>
-</div>
+          <ul>
+            <li><Link className={styles.link} href="/work" onClick={() => setMenuOpen(false)}>WORK</Link></li>
+            <li><Link className={styles.link} href="/about" onClick={() => setMenuOpen(false)}>ABOUT</Link></li>
+            <li>
+              <button className={styles.link} onClick={() => { setContactModalOpen(true); setMenuOpen(false); }}>
+                CONTACT
+              </button>
+            </li>
+          </ul>
+        </div>
 
         {children}
+
+        <ContactModal isOpen={contactModalOpen} onClose={() => setContactModalOpen(false)} />
       </body>
     </html>
   );
