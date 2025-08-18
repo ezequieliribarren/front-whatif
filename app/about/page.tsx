@@ -284,25 +284,24 @@ export default function Page() {
           <section className={styles.contactSection}>
             <div className={styles.contact}><h2>Contact</h2></div>
             <div className={styles.contactGrid}>
+
               <div>
-                <div className={styles.up}>
-                  <h4>MAPS</h4>
-                  <p>C/ Aldapa, 2 Local 4, Esquina,<br />C/ Matilde Hernández, 28025,<br />Madrid</p>
-                </div>
-                <div className={styles.bottom}>
-                  <h4>E-MAIL</h4>
-                  <p>hi@whatif-arch.com</p>
-                </div>
+                <h4>MAPS</h4>
+                <p>C/ Aldapa, 2 Local 4, Esquina,<br />C/ Matilde Hernández, 28025,<br />Madrid</p>
               </div>
               <div>
-                <div className={styles.up}>
-                  <h4>PHONE</h4>
-                  <p>+34 697 266 914</p>
-                </div>
-                <div className={styles.bottom}>
-                  <h4>INSTAGRAM</h4>
-                  <p>@whatif_architecture</p>
-                </div>
+                <h4>E-MAIL</h4>
+                <p>hi@whatif-arch.com</p>
+              </div>
+
+
+              <div>
+                <h4>PHONE</h4>
+                <p>+34 697 266 914</p>
+              </div>
+              <div>
+                <h4>INSTAGRAM</h4>
+                <p>@whatif_architecture</p>
               </div>
             </div>
           </section>

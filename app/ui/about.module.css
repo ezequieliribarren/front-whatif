@@ -17,7 +17,8 @@
 
 .sectionAbout {
   transition: max-height 0.6s ease-in-out;
-  max-height: 80rem; /* Ajusta este valor si necesitas más espacio */
+  max-height: 80rem;
+  /* Ajusta este valor si necesitas más espacio */
   overflow: hidden;
   margin-top: 3rem;
 }
@@ -29,7 +30,8 @@
 
 .sectionScrolled .description {
   opacity: 0;
-  pointer-events: none; /* Desactiva los eventos de clic cuando es invisible */
+  pointer-events: none;
+  /* Desactiva los eventos de clic cuando es invisible */
   display: none;
 }
 
@@ -39,7 +41,8 @@
 }
 
 .sectionScrolled .image {
-  transform: translateY(-20%); /* Ajusta el valor para que la parte visible de la imagen sea la que deseas */
+  transform: translateY(-20%);
+  /* Ajusta el valor para que la parte visible de la imagen sea la que deseas */
   transition: transform 0.6s ease-in-out;
 }
 
@@ -218,6 +221,8 @@
 
 .contactGrid {
   display: grid;
+  grid-template-rows: 1fr;
+  /* Una sola fila en desktop */
   grid-template-columns: repeat(4, 1fr);
   gap: 24px;
   max-width: 1440px;
@@ -235,7 +240,7 @@
 }
 
 .contactGrid p {
-  font-family: 'Fustat', sans-serif;
+  font-family: fustat;
   font-size: 15px;
   color: #444;
   font-weight: 400;
@@ -292,9 +297,10 @@
 
 /* Responsive */
 @media (max-width: 1024px) {
-.containerAbout{
-  height: 90rem;
-}
+  .containerAbout {
+    height: 90rem;
+  }
+
   .sectionAbout {
     flex-direction: column !important;
     gap: 24px !important;
@@ -304,10 +310,11 @@
     height: 170rem !important;
   }
 
-  .sectionAbout h1{
+  .sectionAbout h1 {
     height: 5rem !important;
   }
-    .sectionAbout h2{
+
+  .sectionAbout h2 {
     height: 2rem !important;
     margin-bottom: 2rem;
   }
@@ -330,7 +337,9 @@
   }
 
   .contactGrid {
-    grid-template-columns: 2fr 2fr;
+    grid-template-rows: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr) !important;
+    /* ejemplo para desktop */
     gap: 16px;
   }
 
@@ -338,19 +347,19 @@
     padding: 0 1.5rem;
   }
 
-  .footerContent{
+  .footerContent {
     gap: 4px !important;
   }
 
-  .footer h3{
-    font-size: 16px; 
+  .footer h3 {
+    font-size: 16px;
   }
 
-  .sectionFormer{
+  .sectionFormer {
     padding: 1rem;
   }
 
-  .sectionFormer h2{
+  .sectionFormer h2 {
     text-align: left;
   }
 
@@ -366,10 +375,11 @@
   }
 
   .contactGrid {
-    display: flex;
-    align-items: start;
-    gap: 10px;
-    justify-content: space-between;
+    grid-template-rows: repeat(2, 1fr);
+
+    grid-template-columns: repeat(2, 1fr);
+  
+
   }
 
   .up {
@@ -395,11 +405,6 @@
 
   .description {
     font-size: 16px;
-  }
-
-  .contactGrid {
-    grid-template-columns: 1fr;
-    gap: 12px;
   }
 
   .footerContent {
