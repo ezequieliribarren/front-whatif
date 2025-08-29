@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './ui/home.module.css';
-import FilterBar from './components/filterBar';
 
 type ProjectCategory = {
   id: string;
@@ -84,7 +83,6 @@ export default function Page() {
   return (
     <main className={styles.projectList}> 
     
-      <FilterBar onFilterChange={setSelectedType} />
 
      {filtered.map((project, index) => (
   <section key={project.id}> 

@@ -84,7 +84,7 @@ const CustomNextArrow = (props: any) => {
 
 export default function ProjectClient({ project }: Props) {
   const [activeType, setActiveType] = useState<'photos' | 'drawings' | 'renders' | 'videos' | 'models3D'>('photos');
-  const [showDescription, setShowDescription] = useState(false);
+  const [showDescription, setShowDescription] = useState(true);
 
   const settings = {
     dots: false,
@@ -202,29 +202,30 @@ export default function ProjectClient({ project }: Props) {
 
         <div className={styles.menuProject}>
           <ul>
-            {(['models3D', 'videos', 'drawings', 'renders', 'photos'] as const).map((type) => {
-              const labelMap = {
-                photos: 'Photos',
-                videos: 'Videos',
-                drawings: 'Drawings',
-                renders: 'Renders',
-                models3D: '3D',
-              };
-
-              const hasContent = mediaMap[type] && mediaMap[type]?.length > 0;
-
-              return (
-                <li
-                  key={type}
-                  className={`${styles.menuItem} ${activeType === type ? styles.active : ''} ${!hasContent ? styles.disabled : ''}`}
-                  onClick={() => hasContent && setActiveType(type)}
-                  style={{ cursor: hasContent ? 'pointer' : 'default', opacity: hasContent ? 1 : 0.4 }}
-                  title={hasContent ? labelMap[type] : 'No disponible'}
-                >
-                  <h3>{labelMap[type]}</h3>
-                </li>
-              );
-            })}
+            {(() => {
+              const order = ['models3D', 'videos', 'drawings', 'renders', 'photos'] as const;
+              const available = order.filter((type) => (mediaMap[type] && (mediaMap[type] as any[])?.length > 0));
+              return available.map((type) => {
+                const labelMap = {
+                  photos: 'Photos',
+                  videos: 'Videos',
+                  drawings: 'Drawings',
+                  renders: 'Renders',
+                  models3D: '3D',
+                };
+                return (
+                  <li
+                    key={type}
+                    className={`${styles.menuItem} ${activeType === type ? styles.active : ''}`}
+                    onClick={() => setActiveType(type)}
+                    style={{ cursor: 'pointer' }}
+                    title={labelMap[type]}
+                  >
+                    <h3>{labelMap[type]}</h3>
+                  </li>
+                );
+              });
+            })()}
           </ul>
         </div>
       </div>

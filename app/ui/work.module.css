@@ -13,8 +13,8 @@
   height: 5.57rem;
   align-items: center;
   width: 100%;
-  max-width: 1200px;
-  padding: 0 1rem;
+  max-width: 1280px; /* expandir apenas el ancho */
+  padding: 0; /* eliminar padding para que imagen y borde coincidan */
   overflow: hidden;
   position: relative;
   transition: height 0.6s ease;
@@ -22,7 +22,7 @@
 }
 
 .row:not(:first-child):hover {
-  height: 30rem;
+  height: 24rem;
 }
 
 .row h4 {
@@ -73,7 +73,7 @@
 
 .rowLink {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1280px; /* mantener en sync con .row */
   display: block;
   text-decoration: none;
   color: inherit;
@@ -89,14 +89,13 @@
 
 .headerRow:hover {
   height: 5rem !important;
-  pointer-events: none;
 }
 
 /* Capa clickeable invisible arriba de la fila */
 .rowOverlay {
   position: absolute;
   inset: 0;
-  z-index: 3;
+  z-index: 8;
 }
 
 .colImg {
@@ -104,7 +103,10 @@
   right: 0;
   top: 0;
   height: 100%;
-  width: 25%;
+  /* ocupar el espacio restante y pegarse a la derecha */
+  flex: 1 1 auto;
+  width: auto;
+  margin-left: auto;
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -112,6 +114,14 @@
   z-index: 1;
   cursor: pointer;
   overflow: hidden;
+}
+
+/* En hover, la imagen cubre toda la fila como fondo */
+.row:not(.headerRow):hover .colImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
 /* Overlay oscuro para opacar la imagen al hacer hover en la fila */
@@ -126,7 +136,7 @@
   opacity: 0;
 }
 
-.row:hover .colImg::before {
+.row:not(.headerRow):hover .colImg::before {
   background-color: rgba(0,0,0,0.4);
   opacity: 0.5;
 }
@@ -144,13 +154,13 @@
   background-position: center;
   background-size: contain;
   transform: translate(-50%, -50%);
-  z-index: 3;
+  z-index: 6;
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.6s ease;
 }
 
-.row:hover .colImg::after {
+.row:not(.headerRow):hover .colImg::after {
   opacity: 1;
 }
 
@@ -213,6 +223,15 @@
 .colType h3 {
   font-family: fustat;
   font-size: 16px;
+}
+
+/* Texto en mix-blend difference sobre la imagen de fondo */
+.row:not(.headerRow):hover .col,
+.row:not(.headerRow):hover .col * {
+  position: relative;
+  z-index: 7;
+  mix-blend-mode: difference;
+  color: #fff;
 }
 
 @media (max-width: 1024px) {

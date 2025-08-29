@@ -34,14 +34,15 @@
   flex-direction: row-reverse;
   padding-left: 2rem;
   height: 100% !important;
-  margin-top: -30rem;
+  margin-top: -20rem;
+  min-height: 50rem !important;
 }
 
 .rightImage {
   flex-direction: row;
   padding-right: 2rem;
-  margin-top: -28rem;
-  height: auto !important;
+  margin-top: -20rem;
+  min-height: 50rem !important;
 
 }
 
@@ -79,6 +80,15 @@
   opacity: 1;
 
 }
+.projectInfoRow .h2Home {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.imageContainer:hover~.projectInfoRow .h2Home {
+  opacity: 1 !important;
+}
+
 
 .plusIcon {
   font-size: 98px;
@@ -108,6 +118,7 @@
 
 .projectInfoRow {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   align-items: start;
   text-align: start;
@@ -237,4 +248,44 @@
   .imageContainer:hover .overlay {
     opacity: 1;
   }
+}
+/* Position project info beside image on hover (desktop) */
+.projectCard {
+  position: relative;
+  align-items: center;
+}
+
+/* Mostrar info solo cuando se hace hover sobre la imagen */
+
+.projectInfoRow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-top: 0;
+  align-items: center;
+  z-index: 105;
+  width: 45%;
+}
+
+.leftImage .projectInfoRow {
+  left: 0;
+  right: auto;
+  text-align: right;
+  align-items: flex-end;
+}
+
+.rightImage .projectInfoRow {
+  right: 0;
+  left: auto;
+  text-align: left;
+  align-items: flex-start;
+}
+
+@media (max-width: 1024px) {
+  .projectInfoRow {
+    position: static;
+    transform: none;
+  }
+  /* En mobile, el título y la info siempre visibles */
+  .projectInfoRow .h2Home { opacity: 1; }
 }

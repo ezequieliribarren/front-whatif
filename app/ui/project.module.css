@@ -11,7 +11,7 @@
   padding: 3rem 2rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-end; /* toda la info abajo, pegada */
   gap: 1rem;
   font-size: 14px;
   overflow-y: auto;
