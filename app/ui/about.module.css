@@ -249,13 +249,13 @@
 }
 
 .buttonSelected {
-  color: #fff;
+  color: #000; /* texto negro por defecto */
   border: 1px solid #000;
   font-family: fustat, sans-serif;
   cursor: pointer;
   user-select: none;
   background-color: transparent;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
   padding: 0.5rem 1rem;
   border-radius: 4px;
 }
@@ -265,34 +265,96 @@
 }
 
 .buttonSelected:hover {
-  background-color: transparent;
+  background-color: #000 !important; /* fondo negro al hover */
+  color: #fff !important; /* texto blanco al hover */
+}
+
+.buttonSelected:hover span {
+  color: #fff !important; /* asegurar texto blanco */
+  font-weight: 700 !important; /* negrita al hover */
 }
 
 .footer {
   background: #222;
   color: #fff;
-  padding: 32px 0;
-  margin-top: 48px;
+  margin-top: 20px;
+padding: 3rem;
 }
 
-.footerContent {
+.footer a {
+  color: #fff !important;
+  text-decoration: none;
+}
+
+.footerHeader {
+  text-align: right;
+  padding-right: 1rem; 
+  margin-bottom: 8px;
+}
+
+.footerHeader h2 {
+  color: #fff;
+  font-size: 34px; 
+  font-weight: 300;
+  margin: 0;
+  margin-bottom: 6rem;
+  margin-right: 2rem;
+}
+
+/* layout superior del footer */
+.footerTop {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); 
+  align-items: start;
+  gap: 28px; /* misma separación entre columnas */
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.footerLeft p,
+.footerRight p {
+  margin: 0;
+  font-size: 16px;
+}
+
+.footerLeft p:first-child,
+.footerRight p:first-child {
+  font-size: 18px; /* dirección y phone más grandes */
+  font-weight: 500;
+}
+
+.footerRight p + p { margin-top: 6px; }
+
+.footerEmail {
+  margin-top: 6px; /* pequeño espacio bajo la dirección */
+}
+
+.footerLeft { justify-self: start; }
+.footerCenter { justify-self: center; text-align: center; }
+.footerRight { justify-self: end; text-align: right; }
+
+.footerTagline {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 32px;
-  flex-wrap: wrap;
+  gap: 12px;
 }
 
-.footerContent h3 {
-  font-size: 18px;
+.footerTagline h3 {
+  font-size: 18px; /* más chico que antes */
   margin: 0;
   text-align: center;
   font-family: fustat-light;
 }
 
-.footerContent span {
+.footerTagline span {
   font-size: 22px;
-  margin: 0 12px;
+}
+
+.footerBottom {
+  text-align: center;
+  font-size: 16px;
+  opacity: 0.9;
+  margin-top: 6rem !important;
 }
 
 /* Responsive */
@@ -347,13 +409,9 @@
     padding: 0 1.5rem;
   }
 
-  .footerContent {
-    gap: 4px !important;
-  }
-
-  .footer h3 {
-    font-size: 16px;
-  }
+  .footerTop { grid-template-columns: 1fr; gap: 16px; }
+  .footerTagline { justify-content: center; }
+  .footerTagline h3 { font-size: 14px; }
 
   .sectionFormer {
     padding: 1rem;

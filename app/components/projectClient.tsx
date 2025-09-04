@@ -2,7 +2,7 @@
 import '@google/model-viewer';
 import { useState } from 'react';
 import Slider from 'react-slick';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import styles from '../ui/project.module.css';
 
 import 'slick-carousel/slick/slick.css';
@@ -83,8 +83,16 @@ const CustomNextArrow = (props: any) => {
 };
 
 export default function ProjectClient({ project }: Props) {
+  const router = useRouter();
   const [activeType, setActiveType] = useState<'photos' | 'drawings' | 'renders' | 'videos' | 'models3D'>('photos');
   const [showDescription, setShowDescription] = useState(true);
+  const handleBack = () => {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push('/work');
+    }
+  };
 
   const settings = {
     dots: false,
@@ -159,12 +167,10 @@ export default function ProjectClient({ project }: Props) {
       <div className={styles.carouselSection}>
         {/* Botón Back */}
         <div className={styles.backButton}>
-          <Link href="/work" scroll={false}>
-            <div className={styles.backContent}>
-              <img src="/left-arrow.png" alt="Back" />
-              <span>back</span>
-            </div>
-          </Link>
+          <button type="button" onClick={handleBack} className={styles.backContent} aria-label="Back">
+            <img src="/left-arrow.png" alt="Back" />
+            <span>back</span>
+          </button>
         </div>
 
         {/* Slider */}

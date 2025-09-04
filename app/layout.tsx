@@ -5,10 +5,13 @@ import Link from 'next/link';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styles from './ui/layout.module.css';
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { HiOutlineMenu, HiOutlineX } from 'react-icons/hi';
 import ContactModal from './components/contactModal'; // Importa el componente ContactModal
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const disableNavScroll = pathname?.startsWith('/work/') === true;
   const [isScrollingDown, setIsScrollingDown] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -24,6 +27,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   }, []);
 
   useEffect(() => {
+    if (disableNavScroll) {
+      setScrollY(0);
+      setIsScrollingDown(false);
+      return; // Do not attach scroll listeners on project pages
+    }
+
     setScrollY(window.scrollY);
     setIsScrollingDown(window.scrollY > 5);
 
@@ -52,13 +61,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [disableNavScroll]);
 
   return (
     <html lang="en">
-      <body>
-        <div className={`${styles.navbar} ${scrollY > 5 ? styles.navbarScrolled : styles.navbarInitial}`}>
-          <div className={`${styles.logoWrapper} ${isScrollingDown ? styles.logoUp : ''}`}>
+      <body className={disableNavScroll ? styles.noScrollNav : ''}>
+        <div className={`${styles.navbar} ${!disableNavScroll && scrollY > 5 ? styles.navbarScrolled : styles.navbarInitial}`}>
+          <div className={`${styles.logoWrapper} ${!disableNavScroll && isScrollingDown ? styles.logoUp : ''}`}>
             <Link href="/">
               <img
                 className={`${styles.logo} ${isMobile ? styles.logoMobile : ''}`}
@@ -69,7 +78,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
 
           {/* Nav desktop */}
-          <nav className={`${styles.navLinks} ${isScrollingDown ? styles.linksUp : styles.linksDown}`}>
+          <nav className={`${styles.navLinks} ${!disableNavScroll && isScrollingDown ? styles.linksUp : styles.linksDown}`}>
             <li><Link className={styles.link} href="/work">WORK</Link></li>
             <li><Link className={styles.link} href="/about">ABOUT</Link></li>
           </nav>

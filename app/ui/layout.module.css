@@ -57,6 +57,27 @@
   top: -35px;
 }
 
+/* Ajustes para páginas de proyecto: sin efecto scroll y links mayormente ocultos */
+.noScrollNav .navbar {
+  overflow: hidden; /* recorta lo que se desplace fuera */
+}
+
+.noScrollNav .navLinks {
+  top: -60px; /* ajuste solicitado: un poco más oculto */
+}
+
+/* Hover sutil sólo en la página de proyecto */
+.noScrollNav .navLinks li .link {
+  display: inline-block;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.noScrollNav .navLinks li .link:hover {
+  transform: scale(1.03);
+  font-family: fustat-bold; /* marcar click con negrita */
+}
+
 .link {
   color: black;
   text-decoration: none;

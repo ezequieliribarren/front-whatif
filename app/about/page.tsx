@@ -12,6 +12,13 @@ type TeamMember = {
   detail?: any;
 };
 
+type SelectedClient = {
+  id?: string;
+  _id?: string;
+  name: string;
+  link: string;
+};
+
 // Función para convertir el richText Lexical a HTML simple
 function serializeLexicalToHtml(richText: any): string {
   if (!richText?.root?.children) return '';
@@ -39,6 +46,7 @@ export default function Page() {
   const [altTitles, setAltTitles] = useState(false);
   const [formerMembers, setFormerMembers] = useState<TeamMember[]>([]);
   const [hoverFormerId, setHoverFormerId] = useState<string | null>(null);
+  const [selectedClients, setSelectedClients] = useState<SelectedClient[]>([]);
   const [scrolled, setScrolled] = useState(false);
   const boxWidth = 324;
   const boxHeight = 486;
@@ -73,8 +81,13 @@ export default function Page() {
         const resFormer = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/former-members?limit=100&sort=order`);
         const dataFormer = await resFormer.json();
         setFormerMembers(dataFormer.docs || []);
+
+        // Selected Clients
+        const resClients = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/selected-clients?limit=100&sort=name`);
+        const dataClients = await resClients.json();
+        setSelectedClients(dataClients.docs || []);
       } catch (err) {
-        console.error('Error fetching team/former members:', err);
+        console.error('Error fetching data:', err);
       }
     }
     fetchData();
@@ -206,11 +219,27 @@ export default function Page() {
           {isTabletOrMobile ? (
             <section className={`flex flex-col w-full relative gap-4 ${styles.sectionAbout}`}>
               <h1 className="font-light text-gray-800 text-[32px] font-sans text-center">
-                {altTitles ? <><span className="font-bold">Explore</span> present(s)</> : 'Construimos imaginarios colectivos'}
+                {altTitles ? (
+                  <>
+                    <span className="font-bold">Explore</span> present(s)
+                  </>
+                ) : (
+                  <>
+                    <span className="font-bold">Construimos imaginarios</span> colectivos
+                  </>
+                )}
               </h1>
               {teamMember?.image?.url ? <img className="w-full h-auto max-h-[400px] object-cover" alt={teamMember.name} src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${teamMember.image.url}`} /> : <div>No image</div>}
               <h2 className="font-light text-gray-800 text-[32px] text-center font-sans">
-                {altTitles ? <><span className="font-bold">build</span> futures</> : 'que configuran nuestro cotidiano.'}
+                {altTitles ? (
+                  <>
+                    <span className="font-bold">build</span> futures
+                  </>
+                ) : (
+                  <>
+                    que configuran nuestro <span className="font-bold">cotidiano</span>.
+                  </>
+                )}
               </h2>
               <div className={styles.description} dangerouslySetInnerHTML={{ __html: teamMember?.detail ? serializeLexicalToHtml(teamMember.detail) : '' }} />
             </section>
@@ -222,12 +251,28 @@ export default function Page() {
               <div className="w-1/2 flex flex-col justify-center" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
                 <div>
                   <h1 className="font-light text-gray-800 text-[32px] font-sans">
-                    {isHovered ? <><span className="font-bold">Explore</span> present(s)</> : 'Construimos imaginarios colectivos'}
+                    {isHovered ? (
+                      <>
+                        <span className="font-bold">Explore</span> present(s)
+                      </>
+                    ) : (
+                      <>
+                        <span className="font-bold">Construimos imaginarios</span> colectivos
+                      </>
+                    )}
                   </h1>
                   <div className={styles.description} dangerouslySetInnerHTML={{ __html: teamMember?.detail ? serializeLexicalToHtml(teamMember.detail) : '' }} />
                 </div>
                 <h2 className="font-light text-gray-800 text-[32px] text-right font-sans">
-                  {isHovered ? <><span className="font-bold">build</span> futures</> : 'que configuran nuestro cotidiano.'}
+                  {isHovered ? (
+                    <>
+                      <span className="font-bold">build</span> futures
+                    </>
+                  ) : (
+                    <>
+                      que configuran nuestro <span className="font-bold">cotidiano</span>.
+                    </>
+                  )}
                 </h2>
               </div>
             </section>
@@ -241,7 +286,7 @@ export default function Page() {
               </p>
             </div>
             <div className="w-1/2 flex flex-col items-end">
-              <h2 className="font-light text-gray-800 text-[32px] text-right font-sans">¿Quiénes somos?</h2>
+              <h2 className="font-semi-bold text-gray-800 text-[32px] text-right font-sans">¿Quiénes somos?</h2>
             </div>
           </section>
 
@@ -255,15 +300,59 @@ export default function Page() {
             <h2>Former team members</h2>
             <div style={{ position: 'relative' }} className={styles.formerNamesContainer}>
               {formerMembers.map((m, i) => (
-                <div key={m.id} style={{ display: 'inline-block', position: 'relative', marginRight: '8px' }} onMouseEnter={() => setHoverFormerId(m.id)} onMouseLeave={() => setHoverFormerId(null)}>
-                  <h4 className={styles.formerName} style={{ cursor: 'pointer' }}>
+                <div
+                  key={m.id}
+                  style={{ display: 'inline-block', position: 'relative', marginRight: '8px' }}
+                  onMouseEnter={() => m.image?.url && setHoverFormerId(m.id)}
+                  onMouseLeave={() => m.image?.url && setHoverFormerId(null)}
+                >
+                  <h4
+                    className={styles.formerName}
+                    style={{ cursor: m.image?.url ? 'pointer' : 'default' }}
+                  >
                     {m.name}{i < formerMembers.length - 1 && ','}
                   </h4>
                   {hoverFormerId === m.id && m.image?.url && (
-                    <div style={{ position: 'absolute', bottom: '100%', left: '50%', transform: 'translateX(-50%)', marginBottom: '8px', width: '200px', height: '200px', borderRadius: '8px', boxShadow: '0 4px 10px rgba(0,0,0,0.3)', overflow: 'hidden', opacity: 1, transition: 'opacity 0.3s ease', zIndex: 10, backgroundColor: '#fff' }}>
-                      <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${m.image.url}`} alt={m.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                    <div
+                      style={{
+                        position: 'absolute',
+                        bottom: '100%',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        marginBottom: '8px',
+                        width: '200px',
+                        height: '200px',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+                        overflow: 'hidden',
+                        opacity: 1,
+                        transition: 'opacity 0.3s ease',
+                        zIndex: 10,
+                        backgroundColor: '#fff',
+                      }}
+                    >
+                      <img
+                        src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${m.image.url}`}
+                        alt={m.name}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                      />
                     </div>
                   )}
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* SELECTED CLIENTS */}
+          <section className={styles.sectionFormer}>
+            <h2>Selected Clients</h2>
+            <div style={{ position: 'relative' }} className={styles.formerNamesContainer}>
+              {selectedClients.map((c, i) => (
+                <div key={`client-${c.id || c._id || `${c.name}-${i}`}`} style={{ display: 'inline-block', marginRight: '8px' }}>
+                  <a className={styles.formerName} href={c.link} target="_blank" rel="noopener noreferrer">
+                    {c.name}
+                  </a>
+                  {i < selectedClients.length - 1 && <span>,</span>}
                 </div>
               ))}
             </div>
@@ -280,41 +369,34 @@ export default function Page() {
             </button>
           </section>
 
-          {/* CONTACT */}
-          <section className={styles.contactSection}>
-            <div className={styles.contact}><h2>Contact</h2></div>
-            <div className={styles.contactGrid}>
-
-              <div>
-                <h4>MAPS</h4>
-                <p>C/ Aldapa, 2 Local 4, Esquina,<br />C/ Matilde Hernández, 28025,<br />Madrid</p>
-              </div>
-              <div>
-                <h4>E-MAIL</h4>
-                <p>hi@whatif-arch.com</p>
-              </div>
-
-
-              <div>
-                <h4>PHONE</h4>
-                <p>+34 697 266 914</p>
-              </div>
-              <div>
-                <h4>INSTAGRAM</h4>
-                <p>@whatif_architecture</p>
-              </div>
-            </div>
-          </section>
+          {/* CONTACT section eliminada: contenido se traslada al footer */}
         </div>
       </div>
 
       {/* FOOTER */}
       <div className={styles.footer}>
-        <div className={styles.footerContent}>
-          <h3>e x p l o r e<br /> p r e s e n t(s)</h3><span>/</span>
-          <h3>b u i l d<br /> f u t u r e s</h3><span>/</span>
-          <h3>e x p l o r e<br /> p r e s e n t(s)</h3><span>/</span>
-          <h3>b u i l d <br /> f u t u r e s</h3>
+        <div className={styles.footerHeader}>
+          <h2>Contact</h2>
+        </div>
+        <div className={styles.footerTop}>
+          <div className={styles.footerLeft}>
+            <p>C/ Matilde Hernández, 28025, Madrid</p>
+            <p className={styles.footerEmail}>hi@whatif-arch.com</p>
+          </div>
+          <div className={styles.footerCenter}>
+            <div className={styles.footerTagline}>
+              <h3>e x p l o r e<br /> p r e s e n t(s)</h3>
+              <span>/</span>
+              <h3>b u i l d<br /> f u t u r e s</h3>
+            </div>
+          </div>
+          <div className={styles.footerRight}>
+            <p>+34 697 266 914</p>
+            <p>@whatif_architecture</p>
+          </div>
+        </div>
+        <div className={styles.footerBottom}>
+          <p>© Todos los derechos reservados</p>
         </div>
       </div>
     </div>
