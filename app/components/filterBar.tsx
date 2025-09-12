@@ -23,9 +23,14 @@ export default function FilterBar({ onFilterChange }: FilterBarProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetchFromPayload<{ docs: ProjectType[] }>('/projectTypes').then(data => {
-      setTypes(data.docs);
-    });
+    fetchFromPayload<{ docs: ProjectType[] }>('/projectTypes')
+      .then(data => {
+        setTypes(data.docs);
+      })
+      .catch((err) => {
+        console.error('Error cargando tipos de proyecto', err);
+        setTypes([]); // evita romper el render; solo muestra "All"
+      });
   }, []);
 
   const handleFilterClick = (slug: string | null) => {

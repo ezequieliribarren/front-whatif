@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -35,31 +35,35 @@ export default function Page() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [filtered, setFiltered] = useState<Project[]>([]);
   const [selectedType, setSelectedType] = useState<string | null>(null);
-  const [sortState, setSortState] = useState<SortState>({
-    column: 'date',
-    direction: 'desc',
-  });
+  const [sortState, setSortState] = useState<SortState>({ column: 'date', direction: 'desc' });
+  const [visibleCount, setVisibleCount] = useState<number>(10);
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const isTabletOrMobile = useMediaQuery({ maxWidth: 1024 });
 
+  // Normaliza URL de imagen: acepta absoluta o relativa y concatena base.
+  const buildImageUrl = (u?: string | null) => {
+    if (!u) return null;
+    if (u.startsWith('http://') || u.startsWith('https://')) return u;
+    const base = (backendUrl || '').replace(/\/$/, '');
+    const path = u.startsWith('/') ? u : `/${u}`;
+    return `${base}${path}`;
+  };
+
   useEffect(() => {
     async function fetchProjects() {
-      const res = await fetch(`${backendUrl}/api/projects?depth=1`, {
-        cache: 'no-store',
-      });
+      const res = await fetch(`${backendUrl}/api/projects?depth=1&limit=1000`, { cache: 'no-store' });
       const data = await res.json();
       setProjects(data.docs);
     }
-    fetchProjects();
+    if (backendUrl) fetchProjects();
   }, [backendUrl]);
 
   useEffect(() => {
     let newFilteredProjects = selectedType
-      ? projects.filter((p) =>
-          p.types?.some((t) => t.slug === selectedType)
-        )
+      ? projects.filter((p) => p.types?.some((t) => t.slug === selectedType))
       : [...projects];
 
     const sortedProjects = [...newFilteredProjects].sort((a, b) => {
@@ -94,22 +98,47 @@ export default function Page() {
     });
 
     setFiltered(sortedProjects);
+    setVisibleCount(10);
   }, [selectedType, projects, sortState]);
 
   const handleSort = (column: SortState['column']) => {
     setSortState((prev) => ({
       column,
-      direction:
-        prev.column === column && prev.direction === 'asc' ? 'desc' : 'asc',
+      direction: prev.column === column && prev.direction === 'asc' ? 'desc' : 'asc',
     }));
   };
 
-  const getSortIndicator = (column: SortState['column']) => {
+    const getSortIndicator = (column: SortState['column']) => {
     if (sortState.column === column) {
-      return sortState.direction === 'asc' ? ' ↑' : '↓';
+      return sortState.direction === 'asc' ? ' ^' : ' v';
     }
     return '';
   };
+
+  // Carga incremental con IntersectionObserver
+  useEffect(() => {
+    const sentinel = document.getElementById('infinite-scroll-sentinel');
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting) {
+          if (visibleCount < filtered.length) {
+            setIsLoadingMore(true);
+            setTimeout(() => {
+              setVisibleCount((prev) => Math.min(prev + 10, filtered.length));
+              setIsLoadingMore(false);
+            }, 150);
+          }
+        }
+      },
+      { rootMargin: '200px 0px' }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [filtered.length, visibleCount]);
 
   return (
     <main className={styles.container}>
@@ -157,16 +186,17 @@ export default function Page() {
         </div>
       )}
 
-      {filtered.map((proj) =>
+      {filtered.slice(0, visibleCount).map((proj) =>
         isTabletOrMobile ? (
           <div key={proj.slug} className={styles.cardMobile}>
             <Link
               href={`/work/${proj.id}`}
               className={styles.cardImgMobile}
               style={{
-                backgroundImage: proj.imagenDestacada?.url
-                  ? `url(${backendUrl + proj.imagenDestacada.url})`
-                  : 'none',
+                backgroundImage: (() => {
+                  const img = buildImageUrl(proj.imagenDestacada?.url);
+                  return img ? `url(${img})` : 'none';
+                })(),
                 position: 'relative',
                 display: 'block',
               }}
@@ -215,17 +245,25 @@ export default function Page() {
             <div className={`${styles.col} ${styles.colCategory}`}>
               <h3>{proj.categories?.map((c) => c.name).join(', ') || ''}</h3>
             </div>
-            {proj.imagenDestacada?.url && (
+            {buildImageUrl(proj.imagenDestacada?.url) && (
               <div
                 className={styles.colImg}
                 style={{
-                  backgroundImage: `url(${backendUrl + proj.imagenDestacada.url})`,
+                  backgroundImage: `url(${buildImageUrl(proj.imagenDestacada?.url)})`,
                 }}
               />
             )}
           </div>
         )
       )}
+
+      <div id="infinite-scroll-sentinel" style={{ height: 1 }} />
+      {isLoadingMore && (
+        <div style={{ textAlign: 'center', padding: '12px 0' }}>
+          <span>cargando mas...</span>
+        </div>
+      )}
     </main>
   );
 }
+

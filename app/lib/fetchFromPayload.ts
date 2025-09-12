@@ -1,17 +1,27 @@
 // lib/fetchFromPayload.ts
-const API_URL = process.env.PAYLOAD_API_URL || 'http://69.62.110.55/api';
+// Unifica las llamadas al backend usando NEXT_PUBLIC_BACKEND_URL
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export async function fetchFromPayload<T>(path: string): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, {
+  if (!BASE_URL) {
+    throw new Error('NEXT_PUBLIC_BACKEND_URL no está definida');
+  }
+
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  const url = `${BASE_URL}/api${normalizedPath}`;
+
+  const res = await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
     },
-    next: { revalidate: 60 }, // 🔄 caché de 60s si es del lado del server
+    next: { revalidate: 60 },
   });
 
   if (!res.ok) {
-    throw new Error(`[Payload] Error al hacer fetch a ${path}`);
+    const text = await res.text().catch(() => '');
+    throw new Error(`[Payload] ${res.status} ${res.statusText} en ${url} ${text}`);
   }
 
   return res.json();
 }
+
