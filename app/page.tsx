@@ -42,7 +42,7 @@ export default function Page() {
   useEffect(() => {
     async function fetchProjects() {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/projects?&depth=1`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/projects?depth=1&limit=1000`,
         { cache: 'no-store' }
       );
       const data = await res.json();

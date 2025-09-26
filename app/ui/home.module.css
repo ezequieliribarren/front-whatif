@@ -48,11 +48,20 @@
 
 
 .emptyHalf {
-  flex: 1 1 155%;
+  /* Asegura que la imagen no ocupe más del 50% */
+  flex: 0 0 50%;
+}
+
+/* Limita el ancho del bloque que contiene la imagen + info (solo desktop) */
+@media (min-width: 1025px) {
+  .projectCard > div:first-child {
+    flex: 0 0 50%;
+  }
 }
 
 .imageContainer{
   position: relative;
+  width: 100%;
 }
 
 
@@ -219,7 +228,10 @@
   }
 
 .projectCardImage{
-  height: 100% !important;
+  /* Mantener imagen dentro del 50% asignado */
+  width: 100%;
+  height: auto !important;
+  object-fit: cover;
 }
 
   .overlay {

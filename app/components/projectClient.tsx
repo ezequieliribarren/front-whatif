@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Slider from 'react-slick';
 import { useRouter } from 'next/navigation';
 import styles from '../ui/project.module.css';
+import richTextToHTML from '../lib/richTextToHTML';
 
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -39,22 +40,6 @@ type Props = {
   project: Project;
 };
 
-function extractPlainText(lexicalData: any): string {
-  if (!lexicalData?.root?.children) return '';
-  const nodes = lexicalData.root.children;
-
-  const extract = (nodes: any[]): string => {
-    return nodes
-      .map((node) => {
-        if (node.text) return node.text;
-        if (node.children) return extract(node.children);
-        return '';
-      })
-      .join(' ');
-  };
-
-  return extract(nodes);
-}
 
 const CustomPrevArrow = (props: any) => {
   const { className, style, onClick } = props;
@@ -117,7 +102,9 @@ export default function ProjectClient({ project }: Props) {
   const filteredMedia = mediaMap[activeType] || [];
 
   const projectHasText = !!project.text?.root?.children?.length;
-  const descriptionText = extractPlainText(project.text);
+  const descriptionHTML = projectHasText
+    ? richTextToHTML(project.text.root.children)
+    : '';
 
   return (
     <section className={styles.container}>
@@ -146,9 +133,10 @@ export default function ProjectClient({ project }: Props) {
 
           {/* Descripción por encima del botón */}
           {projectHasText && (
-            <div className={`${styles.description} ${showDescription ? styles.open : ''}`}>
-              <p>{descriptionText}</p>
-            </div>
+            <div
+              className={`${styles.description} ${showDescription ? styles.open : ''}`}
+              dangerouslySetInnerHTML={{ __html: descriptionHTML }}
+            />
           )}
 
           <div className={styles.buttonTextContainer}>

@@ -6,6 +6,8 @@ export default function richTextToHTML(nodes: any[]): string {
 
   const renderNode = (node: any): string => {
     switch (node.type) {
+      case 'linebreak':
+        return '<br />';
       case 'h1':
         return `<h1>${renderChildren(node.children)}</h1>`;
       case 'h2':

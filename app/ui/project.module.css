@@ -53,6 +53,14 @@
   opacity: 0;
   transform: translateY(10px);
   transition: max-height 0.5s ease, opacity 0.5s ease, transform 0.5s ease;
+  text-align: justify;
+}
+/* Espaciado mayor entre párrafos dentro de la descripción */
+.description p {
+  margin: 0 0 1rem;
+}
+.description p:last-child {
+  margin-bottom: 0;
 }
 
 .description.open {
