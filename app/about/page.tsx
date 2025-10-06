@@ -10,6 +10,15 @@ type TeamMember = {
   role: string;
   image?: { url: string };
   detail?: any;
+  studies?: any;
+  studies_en?: any;
+  studies_es?: any;
+  education?: any;
+  education_en?: any;
+  education_es?: any;
+  formacion?: any;
+  formacion_en?: any;
+  formacion_es?: any;
 };
 
 type SelectedClient = {
@@ -70,7 +79,7 @@ export default function Page() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const resActive = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/team-members?sort=order`);
+        const resActive = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/team-members?sort=order&locale=all`);
         const dataActive = await resActive.json();
 
         const team = dataActive.docs.find((m: TeamMember) => m.name === 'Team') || null;
@@ -159,6 +168,30 @@ export default function Page() {
         <img src={arrowDirection === 'left' ? '/left-arrow.png' : '/right-arrow.png'} alt="Arrow" />
       </div>
       <p className={styles.role}>{member.role}</p>
+      {/* Estudios debajo del rol */}
+      {(() => {
+        const src = (member.studies_es ?? member.education_es ?? (member as any).formación ?? member.formacion_es ??
+                    member.studies ?? member.education ?? member.formacion ??
+                    member.studies_en ?? member.education_en ?? member.formacion_en);
+        const srcFinal = src ?? (member as any).Estudios ?? (member as any).estudios;
+        if (!srcFinal) return null;
+        let html = '';
+        if ((src ?? srcFinal)?.root?.children) {
+          html = serializeLexicalToHtml(src ?? srcFinal);
+        } else if (Array.isArray(src ?? srcFinal)) {
+          html = `<p>${src.filter(Boolean).join(' · ')}</p>`;
+        } else if (typeof src === 'string') {
+          html = `<p>${src}</p>`;
+        }
+        if (!html && Array.isArray(srcFinal)) {
+          html = `<p>${srcFinal.filter(Boolean).join(' · ')}</p>`;
+        } else if (!html && typeof srcFinal === 'string') {
+          html = `<p>${srcFinal}</p>`;
+        }
+        return html ? (
+          <div className={styles.studies} dangerouslySetInnerHTML={{ __html: html }} />
+        ) : null;
+      })()}
     </div>
   );
 

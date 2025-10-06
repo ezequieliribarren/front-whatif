@@ -4,7 +4,7 @@ import './ui/global.css';
 import Link from 'next/link';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styles from './ui/layout.module.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { HiOutlineMenu, HiOutlineX } from 'react-icons/hi';
 import ContactModal from './components/contactModal'; // Importa el componente ContactModal
@@ -17,6 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [contactModalOpen, setContactModalOpen] = useState(false);
+  const navRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const checkIsMobile = () => setIsMobile(window.innerWidth <= 1024);
@@ -25,6 +26,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     window.addEventListener('resize', checkIsMobile);
     return () => window.removeEventListener('resize', checkIsMobile);
   }, []);
+
+  // Expose navbar height as a CSS variable so pages can offset content
+  useEffect(() => {
+    const updateNavHeight = () => {
+      const h = navRef.current?.getBoundingClientRect().height ?? 0;
+      document.documentElement.style.setProperty('--nav-height', `${h}px`);
+    };
+    updateNavHeight();
+    window.addEventListener('resize', updateNavHeight);
+    return () => window.removeEventListener('resize', updateNavHeight);
+  }, []);
+
+  // Recompute when layout-affecting states change
+  useEffect(() => {
+    const h = navRef.current?.getBoundingClientRect().height ?? 0;
+    document.documentElement.style.setProperty('--nav-height', `${h}px`);
+  }, [disableNavScroll, isMobile]);
 
   useEffect(() => {
     if (disableNavScroll) {
@@ -66,7 +84,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={disableNavScroll ? styles.noScrollNav : ''}>
-        <div className={`${styles.navbar} ${!disableNavScroll && scrollY > 5 ? styles.navbarScrolled : styles.navbarInitial}`}>
+        <div ref={navRef} className={`${styles.navbar} ${!disableNavScroll && scrollY > 5 ? styles.navbarScrolled : styles.navbarInitial}`}>
           <div className={`${styles.logoWrapper} ${!disableNavScroll && isScrollingDown ? styles.logoUp : ''}`}>
             <Link href="/">
               <img

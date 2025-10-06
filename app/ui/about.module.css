@@ -18,9 +18,10 @@
 .sectionAbout {
   transition: max-height 0.6s ease-in-out;
   max-height: 80rem;
-  /* Ajusta este valor si necesitas más espacio */
+  margin-top: 15rem !important;
   overflow: hidden;
-  margin-top: 3rem;
+  margin-top: 0;
+  padding-top: 0 !important;
 }
 
 .sectionScrolled {
@@ -52,7 +53,7 @@
   background: #fff;
   display: flex;
   flex-direction: column;
-  padding: 0 1rem;
+  padding: var(--nav-height, 12rem) 1rem 0 1rem; /* deja espacio para el navbar fijo */
   overflow: hidden;
   transition: max-height 1s ease-in-out !important;
 }
@@ -172,6 +173,14 @@
   font-weight: 300;
   line-height: normal;
   margin: 0;
+}
+
+.studies {
+  color: var(--DARK-GREY, #1F2021);
+  font-family: Fustat, sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  margin-top: 4px;
 }
 
 .sectionFormer h2 {
@@ -361,13 +370,14 @@ padding: 3rem;
 @media (max-width: 1024px) {
   .containerAbout {
     height: 90rem;
+    padding-top: var(--nav-height, 8rem); /* espacio menor bajo navbar en mobile */
   }
 
   .sectionAbout {
     flex-direction: column !important;
     gap: 24px !important;
     align-items: flex-start !important;
-    padding-top: 15rem !important;
+    padding-top: 0 !important;
     max-height: none !important;
     height: 170rem !important;
   }

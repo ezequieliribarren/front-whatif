@@ -59,6 +59,8 @@
 
 /* Ajustes para páginas de proyecto: sin efecto scroll y links mayormente ocultos */
 .noScrollNav .navbar {
+  position: relative; /* deja de ser fixed en páginas de proyecto */
+  z-index: 10;
   overflow: hidden; /* recorta lo que se desplace fuera */
 }
 

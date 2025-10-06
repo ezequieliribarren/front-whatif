@@ -3,7 +3,7 @@ import ProjectClient from '../../components/projectClient'
 
 async function getProject(id: string) {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/projects/${id}`,
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/projects/${id}?locale=all`,
     { cache: 'no-store' }
   )
 

@@ -1,5 +1,4 @@
 'use client';
-import '@google/model-viewer';
 import { useState } from 'react';
 import Slider from 'react-slick';
 import { useRouter } from 'next/navigation';
@@ -25,6 +24,9 @@ type Project = {
   types?: { name: string }[];
   location?: string;
   client?: string;
+  detail?: any;
+  detail_en?: any;
+  detail_es?: any;
   area?: string;
   agency?: string;
   awards?: string;
@@ -34,6 +36,8 @@ type Project = {
   videos?: Media[];
   models3D?: { url: string }[];
   text?: any;
+  text_en?: any;
+  text_es?: any;
 };
 
 type Props = {
@@ -70,7 +74,9 @@ const CustomNextArrow = (props: any) => {
 export default function ProjectClient({ project }: Props) {
   const router = useRouter();
   const [activeType, setActiveType] = useState<'photos' | 'drawings' | 'renders' | 'videos' | 'models3D'>('photos');
-  const [showDescription, setShowDescription] = useState(true);
+  type Language = 'ES' | 'EN';
+  const [lang, setLang] = useState<Language>('ES');
+  const [currentSlide, setCurrentSlide] = useState(0);
   const handleBack = () => {
     if (typeof window !== 'undefined' && window.history.length > 1) {
       router.back();
@@ -89,6 +95,7 @@ export default function ProjectClient({ project }: Props) {
     adaptiveHeight: true,
     prevArrow: <CustomPrevArrow />,
     nextArrow: <CustomNextArrow />,
+    afterChange: (index: number) => setCurrentSlide(index),
   };
 
   const mediaMap: Record<string, Media[] | { url: string }[] | undefined> = {
@@ -101,10 +108,82 @@ export default function ProjectClient({ project }: Props) {
 
   const filteredMedia = mediaMap[activeType] || [];
 
-  const projectHasText = !!project.text?.root?.children?.length;
-  const descriptionHTML = projectHasText
-    ? richTextToHTML(project.text.root.children)
-    : '';
+  // i18n strings and description selection
+  const t = {
+    ES: {
+      back: 'atrás',
+      location: 'Ubicación',
+      client: 'Cliente',
+      builtArea: 'Área construida',
+      agency: 'Agencia',
+      awards: 'Premios',
+      yearFallback: 'Año',
+      noCategory: 'Sin categoría',
+      noType: 'Sin tipo',
+      menu: {
+        photos: 'Fotos',
+        videos: 'Videos',
+        drawings: 'Planos',
+        renders: 'Renders',
+        models3D: '3D',
+      },
+    },
+    EN: {
+      back: 'back',
+      location: 'Location',
+      client: 'Client',
+      builtArea: 'Built area',
+      agency: 'Agency',
+      awards: 'Awards',
+      yearFallback: 'Year',
+      noCategory: 'No category',
+      noType: 'No type',
+      menu: {
+        photos: 'Photos',
+        videos: 'Videos',
+        drawings: 'Drawings',
+        renders: 'Renders',
+        models3D: '3D',
+      },
+    },
+  } as const;
+
+  const getLocalizedRichText = (p: any, l: Language) => {
+    const lower = l.toLowerCase();
+    const candidates = [
+      p[`text_${lower}`],
+      p.text?.[lower],
+      p.text?.[l],
+      p.text,
+    ];
+    for (const c of candidates) {
+      if (c?.root?.children?.length) return c;
+    }
+    return null;
+  };
+
+  const textNode = getLocalizedRichText(project, lang);
+  const projectHasText = !!textNode?.root?.children?.length;
+  const descriptionHTML = projectHasText ? richTextToHTML(textNode.root.children) : '';
+
+  // no-op: logo overlay remains static (no animation)
+
+  // Detail block (one-line). Prefer ES, then default, then EN. Render as plain text.
+  const detailNode = (project as any).detail_es ?? project.detail ?? (project as any).detail_en;
+  const toPlainText = (nodes: any[]): string => {
+    if (!Array.isArray(nodes)) return '';
+    const collect = (n: any): string => {
+      if (!n) return '';
+      if (n.type === 'text') return n.text || '';
+      if (Array.isArray(n.children)) return n.children.map(collect).join(' ');
+      return '';
+    };
+    return nodes.map(collect).join(' ').replace(/\s+/g, ' ').trim();
+  };
+  const detailPlain = typeof detailNode === 'string'
+    ? detailNode
+    : (detailNode?.root?.children ? toPlainText(detailNode.root.children) : '');
+  const hasDetail = !!detailPlain;
 
   return (
     <section className={styles.container}>
@@ -126,27 +205,50 @@ export default function ProjectClient({ project }: Props) {
           <div>
             {project.location && <p><strong>Location:</strong> {project.location}</p>}
             {project.client && <p><strong>Client:</strong> {project.client}</p>}
+            {hasDetail && (
+              <p><strong>Detail:</strong> {detailPlain}</p>
+            )}
             {project.area && <p><strong>Built area:</strong> {project.area}</p>}
             {project.agency && <p><strong>Agencia:</strong> {project.agency}</p>}
             {project.awards && <p><strong>Premios:</strong> {project.awards}</p>}
           </div>
 
-          {/* Descripción por encima del botón */}
+          {/* Solo el rich text es scrolleable */}
           {projectHasText && (
-            <div
-              className={`${styles.description} ${showDescription ? styles.open : ''}`}
-              dangerouslySetInnerHTML={{ __html: descriptionHTML }}
-            />
+            <div className={styles.descriptionScroll}>
+              <div
+                className={`${styles.description} ${styles.open}`}
+                dangerouslySetInnerHTML={{ __html: descriptionHTML }}
+              />
+            </div>
           )}
 
+          {/* Toggle EN/ES fijo debajo del texto */}
           <div className={styles.buttonTextContainer}>
-            <button
-              onClick={() => projectHasText && setShowDescription(!showDescription)}
-              disabled={!projectHasText}
-              className={`${styles.buttonText} ${!projectHasText ? styles.disabledButton : ''}`}
-            >
-              <h3>{showDescription ? 'x' : 'text'}</h3>
-            </button>
+            <div className={styles.langToggle} role="tablist" aria-label="language selector">
+              <span
+                className={`${styles.langSlider} ${lang === 'EN' ? styles.right : ''}`}
+                aria-hidden="true"
+              />
+              <button
+                type="button"
+                role="tab"
+                aria-selected={lang === 'ES'}
+                className={`${styles.langOption} ${lang === 'ES' ? styles.selected : ''}`}
+                onClick={() => setLang('ES')}
+              >
+                ES
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={lang === 'EN'}
+                className={`${styles.langOption} ${lang === 'EN' ? styles.selected : ''}`}
+                onClick={() => setLang('EN')}
+              >
+                EN
+              </button>
+            </div>
           </div>
         </div>
       </aside>
@@ -165,7 +267,7 @@ export default function ProjectClient({ project }: Props) {
         {filteredMedia.length > 0 && (
           <Slider {...settings} className={styles.slider}>
             {filteredMedia.map((media: any, index: number) => (
-              <div key={index} className={styles.slide}>
+              <div key={index} className={`${styles.slide} ${currentSlide === index ? styles.revealed : ''}`}>
                 {'mimeType' in media && media.mimeType?.includes('video') ? (
                   <video
                     src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${media.url}`}
@@ -206,7 +308,7 @@ export default function ProjectClient({ project }: Props) {
                   drawings: 'Drawings',
                   renders: 'Renders',
                   models3D: '3D',
-                };
+                } as Record<string, string>;
                 return (
                   <li
                     key={type}

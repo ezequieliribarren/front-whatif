@@ -12,7 +12,7 @@
   padding: 3rem 2rem;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end; /* toda la info abajo, pegada */
+  justify-content: flex-start; /* info debajo del logo */
   gap: 1rem;
   font-size: 14px;
   overflow: hidden; /* sin scroll interno en la página de proyecto */
@@ -45,6 +45,31 @@
 
 .details p {
   margin: 0.3rem 0;
+}
+
+/* Estructura: details en columna; solo el rich text scrollea */
+.details {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Contenedor scrolleable solo para el rich text */
+.descriptionScroll {
+  flex: 1;
+  overflow-y: auto;
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none;    /* Firefox */
+}
+.descriptionScroll::-webkit-scrollbar { display: none; } /* WebKit */
+
+/* Asegura que la descripción no esté colapsada dentro del contenedor scrolleable */
+.descriptionScroll .description,
+.descriptionScroll .description.open {
+  overflow: visible;
+  max-height: none;
+  opacity: 1;
+  transform: none;
 }
 
 .description {
@@ -95,6 +120,54 @@
   margin-top: 10px;
 }
 
+/* Language toggle */
+.langToggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 120px;
+  height: 35px;
+  border: 1px solid #1F2021;
+  border-radius: 4px;
+  overflow: hidden;
+  user-select: none;
+}
+
+.langOption {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 2;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.langSlider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: #1F2021;
+  transition: transform 0.25s ease-in-out;
+  z-index: 1;
+}
+
+.right {
+  transform: translateX(100%);
+}
+
+.selected {
+  color: #fff;
+}
+
+.langToggle .langOption:not(.selected) {
+  color: #1F2021;
+}
+
 .carouselSection {
   width: 70%;
   height: 100vh;
@@ -112,11 +185,19 @@
   height: 80vh;
   object-fit: contain;
   object-position: center center;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 180ms ease-out, transform 180ms ease-out;
 }
 
 .slider {
   width: 80%;
   margin-right: 4rem;
+}
+
+.slide.revealed .media {
+  opacity: 1;
+  transform: none;
 }
 
 .tabs {
@@ -189,12 +270,12 @@
 
 .leftArrow {
   top: 85% !important;
-  left: 0 !important;
+  left: 30px !important;
 }
 
 .rightArrow {
   top: 85% !important;
-  right: 0 !important;
+  right: 30px !important;
   background: transparent !important;
 }
 
@@ -222,6 +303,23 @@
   z-index: 9999;
   mix-blend-mode: difference;
 
+}
+
+/* Logo overlay animado en la sección de proyecto */
+.logoOverlay {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  opacity: 1; /* estático, siempre visible */
+  pointer-events: none;
+}
+.logoOverlay img {
+  width: 220px;
+  max-width: 40vw;
+  height: auto;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25));
 }
 
 .backContent {
@@ -253,6 +351,11 @@
     height: auto;
   }
 
+  /* Ocultar botón Back en móviles/tablet */
+  .backButton {
+    display: none !important;
+  }
+
   .carouselSection {
     width: 100%;
     height: auto;
@@ -262,6 +365,11 @@
   .slider {
     width: 100%;
     margin: 0;
+  }
+
+  .logoOverlay img {
+    width: 160px;
+    max-width: 60vw;
   }
 
 

@@ -17,17 +17,15 @@
 .projectCard {
   display: flex;
   width: 100%;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  /* Dejar visibilidad a 1 para no interferir con el fade de las imágenes */
+  opacity: 1;
+  transform: none;
+  transition: none;
   height: auto !important;
 }
 
 
-.projectCard.show {
-  opacity: 1;
-  transform: translateY(0);
-}
+.projectCard.show { }
 
 
 .leftImage {
@@ -232,6 +230,19 @@
   width: 100%;
   height: auto !important;
   object-fit: cover;
+}
+
+/* Fade-up for project images on home (global classes) */
+:global(.fade-img) {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1s ease, transform 1s ease;
+  will-change: opacity, transform;
+}
+
+:global(.fade-img.visible) {
+  opacity: 1;
+  transform: translateY(0);
 }
 
   .overlay {

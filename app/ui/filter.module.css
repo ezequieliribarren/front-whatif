@@ -87,6 +87,13 @@
   .filterMenu {
     justify-items: center;
     gap: 0.5rem;
+    width: 90vw; /* más ancho en mobile para caber palabras largas */
+    grid-template-columns: repeat(2, max-content); /* dos por fila */
+    grid-auto-flow: row;
+    justify-content: center; /* centrar el grid dentro del contenedor */
+    align-content: center;
+    margin: 0 auto; /* asegurar centrado absoluto */
+    text-align: center;
   }
 
   .filterList {
@@ -96,5 +103,10 @@
   .filterItem {
     justify-content: center;
     gap: 0;
+    white-space: nowrap; /* no cortar palabras como public-space */
+  }
+
+  .filterItem h4 {
+    white-space: nowrap;
   }
 }

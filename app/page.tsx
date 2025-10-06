@@ -53,6 +53,28 @@ export default function Page() {
     fetchProjects();
   }, []);
 
+  // Fade-up images when they enter viewport using IntersectionObserver
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const images = Array.from(document.querySelectorAll<HTMLImageElement>('.fade-img'));
+    if (images.length === 0) return;
+
+    const io = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            obs.unobserve(entry.target);
+          }
+        });
+      },
+      { root: null, rootMargin: '0px 0px -10% 0px', threshold: 0.15 }
+    );
+
+    images.forEach((img) => io.observe(img));
+    return () => io.disconnect();
+  }, [filtered]);
+
   useEffect(() => {
     if (selectedType) {
       setFiltered(
@@ -115,7 +137,7 @@ export default function Page() {
                 <img
                   src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${project.imagenDestacada.url}`}
                   alt={project.imagenDestacada.alt || project.title}
-                  className={styles.projectCardImage}
+                  className={`${styles.projectCardImage} fade-img`}
                 />
               </div>
               <div className={styles.projectInfoRow}>
