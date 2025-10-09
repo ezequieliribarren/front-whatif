@@ -232,18 +232,6 @@
   object-fit: cover;
 }
 
-/* Fade-up for project images on home (global classes) */
-:global(.fade-img) {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 1s ease, transform 1s ease;
-  will-change: opacity, transform;
-}
-
-:global(.fade-img.visible) {
-  opacity: 1;
-  transform: translateY(0);
-}
 
   .overlay {
     top: auto !important;
