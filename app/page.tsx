@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
+// Removed Next.js Image; using native <img>
 import { useRouter } from 'next/navigation';
 import styles from './ui/home.module.css';
 import { useCursor } from './components/CursorProvider';
@@ -279,35 +279,21 @@ export default function Page() {
                         </svg>
                       </div>
 
-                      {isUrlClean ? (
-                        <Image
-                          src={`${backendUrl}${cleanUrl}`}
-                          alt={project.imagenDestacada?.alt || project.title}
-                          width={project.imagenDestacada?.width || 1400}
-                          height={project.imagenDestacada?.height || 900}
-                          className={styles.projectCardImage}
-                          quality={80}
-                          sizes="(max-width: 1024px) 100vw, 50vw"
-                          priority={index < 2}
-                          style={{
-                            objectFit: 'cover',
-                            transition: 'opacity 0.25s ease-out, transform 0.25s ease-out',
-                          }}
-                        />
-                      ) : (
-                        <img
-                          src={`${backendUrl}${cleanUrl}`}
-                          alt={project.imagenDestacada?.alt || project.title}
-                          className={styles.projectCardImage}
-                          loading={index < 2 ? 'eager' : 'lazy'}
-                          style={{
-                            width: '100%',
-                            height: 'auto',
-                            objectFit: 'cover',
-                            transition: 'opacity 0.25s ease-out, transform 0.25s ease-out',
-                          }}
-                        />
-                      )}
+                      <img
+                        src={`${backendUrl}${cleanUrl}`}
+                        alt={project.imagenDestacada?.alt || project.title}
+                        className={styles.projectCardImage}
+                        loading={index < 2 ? 'eager' : 'lazy'}
+                        width={project.imagenDestacada?.width || 1400}
+                        height={project.imagenDestacada?.height || 900}
+                        style={{
+                          objectFit: 'cover',
+                          transition: 'opacity 0.25s ease-out, transform 0.25s ease-out',
+                          width: '100%',
+                          height: 'auto',
+                        }}
+                        decoding="async"
+                      />
                     </div>
 
                     <div className={styles.projectInfoRow}>

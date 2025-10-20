@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Slider from 'react-slick';
-import Image from 'next/image';
+ 
 import { useRouter } from 'next/navigation';
 import styles from '../ui/project.module.css';
 import richTextToHTML from '../lib/richTextToHTML';
@@ -61,7 +61,7 @@ const CustomPrevArrow = (props: any) => {
       style={{ ...style }}
       onClick={onClick}
     >
-      <Image src="/left-arrow.png" alt="Previous" width={32} height={32} />
+      <img src="/left-arrow.png" alt="Previous" width={32} height={32} />
     </div>
   );
 };
@@ -74,7 +74,7 @@ const CustomNextArrow = (props: any) => {
       style={{ ...style }}
       onClick={onClick}
     >
-      <Image src="/right-arrow.png" alt="Next" width={32} height={32} />
+      <img src="/right-arrow.png" alt="Next" width={32} height={32} />
     </div>
   );
 };
@@ -291,7 +291,7 @@ const settings = {
       <div className={styles.carouselSection}>
         <div className={styles.backButton}>
           <button type="button" onClick={handleBack} className={styles.backContent} aria-label="Back">
-            <Image src="/left-arrow.png" alt="Back" width={28} height={28} />
+            <img src="/left-arrow.png" alt="Back" width={28} height={28} />
             <span>back</span>
           </button>
         </div>
@@ -330,16 +330,16 @@ const settings = {
                     // Nota: no es posible ocultar el cursor dentro del contenido del iframe sin control interno
                   />
                 ) : (
-                  <Image
+                  <img
                     src={`${backendUrl}${media.url}?width=1600&format=webp`}
                     alt={media.alt || project.title}
                     width={1600}
                     height={900}
-                    quality={80}
                     className={styles.media}
                     style={{ objectFit: 'contain', cursor: 'none' }}
-                    priority={index < 2}
-                    onLoadingComplete={() => {
+                    loading={index < 2 ? 'eager' : 'lazy'}
+                    decoding="async"
+                    onLoad={() => {
                       if (index === 0) setFirstLoaded(true);
                     }}
                   />

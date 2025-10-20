@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+// Removed Next.js Image; using native <img>
 import { useMediaQuery } from 'react-responsive';
 import styles from '../ui/work.module.css';
 import FilterBar from '../components/filterBar';
@@ -150,15 +150,13 @@ export default function Page() {
           <div key={proj.slug} className={styles.cardMobile}>
             <Link href={`/work/${proj.id}`} className={styles.cardImgMobile} aria-label={proj.title}>
               {imgSmall && (
-                <Image
+                <img
                   src={imgSmall}
                   alt={proj.imagenDestacada?.alt || proj.title}
                   width={800}
                   height={600}
-                  quality={80}
-                  placeholder="blur"
-                  blurDataURL={`${imgSmall}&q=10`}
                   loading="lazy"
+                  decoding="async"
                   style={{ objectFit: 'cover', width: '100%', height: 'auto' }}
                 />
               )}
@@ -193,15 +191,13 @@ export default function Page() {
 
             {imgLarge && (
               <div className={styles.colImg}>
-                <Image
+                <img
                   src={imgLarge}
                   alt={proj.imagenDestacada?.alt || proj.title}
                   width={1600}
                   height={1200}
-                  quality={75}
-                  placeholder="blur"
-                  blurDataURL={`${imgSmall}&q=5`}
                   loading="lazy"
+                  decoding="async"
                   style={{
                     objectFit: 'cover',
                     transition: 'opacity 0.5s ease',
