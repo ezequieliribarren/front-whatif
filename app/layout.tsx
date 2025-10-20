@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { HiOutlineMenu, HiOutlineX } from 'react-icons/hi';
 import ContactModal from './components/contactModal'; // Importa el componente ContactModal
+import { CursorProvider } from './components/CursorProvider';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -86,11 +87,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={disableNavScroll ? styles.noScrollNav : ''}>
+        <CursorProvider>
         <div ref={navRef} className={`${styles.navbar} ${!disableNavScroll && scrollY > 5 ? styles.navbarScrolled : styles.navbarInitial}`}>
           <div className={`${styles.logoWrapper} ${!disableNavScroll && isScrollingDown ? styles.logoUp : ''}`}>
             <Link href="/">
               <img
-                className={`${styles.logo} ${isMobile ? styles.logoMobile : ''}`}
+                className={`${styles.logo} ${isMobile ? styles.logoMobile : ''} ${disableNavScroll ? styles.logoHidden : ''}`}
                 src={isMobile ? '/logo-simple.png' : '/logo.png'}
                 alt="Logo"
               />
@@ -131,6 +133,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ContactModal isOpen={contactModalOpen} onClose={() => setContactModalOpen(false)} />
 
         {/* Sin footer global */}
+        </CursorProvider>
       </body>
     </html>
   );

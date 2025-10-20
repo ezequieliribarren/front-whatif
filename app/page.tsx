@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import styles from './ui/home.module.css';
+import { useCursor } from './components/CursorProvider';
 
 type ProjectCategory = {
   id: string;
@@ -53,6 +54,7 @@ export default function Page() {
 
   const router = useRouter();
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || '';
+  const { show, hide, move, isTouch } = useCursor();
 
   useEffect(() => {
     async function fetchProjects() {
@@ -240,7 +242,10 @@ export default function Page() {
               <div>
                 <div
                   className={`${styles.imageContainer} fade-img`}
-                  style={{ cursor: 'pointer' }}
+                  style={{ cursor: isTouch ? 'pointer' : 'none' }}
+                  onMouseEnter={() => { if (!isTouch) show('SEE\nPROJECT', { align: 'right' }); }}
+                  onMouseLeave={() => hide()}
+                  onMouseMove={(e) => { if (!isTouch) move(e.clientX, e.clientY); }}
                   onClick={() => goToProject(project.id)}
                   title={`${project.title}`}
                 >

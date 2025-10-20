@@ -6,7 +6,7 @@
   padding: 2rem 4rem;
   background-color: transparent;
   transition: all 0.3s ease;
-  z-index: 999;
+  z-index: 99999 !important;
   position: fixed;
 
 }
@@ -32,6 +32,10 @@
   width: 28rem;
 }
 
+.logoHidden {
+  display: none !important;
+}
+
 
 /* EFECTO DEL NAVBAR */
 
@@ -55,6 +59,11 @@
 
 .linksUp {
   top: -35px;
+}
+
+/* Keep links always visible (explicitly used in layout) */
+.linksDown {
+  top: 0;
 }
 
 /* Ajustes para páginas de proyecto: sin efecto scroll y links mayormente ocultos */
@@ -206,3 +215,7 @@
     padding: 1.5rem 1rem;
   }
 }
+
+/* Overrides for project detail (no scroll; navbar hidden above screen) */
+.noScrollNav { height: 100vh; overflow: hidden; }
+.noScrollNav .navLinks { top: -60px; }

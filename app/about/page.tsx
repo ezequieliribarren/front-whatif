@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import styles from '@/app/ui/about.module.css';
 import { useMediaQuery } from 'react-responsive';
+import { useCursor } from '@/app/components/CursorProvider';
 
 type TeamMember = {
   id: string;
@@ -63,6 +64,7 @@ export default function Page() {
   const boxWidth = 324;
   const boxHeight = 486;
   const isTabletOrMobile = useMediaQuery({ maxWidth: 1024 });
+  const { show, hide, move, isTouch } = useCursor();
 
   useEffect(() => {
     const SCROLL_THRESHOLD = 120;
@@ -330,7 +332,19 @@ export default function Page() {
           <section className={`flex flex-row w-full relative gap-8 ${styles.sectionAbout} ${scrolled ? styles.sectionScrolled : ''}`}>
             <div className="w-1/2">
               {teamMember?.image?.url ? (
-                <img className="w-full h-auto max-h-[600px] object-cover" alt={teamMember.name} src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${teamMember.image.url}`} />
+                <div
+                  onMouseEnter={() => { if (!isTabletOrMobile && !isTouch) show('WHAT\nIF', { align: 'right' }); }}
+                  onMouseLeave={() => hide()}
+                  onMouseMove={(e) => { if (!isTabletOrMobile && !isTouch) move(e.clientX, e.clientY); }}
+                  style={{ position: 'relative', cursor: (!isTabletOrMobile && !isTouch) ? 'none' : 'auto' }}
+                >
+                  <img
+                    className="w-full h-auto max-h-[600px] object-cover"
+                    alt={teamMember.name}
+                    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${teamMember.image.url}`}
+                  />
+                  
+                </div>
               ) : (
                 <div>No image</div>
               )}

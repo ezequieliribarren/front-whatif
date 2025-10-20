@@ -3,7 +3,11 @@
   height: 100vh;
   background: white;
   padding-top: 0 !important; /* evitar padding global del section */
-
+  position: fixed; /* cubrir desde el inicio, por encima del navbar */
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1001; /* mayor que la barra de navegación */
 }
 
 .sidebar {
@@ -367,6 +371,7 @@
   .container {
     flex-direction: column-reverse;
     height: auto;
+    position: static; /* en móvil no fijar la sección completa */
   }
 
   /* Ocultar botón Back en móviles/tablet */

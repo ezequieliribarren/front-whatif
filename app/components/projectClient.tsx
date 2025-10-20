@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import styles from '../ui/project.module.css';
 import richTextToHTML from '../lib/richTextToHTML';
+import { useCursor } from './CursorProvider';
 
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -80,6 +81,7 @@ const CustomNextArrow = (props: any) => {
 
 export default function ProjectClient({ project }: Props) {
   const router = useRouter();
+  const { show, hide, move, isTouch } = useCursor();
   const [activeType, setActiveType] = useState<
     'photos' | 'drawings' | 'renders' | 'videos' | 'models3D'
   >('photos');
@@ -305,6 +307,10 @@ const settings = {
                     ? styles.revealed
                     : ''
                 }`}
+                onMouseEnter={() => { if (!isTouch) show('WHAT\nIF', { align: 'right' }); }}
+                onMouseLeave={() => hide()}
+                onMouseMove={(e) => { if (!isTouch) move(e.clientX, e.clientY); }}
+                style={{ cursor: isTouch ? undefined : 'none' }}
               >
                 {'mimeType' in media && media.mimeType?.includes('video') ? (
                   <video
@@ -314,12 +320,14 @@ const settings = {
                     muted
                     playsInline
                     className={styles.media}
+                    style={{ cursor: 'none' }}
                   />
                 ) : 'url' in media && typeof media.url === 'string' && !('mimeType' in media) ? (
                   <iframe
                     src={media.url}
                     title={`3D model ${index + 1}`}
                     className={styles.media}
+                    // Nota: no es posible ocultar el cursor dentro del contenido del iframe sin control interno
                   />
                 ) : (
                   <Image
@@ -329,7 +337,7 @@ const settings = {
                     height={900}
                     quality={80}
                     className={styles.media}
-                    style={{ objectFit: 'contain' }}
+                    style={{ objectFit: 'contain', cursor: 'none' }}
                     priority={index < 2}
                     onLoadingComplete={() => {
                       if (index === 0) setFirstLoaded(true);
