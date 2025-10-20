@@ -39,7 +39,6 @@ export default function Page() {
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [visibleProjects, setVisibleProjects] = useState<string[]>([]);
 
-  // Hero preloader state
   const [heroSrc, setHeroSrc] = useState<string | null>(null);
   const [showHero, setShowHero] = useState(true);
   const [videoReady, setVideoReady] = useState(false);
@@ -63,7 +62,6 @@ export default function Page() {
       const data = await res.json();
 
       const docs: Project[] = Array.isArray(data?.docs) ? data.docs : [];
-      // Fallback por si el backend no ordena
       const sorted = [...docs].sort((a: any, b: any) => {
         const ao = typeof a.order === 'number' ? a.order : 1e9;
         const bo = typeof b.order === 'number' ? b.order : 1e9;
@@ -76,56 +74,63 @@ export default function Page() {
     fetchProjects();
   }, [backendUrl]);
 
-  // Fetch hero video from global endpoint (preloader)
   useEffect(() => {
     let aborted = false;
     (async () => {
       try {
-        // 1) Use cached copy if present
         const head = await fetch('/cache/hero.mp4', { method: 'HEAD', cache: 'no-store' });
         if (!aborted && head.ok) {
           setHeroSrc('/cache/hero.mp4');
-          // Also trigger background refresh (non-blocking)
           fetch('/api/cache-hero').catch(() => {});
           return;
         }
-        // 2) Ensure cache exists (may download once)
+
         await fetch('/api/cache-hero', { cache: 'no-store' });
         if (aborted) return;
+
         const head2 = await fetch('/cache/hero.mp4', { method: 'HEAD', cache: 'no-store' });
         if (!aborted && head2.ok) {
           setHeroSrc('/cache/hero.mp4');
           return;
         }
-        // 3) Fallback: fetch remote URL and play directly
+
         const base =
           process.env.NEXT_PUBLIC_BACKEND_URL ||
           (process.env.PAYLOAD_API_URL ? process.env.PAYLOAD_API_URL.replace(/\/api$/, '') : undefined);
-        if (!base) { setShowHero(false); return; }
+        if (!base) {
+          setShowHero(false);
+          return;
+        }
         const res = await fetch(`${base}/api/globals/video-inicial`, { cache: 'no-store' });
-        if (!res.ok) { setShowHero(false); return; }
+        if (!res.ok) {
+          setShowHero(false);
+          return;
+        }
         const data = await res.json();
         const v = data?.video?.url ? `${base}${data.video.url}` : null;
         if (!aborted) {
-          if (v) setHeroSrc(v); else setShowHero(false);
+          if (v) setHeroSrc(v);
+          else setShowHero(false);
         }
       } catch {
         if (!aborted) setShowHero(false);
       }
     })();
-    return () => { aborted = true; };
+    return () => {
+      aborted = true;
+    };
   }, []);
 
-  // Lock scroll while hero is visible
   useEffect(() => {
     if (showHero) {
       const prev = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = prev; };
+      return () => {
+        document.body.style.overflow = prev;
+      };
     }
   }, [showHero]);
 
-  // Ensure preloader hides after 5s max (even if src tarda)
   useEffect(() => {
     if (showHero && !hideTimerRef.current) {
       hideTimerRef.current = setTimeout(() => {
@@ -133,12 +138,10 @@ export default function Page() {
       }, 3000);
     }
     return () => {
-      // Cleanup any pending timer on rerender/unmount
       clearHideTimer();
     };
   }, [showHero]);
 
-  // Preconnect to backend to speed up video load
   useEffect(() => {
     const base =
       process.env.NEXT_PUBLIC_BACKEND_URL ||
@@ -161,7 +164,6 @@ export default function Page() {
     };
   }, []);
 
-  // Fade-up images when they enter viewport
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const images = Array.from(document.querySelectorAll<HTMLDivElement>('.fade-img'));
@@ -191,7 +193,6 @@ export default function Page() {
     }
   }, [selectedType, projects]);
 
-  // Fade-in escalonado de los proyectos
   useEffect(() => {
     setVisibleProjects([]);
     filtered.forEach((project, i) => {
@@ -221,8 +222,14 @@ export default function Page() {
                 preload="auto"
                 style={{ opacity: videoReady ? 1 : 0, transition: 'opacity 120ms linear' }}
                 onLoadedData={() => setVideoReady(true)}
-                onEnded={() => { clearHideTimer(); setShowHero(false); }}
-                onError={() => { clearHideTimer(); setShowHero(false); }}
+                onEnded={() => {
+                  clearHideTimer();
+                  setShowHero(false);
+                }}
+                onError={() => {
+                  clearHideTimer();
+                  setShowHero(false);
+                }}
                 crossOrigin="anonymous"
               />
             )}
@@ -231,88 +238,110 @@ export default function Page() {
       )}
 
       <main className={styles.projectList} style={{ display: showHero ? 'none' : 'block' }}>
-      {filtered.map((project, index) => (
-        <section key={project.id}>
-          <div
-            className={`${styles.projectCard} ${
-              index % 2 === 0 ? styles.leftImage : styles.rightImage
-            } ${visibleProjects.includes(project.slug) ? styles.show : ''}`}
-          >
-            {project.imagenDestacada?.url && (
-              <div>
-                <div
-                  className={`${styles.imageContainer} fade-img`}
-                  style={{ cursor: isTouch ? 'pointer' : 'none' }}
-                  onMouseEnter={() => { if (!isTouch) show('SEE\nPROJECT', { align: 'right' }); }}
-                  onMouseLeave={() => hide()}
-                  onMouseMove={(e) => { if (!isTouch) move(e.clientX, e.clientY); }}
-                  onClick={() => goToProject(project.id)}
-                  title={`${project.title}`}
-                >
-                  <div className={styles.overlay}>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="58"
-                      height="58"
-                      viewBox="0 0 38 38"
-                      fill="none"
-                      className={styles.plusIcon}
-                    >
-                      <path d="M18.748 0V37.5" stroke="white" strokeWidth="2" />
-                      <path d="M37.5 18.7478L0 18.7478" stroke="white" strokeWidth="2" />
-                    </svg>
-                  </div>
+        {filtered.map((project, index) => {
+          const rawUrl = project.imagenDestacada?.url || '';
+          const cleanUrl = rawUrl.replace(/\?.*$/, '').replace(/ /g, '%20');
+          const isUrlClean = !/\?.+/.test(rawUrl);
 
-                  {/* 🔥 OPTIMIZADO CON NEXT/IMAGE */}
-                  <Image
-                    src={`${backendUrl}${project.imagenDestacada.url}?width=1400&format=webp`}
-                    alt={project.imagenDestacada.alt || project.title}
-                    width={project.imagenDestacada.width || 1400}
-                    height={project.imagenDestacada.height || 900}
-                    className={styles.projectCardImage}
-                    quality={80}
-                    placeholder="blur"
-                    blurDataURL="/blur-placeholder.webp"
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    priority={index < 2} // carga prioritaria en las primeras imágenes
-                    style={{
-                      objectFit: 'cover',
-                      transition: 'opacity 0.25s ease-out, transform 0.25s ease-out',
-                    }}
-                  />
-                </div>
-
-                <div className={styles.projectInfoRow}>
+          return (
+            <section key={project.id}>
+              <div
+                className={`${styles.projectCard} ${
+                  index % 2 === 0 ? styles.leftImage : styles.rightImage
+                } ${visibleProjects.includes(project.slug) ? styles.show : ''}`}
+              >
+                {cleanUrl && (
                   <div>
-                    <h2 className={styles.h2Home}>{project.title}</h2>
-                  </div>
+                    <div
+                      className={`${styles.imageContainer} fade-img`}
+                      style={{ cursor: isTouch ? 'pointer' : 'none' }}
+                      onMouseEnter={() => {
+                        if (!isTouch) show('SEE\nPROJECT', { align: 'right' });
+                      }}
+                      onMouseLeave={() => hide()}
+                      onMouseMove={(e) => {
+                        if (!isTouch) move(e.clientX, e.clientY);
+                      }}
+                      onClick={() => goToProject(project.id)}
+                      title={`${project.title}`}
+                    >
+                      <div className={styles.overlay}>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="58"
+                          height="58"
+                          viewBox="0 0 38 38"
+                          fill="none"
+                          className={styles.plusIcon}
+                        >
+                          <path d="M18.748 0V37.5" stroke="white" strokeWidth="2" />
+                          <path d="M37.5 18.7478L0 18.7478" stroke="white" strokeWidth="2" />
+                        </svg>
+                      </div>
 
-                  <div className={styles.projectDetails}>
-                    <div className={styles.projectDate}>
-                      <h3>{new Date().getFullYear()}</h3>
+                      {isUrlClean ? (
+                        <Image
+                          src={`${backendUrl}${cleanUrl}`}
+                          alt={project.imagenDestacada?.alt || project.title}
+                          width={project.imagenDestacada?.width || 1400}
+                          height={project.imagenDestacada?.height || 900}
+                          className={styles.projectCardImage}
+                          quality={80}
+                          sizes="(max-width: 1024px) 100vw, 50vw"
+                          priority={index < 2}
+                          style={{
+                            objectFit: 'cover',
+                            transition: 'opacity 0.25s ease-out, transform 0.25s ease-out',
+                          }}
+                        />
+                      ) : (
+                        <img
+                          src={`${backendUrl}${cleanUrl}`}
+                          alt={project.imagenDestacada?.alt || project.title}
+                          className={styles.projectCardImage}
+                          loading={index < 2 ? 'eager' : 'lazy'}
+                          style={{
+                            width: '100%',
+                            height: 'auto',
+                            objectFit: 'cover',
+                            transition: 'opacity 0.25s ease-out, transform 0.25s ease-out',
+                          }}
+                        />
+                      )}
                     </div>
-                    <div className={styles.projectCategory}>
-                      <h3 className={styles.h3Category}>
-                        {project.categories && project.categories.length > 0
-                          ? project.categories.map((t) => t.name).join(', ')
-                          : 'Sin Categoría'}
-                      </h3>
-                    </div>
-                    <div className={styles.projectType}>
-                      <h3>
-                        {project.types && project.types.length > 0
-                          ? project.types.map((t) => t.name).join(', ')
-                          : 'Sin tipo'}
-                      </h3>
+
+                    <div className={styles.projectInfoRow}>
+                      <div>
+                        <h2 className={styles.h2Home}>{project.title}</h2>
+                      </div>
+
+                      <div className={styles.projectDetails}>
+                        <div className={styles.projectDate}>
+                          <h3>{new Date().getFullYear()}</h3>
+                        </div>
+                        <div className={styles.projectCategory}>
+                          <h3 className={styles.h3Category}>
+                            {project.categories && project.categories.length > 0
+                              ? project.categories.map((t) => t.name).join(', ')
+                              : 'Sin Categoría'}
+                          </h3>
+                        </div>
+                        <div className={styles.projectType}>
+                          <h3>
+                            {project.types && project.types.length > 0
+                              ? project.types.map((t) => t.name).join(', ')
+                              : 'Sin tipo'}
+                          </h3>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
+                <div className={styles.emptyHalf}></div>
               </div>
-            )}
-            <div className={styles.emptyHalf}></div>
-          </div>
-        </section>
-      ))}
+            </section>
+          );
+        })}
       </main>
     </>
   );
