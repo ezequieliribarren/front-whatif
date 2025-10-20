@@ -188,3 +188,21 @@
     padding: 2rem 2rem;
   }
 }
+
+/* Simple global footer shown where local footers don't exist */
+.siteFooter {
+  width: 100%;
+  padding: 2rem 4rem;
+  background: #fff;
+  color: #000;
+}
+
+.siteFooter p {
+  font-size: 1.6rem;
+}
+
+@media (max-width: 1024px) {
+  .siteFooter {
+    padding: 1.5rem 1rem;
+  }
+}

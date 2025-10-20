@@ -44,6 +44,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     document.documentElement.style.setProperty('--nav-height', `${h}px`);
   }, [disableNavScroll, isMobile]);
 
+  // Footer se muestra solo en /about; no se renderiza aquí
+
   useEffect(() => {
     if (disableNavScroll) {
       setScrollY(0);
@@ -127,6 +129,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
 
         <ContactModal isOpen={contactModalOpen} onClose={() => setContactModalOpen(false)} />
+
+        {/* Sin footer global */}
       </body>
     </html>
   );

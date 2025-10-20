@@ -192,6 +192,8 @@
 
 .formerNamesContainer {
   display: flex;
+  justify-content: center !important;
+  text-align: center !important;
   flex-wrap: wrap;
   gap: 10px;
   font-size: 16px;
@@ -200,6 +202,7 @@
   color: #333;
   justify-content: flex-start;
   font-family: fustat, sans-serif;
+  margin-top: 3rem;
 }
 
 .formerName {
@@ -339,6 +342,9 @@ padding: 3rem;
 }
 
 .footerLeft { justify-self: start; }
+.footerLeft:has(.apiAddress) > p:first-child { display: none; }
+
+.apiAddress {}
 .footerCenter { justify-self: center; text-align: center; }
 .footerRight { justify-self: end; text-align: right; }
 

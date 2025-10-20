@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import styles from '@/app/ui/about.module.css';
 import { useMediaQuery } from 'react-responsive';
 
@@ -28,7 +29,6 @@ type SelectedClient = {
   link: string;
 };
 
-// Función para convertir el richText Lexical a HTML simple
 function serializeLexicalToHtml(richText: any): string {
   if (!richText?.root?.children) return '';
   return richText.root.children
@@ -57,64 +57,126 @@ export default function Page() {
   const [hoverFormerId, setHoverFormerId] = useState<string | null>(null);
   const [selectedClients, setSelectedClients] = useState<SelectedClient[]>([]);
   const [scrolled, setScrolled] = useState(false);
+  const [dossierUrl, setDossierUrl] = useState<string | null>(null);
+  const [footerInfo, setFooterInfo] = useState<{ direccion?: string; telefono?: string; mail?: string } | null>(null);
+
   const boxWidth = 324;
   const boxHeight = 486;
   const isTabletOrMobile = useMediaQuery({ maxWidth: 1024 });
 
-  // Manejo de scroll para activar la animación
   useEffect(() => {
     const SCROLL_THRESHOLD = 120;
     const handleScroll = () => {
-      if (window.scrollY > SCROLL_THRESHOLD) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      setScrolled(window.scrollY > SCROLL_THRESHOLD);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Fetch de datos
+  // Fetch footer info
+  useEffect(() => {
+    const base =
+      process.env.NEXT_PUBLIC_BACKEND_URL ||
+      (process.env.PAYLOAD_API_URL ? process.env.PAYLOAD_API_URL.replace(/\/api$/, '') : undefined);
+    if (!base) return;
+    (async () => {
+      try {
+        const res = await fetch(`${base}/api/footer`, { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        const doc = Array.isArray(data?.docs) && data.docs.length > 0 ? data.docs[0] : null;
+        if (doc) setFooterInfo({ direccion: doc.direccion, telefono: doc.telefono, mail: doc.mail });
+      } catch (e) {
+        console.error('Error fetching footer info:', e);
+      }
+    })();
+  }, []);
+
   useEffect(() => {
     async function fetchData() {
-      try {
-        const resActive = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/team-members?sort=order&locale=all`);
-        const dataActive = await resActive.json();
+      const backendBase =
+        process.env.NEXT_PUBLIC_BACKEND_URL ||
+        (process.env.PAYLOAD_API_URL ? process.env.PAYLOAD_API_URL.replace(/\/api$/, '') : undefined);
 
-        const team = dataActive.docs.find((m: TeamMember) => m.name === 'Team') || null;
-        setTeamMember(team);
+      if (!backendBase) {
+        console.error('NEXT_PUBLIC_BACKEND_URL no está definida. Configúrala en .env.local');
+        return;
+      }
 
-        setTeamMembers(dataActive.docs.filter((m: TeamMember) => m.name !== 'Team'));
+      // Lanza todas las requests en paralelo y maneja cada una por separado
+      const [activeRes, formerRes, clientsRes, dossierRes] = await Promise.allSettled([
+        fetch(`${backendBase}/api/team-members?sort=order&locale=all`),
+        fetch(`${backendBase}/api/former-members?limit=100&sort=order`),
+        fetch(`${backendBase}/api/selected-clients?limit=100&sort=name`),
+        fetch(`${backendBase}/api/dossier?limit=1`),
+      ]);
 
-        const resFormer = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/former-members?limit=100&sort=order`);
-        const dataFormer = await resFormer.json();
-        setFormerMembers(dataFormer.docs || []);
+      if (activeRes.status === 'fulfilled') {
+        try {
+          const dataActive = await activeRes.value.json();
+          const team = dataActive.docs.find((m: TeamMember) => m.name === 'Team') || null;
+          setTeamMember(team);
+          setTeamMembers(dataActive.docs.filter((m: TeamMember) => m.name !== 'Team'));
+        } catch (e) {
+          console.error('Error parseando team-members:', e);
+        }
+      } else {
+        console.error('Error fetching team-members:', activeRes.reason);
+      }
 
-        // Selected Clients
-        const resClients = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/selected-clients?limit=100&sort=name`);
-        const dataClients = await resClients.json();
-        setSelectedClients(dataClients.docs || []);
-      } catch (err) {
-        console.error('Error fetching data:', err);
+      if (formerRes.status === 'fulfilled') {
+        try {
+          const dataFormer = await formerRes.value.json();
+          setFormerMembers(dataFormer.docs || []);
+        } catch (e) {
+          console.error('Error parseando former-members:', e);
+        }
+      } else {
+        console.error('Error fetching former-members:', formerRes.reason);
+      }
+
+      if (clientsRes.status === 'fulfilled') {
+        try {
+          const dataClients = await clientsRes.value.json();
+          setSelectedClients(dataClients.docs || []);
+        } catch (e) {
+          console.error('Error parseando selected-clients:', e);
+        }
+      } else {
+        console.error('Error fetching selected-clients:', clientsRes.reason);
+      }
+
+      if (dossierRes.status === 'fulfilled') {
+        try {
+          const dataDossier = await dossierRes.value.json();
+          const dossierDoc = dataDossier?.docs?.[0];
+          const pdfUrl = dossierDoc?.archivo?.url ? `${backendBase}${dossierDoc.archivo.url}` : null;
+          setDossierUrl(pdfUrl);
+        } catch (e) {
+          console.error('Error parseando dossier:', e);
+        }
+      } else {
+        console.error('Error fetching dossier:', dossierRes.reason);
       }
     }
     fetchData();
   }, []);
 
-  // Alternancia automática hover desktop
   useEffect(() => {
-    if (!isTabletOrMobile && teamMembers.length > 0) {
+    if (!isTabletOrMobile && teamMembers.length > 0 && hoveredId === null) {
       let idx = 0;
       const interval = setInterval(() => {
-        setHoveredId(teamMembers[idx % teamMembers.length].id);
-        idx++;
+        setHoveredId((prev) => {
+          if (prev !== null) return prev; // pause rotation while hovering
+          const id = teamMembers[idx % teamMembers.length].id;
+          idx++;
+          return id;
+        });
       }, 3000);
       return () => clearInterval(interval);
     }
-  }, [teamMembers, isTabletOrMobile]);
+  }, [teamMembers, isTabletOrMobile, hoveredId]);
 
-  // Alternar títulos tablet/mobile
   useEffect(() => {
     if (isTabletOrMobile) {
       const interval = setInterval(() => setAltTitles(prev => !prev), 3000);
@@ -122,13 +184,28 @@ export default function Page() {
     } else setAltTitles(false);
   }, [isTabletOrMobile]);
 
-  // Componentes internos
+  // Keep hover active when moving between the image and the info of the same member
+  const handleMemberMouseLeave = (memberId: string) => (e: React.MouseEvent<HTMLElement>) => {
+    if (isTabletOrMobile) return;
+    const rt = e.relatedTarget as Node | null;
+    if (!rt) { setHoveredId(null); return; }
+    let el: HTMLElement | null = rt as HTMLElement;
+    while (el) {
+      if ((el as HTMLElement).dataset && (el as HTMLElement).dataset.memberId === memberId) {
+        return; // still within same member block; keep hovered
+      }
+      el = el.parentElement;
+    }
+    setHoveredId(null);
+  };
+
   const CellImage = ({ member }: { member: TeamMember }) => (
     <div
       className={styles.imageContainer}
       style={{ width: boxWidth, height: boxHeight }}
       onMouseEnter={() => !isTabletOrMobile && setHoveredId(member.id)}
-      onMouseLeave={() => !isTabletOrMobile && setHoveredId(null)}
+      onMouseLeave={handleMemberMouseLeave(member.id)}
+      data-member-id={member.id}
       key={member.id + '-img'}
     >
       {member.image?.url ? (
@@ -158,6 +235,9 @@ export default function Page() {
         opacity: alwaysVisible || hoveredId === member.id ? 1 : 0,
         pointerEvents: alwaysVisible || hoveredId === member.id ? 'auto' : 'none',
       }}
+      onMouseEnter={() => !isTabletOrMobile && setHoveredId(member.id)}
+      onMouseLeave={handleMemberMouseLeave(member.id)}
+      data-member-id={member.id}
       key={member.id + '-info'}
     >
       <div
@@ -168,11 +248,10 @@ export default function Page() {
         <img src={arrowDirection === 'left' ? '/left-arrow.png' : '/right-arrow.png'} alt="Arrow" />
       </div>
       <p className={styles.role}>{member.role}</p>
-      {/* Estudios debajo del rol */}
       {(() => {
         const src = (member.studies_es ?? member.education_es ?? (member as any).formación ?? member.formacion_es ??
-                    member.studies ?? member.education ?? member.formacion ??
-                    member.studies_en ?? member.education_en ?? member.formacion_en);
+          member.studies ?? member.education ?? member.formacion ??
+          member.studies_en ?? member.education_en ?? member.formacion_en);
         const srcFinal = src ?? (member as any).Estudios ?? (member as any).estudios;
         if (!srcFinal) return null;
         let html = '';
@@ -246,25 +325,41 @@ export default function Page() {
 
   return (
     <div className={`containerAbout ${scrolled ? 'scrolled' : ''}`}>
-      {/* SECCION TEAM */}
       <div className="flex justify-center w-full">
         <div className="w-full" style={{ width: boxWidth * 4 + 12 }}>
-          {isTabletOrMobile ? (
-            <section className={`flex flex-col w-full relative gap-4 ${styles.sectionAbout}`}>
-              <h1 className="font-light text-gray-800 text-[32px] font-sans text-center">
-                {altTitles ? (
-                  <>
-                    <span className="font-bold">Explore</span> present(s)
-                  </>
-                ) : (
-                  <>
-                    <span className="font-bold">Construimos imaginarios</span> colectivos
-                  </>
-                )}
-              </h1>
-              {teamMember?.image?.url ? <img className="w-full h-auto max-h-[400px] object-cover" alt={teamMember.name} src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${teamMember.image.url}`} /> : <div>No image</div>}
-              <h2 className="font-light text-gray-800 text-[32px] text-center font-sans">
-                {altTitles ? (
+          <section className={`flex flex-row w-full relative gap-8 ${styles.sectionAbout} ${scrolled ? styles.sectionScrolled : ''}`}>
+            <div className="w-1/2">
+              {teamMember?.image?.url ? (
+                <img className="w-full h-auto max-h-[600px] object-cover" alt={teamMember.name} src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${teamMember.image.url}`} />
+              ) : (
+                <div>No image</div>
+              )}
+            </div>
+            <div className="w-1/2 flex flex-col justify-center">
+              <div>
+                <h1
+                  className="font-light text-gray-800 text-[32px] font-sans"
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
+                >
+                  {isHovered ? (
+                    <>
+                      <span className="font-bold">Explore</span> present(s)
+                    </>
+                  ) : (
+                    <>
+                      <span className="font-bold">Construimos imaginarios</span> colectivos
+                    </>
+                  )}
+                </h1>
+                <div className={styles.description} dangerouslySetInnerHTML={{ __html: teamMember?.detail ? serializeLexicalToHtml(teamMember.detail) : '' }} />
+              </div>
+              <h2
+                className="font-light text-gray-800 text-[32px] text-right font-sans"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+              >
+                {isHovered ? (
                   <>
                     <span className="font-bold">build</span> futures
                   </>
@@ -274,44 +369,9 @@ export default function Page() {
                   </>
                 )}
               </h2>
-              <div className={styles.description} dangerouslySetInnerHTML={{ __html: teamMember?.detail ? serializeLexicalToHtml(teamMember.detail) : '' }} />
-            </section>
-          ) : (
-            <section className={`flex flex-row w-full relative gap-8 ${styles.sectionAbout} ${scrolled ? styles.sectionScrolled : ''}`}>
-              <div className="w-1/2">
-                {teamMember?.image?.url ? <img className="w-full h-auto max-h-[600px] object-cover" alt={teamMember.name} src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${teamMember.image.url}`} /> : <div>No image</div>}
-              </div>
-              <div className="w-1/2 flex flex-col justify-center" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-                <div>
-                  <h1 className="font-light text-gray-800 text-[32px] font-sans">
-                    {isHovered ? (
-                      <>
-                        <span className="font-bold">Explore</span> present(s)
-                      </>
-                    ) : (
-                      <>
-                        <span className="font-bold">Construimos imaginarios</span> colectivos
-                      </>
-                    )}
-                  </h1>
-                  <div className={styles.description} dangerouslySetInnerHTML={{ __html: teamMember?.detail ? serializeLexicalToHtml(teamMember.detail) : '' }} />
-                </div>
-                <h2 className="font-light text-gray-800 text-[32px] text-right font-sans">
-                  {isHovered ? (
-                    <>
-                      <span className="font-bold">build</span> futures
-                    </>
-                  ) : (
-                    <>
-                      que configuran nuestro <span className="font-bold">cotidiano</span>.
-                    </>
-                  )}
-                </h2>
-              </div>
-            </section>
-          )}
+            </div>
+          </section>
 
-          {/* QUIENES SOMOS */}
           <section className={`flex flex-row w-full relative py-10 gap-8 ${styles.quienesSomos}`}>
             <div className="w-1/2">
               <p className={styles.description}>
@@ -323,27 +383,18 @@ export default function Page() {
             </div>
           </section>
 
-          {/* GRID */}
           <section className={isTabletOrMobile ? 'py-10' : 'grid grid-cols-4 gap-4 py-10'}>
             {isTabletOrMobile ? renderGridCellsResponsive() : renderGridCells()}
           </section>
 
-          {/* FORMER MEMBERS */}
           <section className={styles.sectionFormer}>
             <h2>Former team members</h2>
             <div style={{ position: 'relative' }} className={styles.formerNamesContainer}>
               {formerMembers.map((m, i) => (
-                <div
-                  key={m.id}
-                  style={{ display: 'inline-block', position: 'relative', marginRight: '8px' }}
-                  onMouseEnter={() => m.image?.url && setHoverFormerId(m.id)}
-                  onMouseLeave={() => m.image?.url && setHoverFormerId(null)}
-                >
-                  <h4
-                    className={styles.formerName}
-                    style={{ cursor: m.image?.url ? 'pointer' : 'default' }}
-                  >
-                    {m.name}{i < formerMembers.length - 1 && ','}
+                <div key={m.id} style={{ display: 'inline-block', position: 'relative', marginRight: '8px' }} onMouseEnter={() => m.image?.url && setHoverFormerId(m.id)} onMouseLeave={() => m.image?.url && setHoverFormerId(null)}>
+                  <h4 className={styles.formerName} style={{ cursor: m.image?.url ? 'pointer' : 'default' }}>
+                    {m.name}
+                    {i < formerMembers.length - 1 && ','}
                   </h4>
                   {hoverFormerId === m.id && m.image?.url && (
                     <div
@@ -364,11 +415,7 @@ export default function Page() {
                         backgroundColor: '#fff',
                       }}
                     >
-                      <img
-                        src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${m.image.url}`}
-                        alt={m.name}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                      />
+                      <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${m.image.url}`} alt={m.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                     </div>
                   )}
                 </div>
@@ -376,7 +423,6 @@ export default function Page() {
             </div>
           </section>
 
-          {/* SELECTED CLIENTS */}
           <section className={styles.sectionFormer}>
             <h2>Selected Clients</h2>
             <div style={{ position: 'relative' }} className={styles.formerNamesContainer}>
@@ -391,30 +437,48 @@ export default function Page() {
             </div>
           </section>
 
-          {/* BUTTON */}
           <section className="flex justify-center py-10">
-            <button className={`flex items-center gap-2.5 px-4 py-1 border border-black text-black font-serif hover:bg-black hover:text-white transition-colors rounded ${styles.buttonSelected}`} type="button">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8 12l4 4m0 0l4-4m-4 4V4" />
-              </svg>
-              <span className="text-lg font-normal">Selected Work</span>
-            </button>
+            {dossierUrl ? (
+              <a
+                href={dossierUrl}
+                download
+                className={`flex items-center gap-2.5 px-4 py-1 border border-black text-black font-serif hover:bg-black hover:text-white transition-colors rounded ${styles.buttonSelected}`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 12l4 4m0 0l4-4m-4 4V4" />
+                </svg>
+                <span className="text-lg font-normal">Download Dossier</span>
+              </a>
+            ) : (
+              <button
+                disabled
+                className={`opacity-50 cursor-not-allowed flex items-center gap-2.5 px-4 py-1 border border-black text-black font-serif rounded ${styles.buttonSelected}`}
+              >
+                <span className="text-lg font-normal">Dossier no disponible</span>
+              </button>
+            )}
           </section>
-
-          {/* CONTACT section eliminada: contenido se traslada al footer */}
         </div>
       </div>
 
-      {/* FOOTER */}
       <div className={styles.footer}>
         <div className={styles.footerHeader}>
           <h2>Contact</h2>
         </div>
         <div className={styles.footerTop}>
           <div className={styles.footerLeft}>
+            {footerInfo?.direccion && (
+              <p className={styles.apiAddress}>{footerInfo.direccion}</p>
+            )}
             <p>C/ Matilde Hernández, 28025, Madrid</p>
-            <p className={styles.footerEmail}>hi@whatif-arch.com</p>
+            <p className={styles.footerEmail}>
+              {footerInfo?.mail ? (
+                <a href={`mailto:${footerInfo.mail}`}>{footerInfo.mail}</a>
+              ) : (
+                'hi@whatif-arch.com'
+              )}
+            </p>
           </div>
           <div className={styles.footerCenter}>
             <div className={styles.footerTagline}>
@@ -424,12 +488,21 @@ export default function Page() {
             </div>
           </div>
           <div className={styles.footerRight}>
-            <p>+34 697 266 914</p>
-            <p>@whatif_architecture</p>
+            <p>
+              {footerInfo?.telefono ? (
+                <a href={`tel:${footerInfo.telefono.replace(/\s+/g, '')}`}>{footerInfo.telefono}</a>
+              ) : (
+                '+34 697 266 914'
+              )}
+            </p>
           </div>
         </div>
         <div className={styles.footerBottom}>
-          <p>© Todos los derechos reservados</p>
+          <p>
+            <Link href="/politicas-de-privacidad">
+              {`Todos los derechos reservados What if ${new Date().getFullYear()}`}
+            </Link>
+          </p>
         </div>
       </div>
     </div>

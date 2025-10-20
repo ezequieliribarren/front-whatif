@@ -1,7 +1,8 @@
 ﻿'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useMediaQuery } from 'react-responsive';
 import styles from '../ui/work.module.css';
 import FilterBar from '../components/filterBar';
@@ -40,105 +41,77 @@ export default function Page() {
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
   const isTabletOrMobile = useMediaQuery({ maxWidth: 1024 });
 
-  // Normaliza URL de imagen: acepta absoluta o relativa y concatena base.
-  const buildImageUrl = (u?: string | null) => {
+  // 🧠 Normaliza URL de imagen + genera versión optimizada (webp)
+  const buildImageUrl = (u?: string | null, width = 800) => {
     if (!u) return null;
-    if (u.startsWith('http://') || u.startsWith('https://')) return u;
     const base = (backendUrl || '').replace(/\/$/, '');
     const path = u.startsWith('/') ? u : `/${u}`;
-    return `${base}${path}`;
+    return `${base}${path}?width=${width}&format=webp`;
   };
 
+  // 🔹 Cargar proyectos desde Payload
   useEffect(() => {
     async function fetchProjects() {
       const res = await fetch(`${backendUrl}/api/projects?depth=1&limit=1000`, { cache: 'no-store' });
       const data = await res.json();
-      setProjects(data.docs);
+      setProjects(data.docs || []);
     }
     if (backendUrl) fetchProjects();
   }, [backendUrl]);
 
+  // 🔹 Filtrar y ordenar proyectos
   useEffect(() => {
-    let newFilteredProjects = selectedType
+    let filteredProjects = selectedType
       ? projects.filter((p) => p.types?.some((t) => t.slug === selectedType))
       : [...projects];
 
-    const sortedProjects = [...newFilteredProjects].sort((a, b) => {
+    const sorted = [...filteredProjects].sort((a, b) => {
       const { column, direction } = sortState;
-      let aValue: any;
-      let bValue: any;
-
-      switch (column) {
-        case 'date':
-          aValue = a.date ? new Date(a.date).getFullYear() : 0;
-          bValue = b.date ? new Date(b.date).getFullYear() : 0;
-          break;
-        case 'title':
-          aValue = a.title.toLowerCase();
-          bValue = b.title.toLowerCase();
-          break;
-        case 'types':
-          aValue = a.types?.map((t) => t.name).join(', ').toLowerCase() || '';
-          bValue = b.types?.map((t) => t.name).join(', ').toLowerCase() || '';
-          break;
-        case 'categories':
-          aValue = a.categories?.map((c) => c.name).join(', ').toLowerCase() || '';
-          bValue = b.categories?.map((c) => c.name).join(', ').toLowerCase() || '';
-          break;
-        default:
-          return 0;
-      }
-
-      if (aValue < bValue) return direction === 'asc' ? -1 : 1;
-      if (aValue > bValue) return direction === 'asc' ? 1 : -1;
-      return 0;
+      const dir = direction === 'asc' ? 1 : -1;
+      const val = (p: Project) => {
+        switch (column) {
+          case 'date': return p.date ? new Date(p.date).getFullYear() : 0;
+          case 'title': return p.title.toLowerCase();
+          case 'types': return p.types?.map((t) => t.name).join(',').toLowerCase() || '';
+          case 'categories': return p.categories?.map((c) => c.name).join(',').toLowerCase() || '';
+          default: return '';
+        }
+      };
+      return val(a) < val(b) ? -dir : val(a) > val(b) ? dir : 0;
     });
 
-    setFiltered(sortedProjects);
+    setFiltered(sorted);
     setVisibleCount(10);
-  }, [selectedType, projects, sortState]);
+  }, [projects, selectedType, sortState]);
 
-  const handleSort = (column: SortState['column']) => {
-    setSortState((prev) => ({
-      column,
-      direction: prev.column === column && prev.direction === 'asc' ? 'desc' : 'asc',
-    }));
-  };
-
-    const getSortIndicator = (column: SortState['column']) => {
-    if (sortState.column === column) {
-      return sortState.direction === 'asc' ? ' ^' : ' v';
-    }
-    return '';
-  };
-
-  // Carga incremental con IntersectionObserver
+  // 🔁 Scroll infinito
   useEffect(() => {
     const sentinel = document.getElementById('infinite-scroll-sentinel');
     if (!sentinel) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        const entry = entries[0];
-        if (entry.isIntersecting) {
-          if (visibleCount < filtered.length) {
-            setIsLoadingMore(true);
-            setTimeout(() => {
-              setVisibleCount((prev) => Math.min(prev + 10, filtered.length));
-              setIsLoadingMore(false);
-            }, 150);
-          }
+        if (entries[0].isIntersecting && visibleCount < filtered.length) {
+          setIsLoadingMore(true);
+          setTimeout(() => {
+            setVisibleCount((p) => Math.min(p + 10, filtered.length));
+            setIsLoadingMore(false);
+          }, 200);
         }
       },
-      { rootMargin: '200px 0px' }
+      { rootMargin: '200px' }
     );
 
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [filtered.length, visibleCount]);
+  }, [filtered, visibleCount]);
+
+  const getSortIndicator = (column: SortState['column']) =>
+    sortState.column === column ? (sortState.direction === 'asc' ? ' ↑' : ' ↓') : '';
+
+  const visibleProjects = useMemo(() => filtered.slice(0, visibleCount), [filtered, visibleCount]);
 
   return (
     <main className={styles.container}>
@@ -146,73 +119,49 @@ export default function Page() {
 
       {!isTabletOrMobile && (
         <div className={`${styles.row} ${styles.headerRow}`}>
-          <div className={`${styles.col} ${styles.colYear}`}>
-            <h4
-              onClick={() => handleSort('date')}
-              className={styles.sortableHeader}
-              style={{ cursor: 'pointer' }}
+          {['date', 'title', 'types', 'categories'].map((col) => (
+            <div
+              key={col}
+              className={`${styles.col} ${styles[`col${col.charAt(0).toUpperCase() + col.slice(1)}`]}`}
             >
-              year{getSortIndicator('date')}
-            </h4>
-          </div>
-          <div className={`${styles.col} ${styles.colTitle}`}>
-            <h4
-              onClick={() => handleSort('title')}
-              className={styles.sortableHeader}
-              style={{ cursor: 'pointer' }}
-            >
-              name{getSortIndicator('title')}
-            </h4>
-          </div>
-          <div className={`${styles.col} ${styles.colType}`}>
-            <h4
-              onClick={() => handleSort('types')}
-              className={styles.sortableHeader}
-              style={{ cursor: 'pointer' }}
-            >
-              type{getSortIndicator('types')}
-            </h4>
-          </div>
-          <div className={`${styles.col} ${styles.colCategory}`}>
-            <h4
-              onClick={() => handleSort('categories')}
-              className={styles.sortableHeader}
-              style={{ cursor: 'pointer' }}
-            >
-              category{getSortIndicator('categories')}
-            </h4>
-          </div>
-          <div className={`${styles.col} ${styles.colImg}`}></div>
+              <h4
+                onClick={() =>
+                  setSortState((p) => ({
+                    column: col as SortState['column'],
+                    direction: p.column === col && p.direction === 'asc' ? 'desc' : 'asc',
+                  }))
+                }
+                className={styles.sortableHeader}
+              >
+                {col}
+                {getSortIndicator(col as SortState['column'])}
+              </h4>
+            </div>
+          ))}
+          <div className={`${styles.col} ${styles.colImg}`} />
         </div>
       )}
 
-      {filtered.slice(0, visibleCount).map((proj) =>
-        isTabletOrMobile ? (
+      {visibleProjects.map((proj) => {
+        const imgSmall = buildImageUrl(proj.imagenDestacada?.url, 600);
+        const imgLarge = buildImageUrl(proj.imagenDestacada?.url, 1400);
+
+        return isTabletOrMobile ? (
           <div key={proj.slug} className={styles.cardMobile}>
-            <Link
-              href={`/work/${proj.id}`}
-              className={styles.cardImgMobile}
-              style={{
-                backgroundImage: (() => {
-                  const img = buildImageUrl(proj.imagenDestacada?.url);
-                  return img ? `url(${img})` : 'none';
-                })(),
-                position: 'relative',
-                display: 'block',
-              }}
-              aria-label={`Ir al proyecto ${proj.title}`}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="58"
-                height="58"
-                viewBox="0 0 38 38"
-                fill="none"
-                className={styles.plusIcon}
-              >
-                <path d="M18.748 0V37.5" stroke="white" strokeWidth="2" />
-                <path d="M37.5 18.7478L0 18.7478" stroke="white" strokeWidth="2" />
-              </svg>
+            <Link href={`/work/${proj.id}`} className={styles.cardImgMobile} aria-label={proj.title}>
+              {imgSmall && (
+                <Image
+                  src={imgSmall}
+                  alt={proj.imagenDestacada?.alt || proj.title}
+                  width={800}
+                  height={600}
+                  quality={80}
+                  placeholder="blur"
+                  blurDataURL={`${imgSmall}&q=10`}
+                  loading="lazy"
+                  style={{ objectFit: 'cover', width: '100%', height: 'auto' }}
+                />
+              )}
             </Link>
             <div className={styles.cardInfoMobile}>
               <h2 className={styles.titleLink}>{proj.title}</h2>
@@ -227,11 +176,7 @@ export default function Page() {
           </div>
         ) : (
           <div key={proj.slug} className={styles.row}>
-            <Link
-              href={`/work/${proj.id}`}
-              className={styles.rowOverlay}
-              aria-label={`Ir al proyecto ${proj.title}`}
-            />
+            <Link href={`/work/${proj.id}`} className={styles.rowOverlay} aria-label={proj.title} />
 
             <div className={`${styles.col} ${styles.colYear}`}>
               <h3>{proj.date ? new Date(proj.date).getFullYear() : ''}</h3>
@@ -245,25 +190,35 @@ export default function Page() {
             <div className={`${styles.col} ${styles.colCategory}`}>
               <h3>{proj.categories?.map((c) => c.name).join(', ') || ''}</h3>
             </div>
-            {buildImageUrl(proj.imagenDestacada?.url) && (
-              <div
-                className={styles.colImg}
-                style={{
-                  backgroundImage: `url(${buildImageUrl(proj.imagenDestacada?.url)})`,
-                }}
-              />
+
+            {imgLarge && (
+              <div className={styles.colImg}>
+                <Image
+                  src={imgLarge}
+                  alt={proj.imagenDestacada?.alt || proj.title}
+                  width={1600}
+                  height={1200}
+                  quality={75}
+                  placeholder="blur"
+                  blurDataURL={`${imgSmall}&q=5`}
+                  loading="lazy"
+                  style={{
+                    objectFit: 'cover',
+                    transition: 'opacity 0.5s ease',
+                  }}
+                />
+              </div>
             )}
           </div>
-        )
-      )}
+        );
+      })}
 
       <div id="infinite-scroll-sentinel" style={{ height: 1 }} />
       {isLoadingMore && (
         <div style={{ textAlign: 'center', padding: '12px 0' }}>
-          <span>cargando mas...</span>
+          <span>cargando más...</span>
         </div>
       )}
     </main>
   );
 }
-

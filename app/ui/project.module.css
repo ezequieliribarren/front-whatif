@@ -51,6 +51,7 @@
 .details {
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
   min-height: 0;
 }
 
@@ -121,6 +122,10 @@
 }
 
 /* Language toggle */
+.buttonTextContainer {
+  margin-top: auto; /* fija el toggle al fondo del sidebar */
+  padding-top: 1rem; /* separacin del contenido scrolleable */
+}
 .langToggle {
   position: relative;
   display: flex;
@@ -186,8 +191,25 @@
   object-fit: contain;
   object-position: center center;
   opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 180ms ease-out, transform 180ms ease-out;
+  transform: translateY(20px);
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out !important;
+}
+
+.slide.revealed .media {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* crossfade suave entre slides */
+.slick-slide {
+  transition: opacity 0.2s ease-in-out !important;
+}
+
+.slick-active {
+  opacity: 1 !important;
+}
+.slick-slide:not(.slick-active) {
+  opacity: 0 !important;
 }
 
 .slider {
@@ -195,10 +217,6 @@
   margin-right: 4rem;
 }
 
-.slide.revealed .media {
-  opacity: 1;
-  transform: none;
-}
 
 .tabs {
   display: flex;
