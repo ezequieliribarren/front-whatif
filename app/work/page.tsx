@@ -72,7 +72,10 @@ export default function Page() {
       const dir = direction === 'asc' ? 1 : -1;
       const val = (p: Project) => {
         switch (column) {
-          case 'date': return p.date ? new Date(p.date).getFullYear() : 0;
+          case 'date': {
+            // Ordenar por fecha completa (más preciso que por año)
+            return p.date ? new Date(p.date).getTime() : Number.NEGATIVE_INFINITY;
+          }
           case 'title': return p.title.toLowerCase();
           case 'types': return p.types?.map((t) => t.name).join(',').toLowerCase() || '';
           case 'categories': return p.categories?.map((c) => c.name).join(',').toLowerCase() || '';
@@ -157,7 +160,7 @@ export default function Page() {
                   height={600}
                   loading="lazy"
                   decoding="async"
-                  style={{ objectFit: 'cover', width: '100%', height: 'auto' }}
+                  style={{ objectFit: 'cover', width: '100%', height: '100%', display: 'block' }}
                 />
               )}
             </Link>

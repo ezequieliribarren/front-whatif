@@ -59,7 +59,13 @@ export default function Page() {
   const [selectedClients, setSelectedClients] = useState<SelectedClient[]>([]);
   const [scrolled, setScrolled] = useState(false);
   const [dossierUrl, setDossierUrl] = useState<string | null>(null);
-  const [footerInfo, setFooterInfo] = useState<{ direccion?: string; telefono?: string; mail?: string } | null>(null);
+  const [footerInfo, setFooterInfo] = useState<{
+    direccion?: string;
+    telefono?: string;
+    mail?: string;
+    instagram?: string;
+    mapsLink?: string;
+  } | null>(null);
 
   const boxWidth = 324;
   const boxHeight = 486;
@@ -68,12 +74,16 @@ export default function Page() {
 
   useEffect(() => {
     const SCROLL_THRESHOLD = 120;
+    if (isTabletOrMobile) {
+      setScrolled(false);
+      return; // disable scroll-triggered effects on tablet/mobile
+    }
     const handleScroll = () => {
       setScrolled(window.scrollY > SCROLL_THRESHOLD);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isTabletOrMobile]);
 
   // Fetch footer info
   useEffect(() => {
@@ -87,7 +97,14 @@ export default function Page() {
         if (!res.ok) return;
         const data = await res.json();
         const doc = Array.isArray(data?.docs) && data.docs.length > 0 ? data.docs[0] : null;
-        if (doc) setFooterInfo({ direccion: doc.direccion, telefono: doc.telefono, mail: doc.mail });
+        if (doc)
+          setFooterInfo({
+            direccion: doc.direccion,
+            telefono: doc.telefono,
+            mail: doc.mail,
+            instagram: doc.instagram,
+            mapsLink: doc.mapsLink,
+          });
       } catch (e) {
         console.error('Error fetching footer info:', e);
       }
@@ -328,7 +345,7 @@ export default function Page() {
   return (
     <div className={`containerAbout ${scrolled ? 'scrolled' : ''}`}>
       <div className="flex justify-center w-full">
-        <div className="w-full" style={{ width: boxWidth * 4 + 12 }}>
+        <div className="w-full" style={{ width: isTabletOrMobile ? '100%' : (boxWidth * 4 + 12) }}>
           <section className={`flex flex-row w-full relative gap-8 ${styles.sectionAbout} ${scrolled ? styles.sectionScrolled : ''}`}>
             <div className="w-1/2">
               {teamMember?.image?.url ? (
@@ -338,6 +355,13 @@ export default function Page() {
                   onMouseMove={(e) => { if (!isTabletOrMobile && !isTouch) move(e.clientX, e.clientY); }}
                   style={{ position: 'relative', cursor: (!isTabletOrMobile && !isTouch) ? 'none' : 'auto' }}
                 >
+                  {isTabletOrMobile && (
+                    <h1 className="font-light text-gray-800 text-[32px] font-sans" style={{ textAlign: 'left', width: '100%' }}>
+                      <>
+                        <span className="font-bold">Construimos imaginarios</span> colectivos
+                      </>
+                    </h1>
+                  )}
                   <img
                     className="w-full h-auto max-h-[600px] object-cover"
                     alt={teamMember.name}
@@ -347,6 +371,15 @@ export default function Page() {
                 </div>
               ) : (
                 <div>No image</div>
+              )}
+              {/* Títulos para mobile/tablet, arriba y abajo de la imagen */}
+              {/* Título inferior (mobile) */}
+              {isTabletOrMobile && (
+                <h2 className="font-light text-gray-800 text-[32px] text-right font-sans" style={{ width: '100%' }}>
+                  <>
+                    que configuran nuestro <span className="font-bold">cotidiano</span>.
+                  </>
+                </h2>
               )}
             </div>
             <div className="w-1/2 flex flex-col justify-center">
@@ -483,16 +516,44 @@ export default function Page() {
         <div className={styles.footerTop}>
           <div className={styles.footerLeft}>
             {footerInfo?.direccion && (
-              <p className={styles.apiAddress}>{footerInfo.direccion}</p>
+              <p className={styles.apiAddress}>
+                {footerInfo?.mapsLink ? (
+                  <a
+                    href={footerInfo.mapsLink.startsWith('http') ? footerInfo.mapsLink : `https://${footerInfo.mapsLink}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {footerInfo.direccion}
+                  </a>
+                ) : (
+                  footerInfo.direccion
+                )}
+              </p>
             )}
             <p>C/ Matilde Hernández, 28025, Madrid</p>
             <p className={styles.footerEmail}>
               {footerInfo?.mail ? (
                 <a href={`mailto:${footerInfo.mail}`}>{footerInfo.mail}</a>
               ) : (
-                'hi@whatif-arch.com'
+                <a href={`mailto:hi@whatif-arch.com`}>hi@whatif-arch.com</a>
               )}
             </p>
+            {(() => {
+              let url = footerInfo?.instagram || '';
+              if (!url) {
+                const found = selectedClients.find((c) => (c.name || '').toLowerCase().includes('instagram'));
+                url = found?.link || '';
+              }
+              if (!url) return null;
+              const handle = url
+                .replace(/^https?:\/\/(www\.)?instagram\.com\/?/i, '')
+                .replace(/\/?$/, '');
+              return (
+                <p className={styles.footerInstagram}>
+                  <a href={url} target="_blank" rel="noopener noreferrer">@{handle}</a>
+                </p>
+              );
+            })()}
           </div>
           <div className={styles.footerCenter}>
             <div className={styles.footerTagline}>
@@ -506,7 +567,7 @@ export default function Page() {
               {footerInfo?.telefono ? (
                 <a href={`tel:${footerInfo.telefono.replace(/\s+/g, '')}`}>{footerInfo.telefono}</a>
               ) : (
-                '+34 697 266 914'
+                <a href={`tel:+34697266914`}>+34 697 266 914</a>
               )}
             </p>
           </div>

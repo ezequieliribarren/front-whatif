@@ -42,6 +42,7 @@ export default function Page() {
   const [heroSrc, setHeroSrc] = useState<string | null>(null);
   const [showHero, setShowHero] = useState(true);
   const [videoReady, setVideoReady] = useState(false);
+  const [isFadingOut, setIsFadingOut] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const clearHideTimer = () => {
@@ -49,6 +50,22 @@ export default function Page() {
       clearTimeout(hideTimerRef.current);
       hideTimerRef.current = null;
     }
+  };
+
+  const startHeroHide = () => {
+    // Avoid double-trigger
+    if (isFadingOut) return;
+    setIsFadingOut(true);
+    clearHideTimer();
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('heroPlayed', '1');
+      }
+    } catch {}
+    // Wait for fade-out transition then remove
+    setTimeout(() => {
+      setShowHero(false);
+    }, 700);
   };
 
   const router = useRouter();
@@ -75,6 +92,14 @@ export default function Page() {
   }, [backendUrl]);
 
   useEffect(() => {
+    // Skip hero if it already played once
+    try {
+      if (typeof window !== 'undefined' && localStorage.getItem('heroPlayed') === '1') {
+        setShowHero(false);
+        return;
+      }
+    } catch {}
+
     let aborted = false;
     (async () => {
       try {
@@ -134,7 +159,7 @@ export default function Page() {
   useEffect(() => {
     if (showHero && !hideTimerRef.current) {
       hideTimerRef.current = setTimeout(() => {
-        setShowHero(false);
+        startHeroHide();
       }, 3000);
     }
     return () => {
@@ -209,7 +234,14 @@ export default function Page() {
   return (
     <>
       {showHero && (
-        <section className={styles.heroSection}>
+        <section
+          className={styles.heroSection}
+          style={{
+            opacity: isFadingOut ? 0 : 1,
+            transition: 'opacity 700ms ease',
+            pointerEvents: isFadingOut ? 'none' : 'auto',
+          }}
+        >
           <div className={styles.heroVideoWrapper}>
             {heroSrc && (
               <video
@@ -220,15 +252,20 @@ export default function Page() {
                 playsInline
                 autoPlay
                 preload="auto"
-                style={{ opacity: videoReady ? 1 : 0, transition: 'opacity 120ms linear' }}
+                style={{ opacity: videoReady && !isFadingOut ? 1 : 0, transition: 'opacity 600ms ease' }}
+                onPlay={() => {
+                  try {
+                    if (typeof window !== 'undefined') {
+                      localStorage.setItem('heroPlayed', '1');
+                    }
+                  } catch {}
+                }}
                 onLoadedData={() => setVideoReady(true)}
                 onEnded={() => {
-                  clearHideTimer();
-                  setShowHero(false);
+                  startHeroHide();
                 }}
                 onError={() => {
-                  clearHideTimer();
-                  setShowHero(false);
+                  startHeroHide();
                 }}
                 crossOrigin="anonymous"
               />
@@ -237,7 +274,10 @@ export default function Page() {
         </section>
       )}
 
-      <main className={styles.projectList} style={{ display: showHero ? 'none' : 'block' }}>
+      <main
+        className={styles.projectList}
+        style={{ display: showHero && !isFadingOut ? 'none' : 'block' }}
+      >
         {filtered.map((project, index) => {
           const rawUrl = project.imagenDestacada?.url || '';
           const cleanUrl = rawUrl.replace(/\?.*$/, '').replace(/ /g, '%20');

@@ -55,11 +55,20 @@ type Props = {
 
 const CustomPrevArrow = (props: any) => {
   const { className, style, onClick } = props;
+  const { show, move, isTouch, hide } = useCursor();
   return (
     <div
       className={`${className} ${styles.customArrow} ${styles.leftArrow}`}
-      style={{ ...style }}
+      style={{ ...style, cursor: isTouch ? 'pointer' : 'none' }}
       onClick={onClick}
+      onMouseEnter={(e) => {
+        if (!isTouch) {
+          show('', { variant: 'arrow' });
+          move(e.clientX, e.clientY);
+        }
+      }}
+      onMouseMove={(e) => { if (!isTouch) move(e.clientX, e.clientY); }}
+      onMouseLeave={() => { if (!isTouch) hide(); }}
     >
       <img src="/left-arrow.png" alt="Previous" width={32} height={32} />
     </div>
@@ -68,11 +77,20 @@ const CustomPrevArrow = (props: any) => {
 
 const CustomNextArrow = (props: any) => {
   const { className, style, onClick } = props;
+  const { show, move, isTouch, hide } = useCursor();
   return (
     <div
       className={`${className} ${styles.customArrow} ${styles.rightArrow}`}
-      style={{ ...style }}
+      style={{ ...style, cursor: isTouch ? 'pointer' : 'none' }}
       onClick={onClick}
+      onMouseEnter={(e) => {
+        if (!isTouch) {
+          show('', { variant: 'arrow' });
+          move(e.clientX, e.clientY);
+        }
+      }}
+      onMouseMove={(e) => { if (!isTouch) move(e.clientX, e.clientY); }}
+      onMouseLeave={() => { if (!isTouch) hide(); }}
     >
       <img src="/right-arrow.png" alt="Next" width={32} height={32} />
     </div>
@@ -271,6 +289,10 @@ const settings = {
                 aria-selected={lang === 'ES'}
                 className={`${styles.langOption} ${lang === 'ES' ? styles.selected : ''}`}
                 onClick={() => setLang('ES')}
+                onMouseEnter={(e) => { if (!isTouch) { show('', { variant: 'arrow' }); move(e.clientX, e.clientY); } }}
+                onMouseMove={(e) => { if (!isTouch) move(e.clientX, e.clientY); }}
+                onMouseLeave={() => { if (!isTouch) hide(); }}
+                style={{ cursor: isTouch ? 'pointer' : 'none' }}
               >
                 ES
               </button>
@@ -280,6 +302,10 @@ const settings = {
                 aria-selected={lang === 'EN'}
                 className={`${styles.langOption} ${lang === 'EN' ? styles.selected : ''}`}
                 onClick={() => setLang('EN')}
+                onMouseEnter={(e) => { if (!isTouch) { show('', { variant: 'arrow' }); move(e.clientX, e.clientY); } }}
+                onMouseMove={(e) => { if (!isTouch) move(e.clientX, e.clientY); }}
+                onMouseLeave={() => { if (!isTouch) hide(); }}
+                style={{ cursor: isTouch ? 'pointer' : 'none' }}
               >
                 EN
               </button>
@@ -290,7 +316,21 @@ const settings = {
 
       <div className={styles.carouselSection}>
         <div className={styles.backButton}>
-          <button type="button" onClick={handleBack} className={styles.backContent} aria-label="Back">
+          <button
+            type="button"
+            onClick={handleBack}
+            className={styles.backContent}
+            aria-label="Back"
+            onMouseEnter={(e) => {
+              if (!isTouch) {
+                show('', { variant: 'arrow' });
+                move(e.clientX, e.clientY);
+              }
+            }}
+            onMouseMove={(e) => { if (!isTouch) move(e.clientX, e.clientY); }}
+            onMouseLeave={() => { if (!isTouch) hide(); }}
+            style={{ cursor: isTouch ? 'pointer' : 'none' }}
+          >
             <img src="/left-arrow.png" alt="Back" width={28} height={28} />
             <span>back</span>
           </button>
@@ -369,8 +409,11 @@ const settings = {
                     key={type}
                     className={`${styles.menuItem} ${activeType === type ? styles.active : ''}`}
                     onClick={() => setActiveType(type)}
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: isTouch ? 'pointer' : 'none' }}
                     title={labelMap[type]}
+                    onMouseEnter={(e) => { if (!isTouch) { show('', { variant: 'arrow' }); move(e.clientX, e.clientY); } }}
+                    onMouseMove={(e) => { if (!isTouch) move(e.clientX, e.clientY); }}
+                    onMouseLeave={() => { if (!isTouch) hide(); }}
                   >
                     <h3>{labelMap[type]}</h3>
                   </li>

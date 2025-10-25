@@ -1,7 +1,7 @@
 .navbar {
   display: flex;
   justify-content: space-between;
-  align-items: top;
+  align-items: flex-start;
   width: 100%;
   padding: 2rem 4rem;
   background-color: transparent;
@@ -68,13 +68,13 @@
 
 /* Ajustes para páginas de proyecto: sin efecto scroll y links mayormente ocultos */
 .noScrollNav .navbar {
-  position: relative; /* deja de ser fixed en páginas de proyecto */
-  z-index: 10;
-  overflow: hidden; /* recorta lo que se desplace fuera */
+  position: fixed;
+  z-index: 99999;
+  overflow: visible;
 }
 
 .noScrollNav .navLinks {
-  top: -60px; /* ajuste solicitado: un poco más oculto */
+  top: 0;
 }
 
 /* Hover sutil sólo en la página de proyecto */
@@ -218,4 +218,12 @@
 
 /* Overrides for project detail (no scroll; navbar hidden above screen) */
 .noScrollNav { height: 100vh; overflow: hidden; }
-.noScrollNav .navLinks { top: -60px; }
+.noScrollNav .navLinks {
+  top: 0;
+}
+
+/* Allow scrolling on project pages in tablet/mobile */
+@media (max-width: 1024px) {
+  .noScrollNav { height: auto; overflow: auto; }
+}
+

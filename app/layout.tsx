@@ -8,7 +8,39 @@ import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { HiOutlineMenu, HiOutlineX } from 'react-icons/hi';
 import ContactModal from './components/contactModal'; // Importa el componente ContactModal
-import { CursorProvider } from './components/CursorProvider';
+import { CursorProvider, useCursor } from './components/CursorProvider';
+
+function NavLinksWithCursor({ disableNavScroll, isScrollingDown }: { disableNavScroll: boolean; isScrollingDown: boolean }) {
+  const { show, move, isTouch, hide } = useCursor();
+  return (
+    <nav className={`${styles.navLinks} ${!disableNavScroll && isScrollingDown ? styles.linksUp : styles.linksDown}`}>
+      <li>
+        <Link
+          className={styles.link}
+          href="/work"
+          onMouseEnter={(e) => { if (!isTouch) { show('', { variant: 'arrow' }); move((e as any).clientX, (e as any).clientY); } }}
+          onMouseMove={(e) => { if (!isTouch) move((e as any).clientX, (e as any).clientY); }}
+          onMouseLeave={() => { if (!isTouch) hide(); }}
+          style={{ cursor: isTouch ? 'pointer' : 'none' }}
+        >
+          WORK
+        </Link>
+      </li>
+      <li>
+        <Link
+          className={styles.link}
+          href="/about"
+          onMouseEnter={(e) => { if (!isTouch) { show('', { variant: 'arrow' }); move((e as any).clientX, (e as any).clientY); } }}
+          onMouseMove={(e) => { if (!isTouch) move((e as any).clientX, (e as any).clientY); }}
+          onMouseLeave={() => { if (!isTouch) hide(); }}
+          style={{ cursor: isTouch ? 'pointer' : 'none' }}
+        >
+          ABOUT
+        </Link>
+      </li>
+    </nav>
+  );
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -48,10 +80,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   // Footer se muestra solo en /about; no se renderiza aquí
 
   useEffect(() => {
-    if (disableNavScroll) {
+    if (disableNavScroll || isMobile) {
       setScrollY(0);
       setIsScrollingDown(false);
-      return; // Do not attach scroll listeners on project pages
+      return; // Do not attach scroll listeners on project pages or on mobile/tablet
     }
 
     setScrollY(window.scrollY);
@@ -82,7 +114,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [disableNavScroll]);
+  }, [disableNavScroll, isMobile]);
 
   return (
     <html lang="en">
@@ -100,10 +132,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
 
           {/* Nav desktop */}
-          <nav className={`${styles.navLinks} ${!disableNavScroll && isScrollingDown ? styles.linksUp : styles.linksDown}`}>
-            <li><Link className={styles.link} href="/work">WORK</Link></li>
-            <li><Link className={styles.link} href="/about">ABOUT</Link></li>
-          </nav>
+          <NavLinksWithCursor disableNavScroll={disableNavScroll} isScrollingDown={isScrollingDown} />
 
           {/* Icono hamburguesa */}
           <div className={styles.menuIcon} onClick={() => setMenuOpen(!menuOpen)}>
@@ -138,3 +167,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+

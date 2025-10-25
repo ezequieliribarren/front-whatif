@@ -193,7 +193,7 @@
 .formerNamesContainer {
   display: flex;
   justify-content: center !important;
-  text-align: center !important;
+  text-align: left !important;
   flex-wrap: wrap;
   gap: 10px;
   font-size: 16px;
@@ -309,9 +309,13 @@ padding: 3rem;
   font-size: 34px; 
   font-weight: 300;
   margin: 0;
-  margin-bottom: 6rem;
+  margin-bottom: 2rem;
   margin-right: 2rem;
 }
+
+/* Footer contact spacing tweaks */
+.footerEmail { margin-top: 12px !important; }
+.footerInstagram { margin-top: 6px; }
 
 /* layout superior del footer */
 .footerTop {
@@ -342,7 +346,9 @@ padding: 3rem;
 }
 
 .footerLeft { justify-self: start; }
-.footerLeft:has(.apiAddress) > p:first-child { display: none; }
+.footerLeft:has(.apiAddress) > p:first-child { display: block; }
+/* Hide legacy default address paragraph when clickable address is present */
+.footerLeft .apiAddress + p { display: none; }
 
 .apiAddress {}
 .footerCenter { justify-self: center; text-align: center; }
@@ -375,26 +381,29 @@ padding: 3rem;
 /* Responsive */
 @media (max-width: 1024px) {
   .containerAbout {
-    height: 90rem;
+    height: auto; /* permitir scroll natural en mobile */
     padding-top: var(--nav-height, 8rem); /* espacio menor bajo navbar en mobile */
   }
 
   .sectionAbout {
-    flex-direction: column !important;
-    gap: 24px !important;
-    align-items: flex-start !important;
-    padding-top: 0 !important;
-    max-height: none !important;
-    height: 170rem !important;
+    display: flex;
+        flex-direction: column !important;
+        gap: 16px !important;
+        align-items: center !important;
+        padding-top: 0 !important;
+        max-height: none !important;
+        height: auto !important;
   }
 
   .sectionAbout h1 {
-    height: 5rem !important;
+    height: auto !important;
+        text-align: left !important;
   }
 
   .sectionAbout h2 {
-    height: 2rem !important;
-    margin-bottom: 2rem;
+    height: auto !important;
+        margin-bottom: 1rem;
+        text-align: right !important;
   }
 
   .quienesSomos {
@@ -425,9 +434,21 @@ padding: 3rem;
     padding: 0 1.5rem;
   }
 
+  /* Desactivar efectos/animaciones en grid de equipo (solo tablet/mobile) */
+  .imageContainer { transition: none !important; }
+  .imageContainer .image { filter: none !important; transition: none !important; }
+  .overlay, .svgOverlay { display: none !important; }
+  .infoContainer { transition: none !important; }
+
   .footerTop { grid-template-columns: 1fr; gap: 16px; }
-  .footerTagline { justify-content: center; }
+  /* Ocultar tagline (explore / build) solo en mobile/tablet */
+  .footerCenter { display: none !important; }
+  .footerTagline { display: none !important; }
   .footerTagline h3 { font-size: 14px; }
+
+  /* Alinear todo el contenido del footer con el título Contact (a la derecha) */
+  .footerLeft { justify-self: end; text-align: right; }
+  .footerRight { justify-self: end; text-align: right; }
 
   .sectionFormer {
     padding: 1rem;
@@ -441,6 +462,22 @@ padding: 3rem;
     padding: 1rem;
   }
 
+}
+
+/* Ajustes móviles/tablet adicionales para la cabecera About */
+@media (max-width: 1024px) {
+  /* Forzar ancho completo y quitar márgenes laterales perceptibles */
+  .containerAbout { padding-left: 0; padding-right: 0; }
+  .sectionAbout > div { width: 100% !important; }
+
+  /* Títulos originales del bloque de texto no se muestran en mobile/tablet */
+  .sectionAbout > div:last-child h1,
+  .sectionAbout > div:last-child h2 { display: none !important; }
+
+  /* Imagen sin efectos y al 100% */
+  .imageContainer { width: 100% !important; }
+  .image { width: 100% !important; height: auto; max-width: 100vw; transition: none !important; }
+  .overlay { display: none !important; }
 }
 
 @media (max-width: 1024px) {
@@ -485,3 +522,11 @@ padding: 3rem;
     gap: 12px;
   }
 }
+
+
+/* Utilidad para mostrar solo en mobile/tablet */
+.mobileOnly { display: none; }
+@media (max-width: 1024px) { .mobileOnly { display: block; } }
+
+
+
