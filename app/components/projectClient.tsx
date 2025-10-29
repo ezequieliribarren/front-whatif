@@ -130,6 +130,10 @@ const settings = {
   prevArrow: <CustomPrevArrow />,
   nextArrow: <CustomNextArrow />,
   afterChange: (index: number) => setCurrentSlide(index),
+  autoplay: true,
+  autoplaySpeed: 4000,
+  pauseOnHover: true,
+  pauseOnFocus: true,
 };
 
 

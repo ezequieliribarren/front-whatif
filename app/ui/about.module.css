@@ -313,6 +313,11 @@ padding: 3rem;
   margin-right: 2rem;
 }
 
+/* Alinear el título "Quiénes somos" a la derecha en desktop */
+.quienesSomos h2 {
+  text-align: right;
+}
+
 /* Footer contact spacing tweaks */
 .footerEmail { margin-top: 12px !important; }
 .footerInstagram { margin-top: 6px; }
@@ -409,6 +414,11 @@ padding: 3rem;
   .quienesSomos {
     flex-direction: column-reverse !important;
     text-align: center;
+  }
+  /* Forzar el título a la derecha en mobile/tablet */
+  .quienesSomos h2 {
+    text-align: right !important;
+    width: 100%;
   }
 
   .quienesSomos div {

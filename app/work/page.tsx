@@ -122,25 +122,58 @@ export default function Page() {
 
       {!isTabletOrMobile && (
         <div className={`${styles.row} ${styles.headerRow}`}>
-          {['date', 'title', 'types', 'categories'].map((col) => (
-            <div
-              key={col}
-              className={`${styles.col} ${styles[`col${col.charAt(0).toUpperCase() + col.slice(1)}`]}`}
+          <div className={`${styles.col} ${styles.colYear}`}>
+            <h4
+              onClick={() =>
+                setSortState((p) => ({
+                  column: 'date',
+                  direction: p.column === 'date' && p.direction === 'asc' ? 'desc' : 'asc',
+                }))
+              }
+              className={styles.sortableHeader}
             >
-              <h4
-                onClick={() =>
-                  setSortState((p) => ({
-                    column: col as SortState['column'],
-                    direction: p.column === col && p.direction === 'asc' ? 'desc' : 'asc',
-                  }))
-                }
-                className={styles.sortableHeader}
-              >
-                {col}
-                {getSortIndicator(col as SortState['column'])}
-              </h4>
-            </div>
-          ))}
+              date{getSortIndicator('date')}
+            </h4>
+          </div>
+          <div className={`${styles.col} ${styles.colTitle}`}>
+            <h4
+              onClick={() =>
+                setSortState((p) => ({
+                  column: 'title',
+                  direction: p.column === 'title' && p.direction === 'asc' ? 'desc' : 'asc',
+                }))
+              }
+              className={styles.sortableHeader}
+            >
+              title{getSortIndicator('title')}
+            </h4>
+          </div>
+          <div className={`${styles.col} ${styles.colType}`}>
+            <h4
+              onClick={() =>
+                setSortState((p) => ({
+                  column: 'types',
+                  direction: p.column === 'types' && p.direction === 'asc' ? 'desc' : 'asc',
+                }))
+              }
+              className={styles.sortableHeader}
+            >
+              types{getSortIndicator('types')}
+            </h4>
+          </div>
+          <div className={`${styles.col} ${styles.colCategory}`}>
+            <h4
+              onClick={() =>
+                setSortState((p) => ({
+                  column: 'categories',
+                  direction: p.column === 'categories' && p.direction === 'asc' ? 'desc' : 'asc',
+                }))
+              }
+              className={styles.sortableHeader}
+            >
+              categories{getSortIndicator('categories')}
+            </h4>
+          </div>
           <div className={`${styles.col} ${styles.colImg}`} />
         </div>
       )}

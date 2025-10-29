@@ -190,7 +190,10 @@
 }
 
 @media (max-width: 1024px) {
-
+  /* Reducir espacio superior general en la home (móvil/tablet) */
+  .projectList {
+    padding-top: calc(var(--nav-height, 8rem) + 1rem);
+  }
   .projectDetails {
     flex-direction: row;
     flex-wrap: wrap;
@@ -210,7 +213,7 @@
 
   .projectCard {
     flex-direction: column !important;
-    margin-top: 4rem;
+    margin-top: 1.5rem;
     padding: 0;
     margin: 0;
   }
@@ -227,7 +230,7 @@
 
   .projectCardImage {
     width: 100%;
-    height: auto;
+    height: 100% !important; /* asegurar que la imagen llene el contenedor */
     object-fit: cover;
   }
 
@@ -243,6 +246,7 @@
     padding: 1.5rem 1rem;
     background-color: #fff;
     margin-top: 1rem !important;
+    width: 100% !important;
   }
 
   .projectDetails {
@@ -261,21 +265,21 @@
   }
 
 .projectCardImage{
-  /* Mantener imagen dentro del 50% asignado */
+  /* Mantener imagen dentro del contenedor visible */
   width: 100%;
-  height: auto !important;
+  height: 100% !important;
   object-fit: cover;
 }
 
 
   .overlay {
     top: auto !important;
-    right: auto !important;
-    left: 0 !important;
-    bottom: 0 !important;
+    left: auto !important;
+    right: 8px !important;
+    bottom: 8px !important;
     position: absolute;
-    width: 90px;
-    height: 90px !important;
+    width: 56px;
+    height: 56px !important;
     backdrop-filter: blur(9px);
     display: flex;
     align-items: center;
@@ -293,6 +297,22 @@
   /* Anular el hover en mobile */
   .imageContainer:hover .overlay {
     opacity: 1;
+  }
+
+  /* Reducir el tamaño del ícono + dentro del blur en móvil */
+  .overlay svg,
+  .overlay .plusIcon {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  /* Eliminar desplazamientos laterales/verticales para móvil */
+  .leftImage,
+  .rightImage {
+    margin-top: 0 !important;
+    min-height: auto !important;
+    padding-left: 0;
+    padding-right: 0;
   }
 }
 /* Position project info beside image on hover (desktop) */

@@ -130,7 +130,7 @@
   align-items: center;
   gap: 3rem;
   transition: right 0.4s ease-in-out;
-  z-index: 1000;
+  z-index: 100000; /* por encima del navbar (99999) */
   padding: 2rem;
 }
 
@@ -157,7 +157,7 @@
   background: transparent;
   border: none;
   color: black;
-  z-index: 1002;
+  z-index: 100002; /* asegurar clic por encima de otros elementos */
   cursor: pointer;
 }
 

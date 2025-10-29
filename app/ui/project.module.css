@@ -30,7 +30,7 @@
   }
 
 .title {
-  font-size: 26px;
+  font-size: 60px; /* ~45pt en desktop */
   font-weight: bold;
   text-transform: uppercase;
   }
@@ -444,3 +444,9 @@
 
 
 
+/* Mantener el tamaño del título en móvil/tablet */
+@media (max-width: 1024px) {
+  .title {
+    font-size: 26px;
+  }
+}

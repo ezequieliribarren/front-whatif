@@ -8,7 +8,10 @@
 }
 
 .row {
-  display: flex;
+  display: grid;
+  /* Columns: Year | Title (flex) | Types | Categories | Img (flex) */
+  grid-template-columns: 8rem minmax(20rem, 1fr) 20rem 20rem minmax(0, 1fr);
+  column-gap: 3rem;
   border-bottom: 1px solid black;
   height: 5.57rem;
   align-items: center;
@@ -34,19 +37,17 @@
 }
 
 .col {
-  margin: 0 1rem;
+  margin: 0; /* grid manages spacing */
   font-size: 1rem;
   z-index: 2;
 }
 
 .colYear {
-  width: 8rem;
+  /* fixed by grid column */
 }
 
 .colTitle {
-  flex: 1 1 25rem;
-  min-width: 20rem;
-  margin-right: 3rem;
+  min-width: 0; /* allow ellipsis to work in grid */
 }
 
 .colTitle h2 {
@@ -59,12 +60,10 @@
 
 .colType {
   width: 20rem;
-  margin-right: 4rem;
 }
 
 .colCategory {
   width: 20rem;
-  margin-right: 4rem;
 }
 
 .titleLink {
@@ -112,10 +111,8 @@
   right: 0;
   top: 0;
   height: 100%;
-  /* ocupar el espacio restante y pegarse a la derecha */
-  flex: 1 1 auto;
+  /* last grid column grows */
   width: auto;
-  margin-left: auto;
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -152,26 +149,11 @@
 
 /* Imagen plus centrada */
 .colImg::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 58px;
-  height: 58px;
-  background-image: url('/plus.png');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-  transform: translate(-50%, -50%);
-  z-index: 6;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.6s ease;
+  /* Sin ícono plus en Work */
+  content: none !important;
 }
 
-.row:not(.headerRow):hover .colImg::after {
-  opacity: 1;
-}
+.row:not(.headerRow):hover .colImg::after { opacity: 0; }
 
 .plusIcon {
   font-size: 3rem;
@@ -185,7 +167,8 @@
   margin-bottom: 16px;
   background: #fff;
   width: 100%;
-  padding: 0 1.5rem;
+  /* Quitar padding horizontal para que la imagen coincida con el borde */
+  padding: 0;
   box-sizing: border-box;
   border-top: 1px solid black;
 }
@@ -202,24 +185,11 @@
 }
 
 /* Plus overlay centered on mobile image (like original) */
-.cardImgMobile::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 58px;
-  height: 58px;
-  background-image: url('/plus.png');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-  transform: translate(-50%, -50%);
-  z-index: 2;
-  pointer-events: none;
-}
+.cardImgMobile::after { content: none !important; }
 
 .cardInfoMobile {
-  padding: 16px;
+  /* Mover el padding horizontal aquí para mantener márgenes del texto */
+  padding: 16px 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -276,7 +246,7 @@
     text-transform: uppercase;
     font-weight: 600;
     color: black;
-    font-size: 24px;
+    font-size: 22px; /* -2px en mobile */
   }
 
   /* Solo la category en uppercase */

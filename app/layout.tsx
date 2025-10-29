@@ -124,7 +124,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className={`${styles.logoWrapper} ${!disableNavScroll && isScrollingDown ? styles.logoUp : ''}`}>
             <Link href="/">
               <img
-                className={`${styles.logo} ${isMobile ? styles.logoMobile : ''} ${disableNavScroll ? styles.logoHidden : ''}`}
+                className={`${styles.logo} ${isMobile ? styles.logoMobile : ''}`}
                 src={isMobile ? '/logo-simple.png' : '/logo.png'}
                 alt="Logo"
               />
@@ -134,10 +134,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {/* Nav desktop */}
           <NavLinksWithCursor disableNavScroll={disableNavScroll} isScrollingDown={isScrollingDown} />
 
-          {/* Icono hamburguesa */}
-          <div className={styles.menuIcon} onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? <HiOutlineX size={40} /> : <HiOutlineMenu size={40} />}
-          </div>
+          {/* Icono hamburguesa (oculto cuando el menú está abierto para evitar doble 'X') */}
+          {!menuOpen && (
+            <div className={styles.menuIcon} onClick={() => setMenuOpen(true)}>
+              <HiOutlineMenu size={40} />
+            </div>
+          )}
         </div>
 
         {/* Menú lateral mobile */}

@@ -538,7 +538,17 @@ export default function Page() {
                 <a href={`mailto:hi@whatif-arch.com`}>hi@whatif-arch.com</a>
               )}
             </p>
-            {(() => {
+        
+          </div>
+          <div className={styles.footerCenter}>
+            <div className={styles.footerTagline}>
+              <h3>e x p l o r e<br /> p r e s e n t(s)</h3>
+              <span>/</span>
+              <h3>b u i l d<br /> f u t u r e s</h3>
+            </div>
+          </div>
+          <div className={styles.footerRight}>
+              {(() => {
               let url = footerInfo?.instagram || '';
               if (!url) {
                 const found = selectedClients.find((c) => (c.name || '').toLowerCase().includes('instagram'));
@@ -554,22 +564,6 @@ export default function Page() {
                 </p>
               );
             })()}
-          </div>
-          <div className={styles.footerCenter}>
-            <div className={styles.footerTagline}>
-              <h3>e x p l o r e<br /> p r e s e n t(s)</h3>
-              <span>/</span>
-              <h3>b u i l d<br /> f u t u r e s</h3>
-            </div>
-          </div>
-          <div className={styles.footerRight}>
-            <p>
-              {footerInfo?.telefono ? (
-                <a href={`tel:${footerInfo.telefono.replace(/\s+/g, '')}`}>{footerInfo.telefono}</a>
-              ) : (
-                <a href={`tel:+34697266914`}>+34 697 266 914</a>
-              )}
-            </p>
           </div>
         </div>
         <div className={styles.footerBottom}>
