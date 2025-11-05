@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 // Removed Next.js Image; using native <img>
 import { useRouter } from 'next/navigation';
 import styles from './ui/home.module.css';
+import Link from 'next/link';
+import aboutStyles from './ui/about.module.css';
 import { useCursor } from './components/CursorProvider';
 
 type ProjectCategory = {
@@ -372,6 +374,14 @@ export default function Page() {
             </section>
           );
         })}
+        <section className="flex justify-center py-10">
+          <Link
+            href="/work"
+            className={`flex items-center gap-2.5 px-4 py-1 border border-black text-black font-serif hover:bg-black hover:text-white transition-colors rounded ${aboutStyles.buttonSelected} ${aboutStyles.mobileOnly}`}
+          >
+            <span className="text-lg font-normal">Our Work</span>
+          </Link>
+        </section>
       </main>
     </>
   );
