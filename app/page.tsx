@@ -23,6 +23,7 @@ type Project = {
   title: string;
   slug: string;
   featured?: boolean;
+  apagar?: boolean;
   categories?: ProjectCategory[];
   types?: ProjectType[];
   imagenDestacada?: {
@@ -85,8 +86,11 @@ export default function Page() {
         return ao - bo;
       });
 
-      setProjects(sorted);
-      setFiltered(sorted);
+      // Exclude projects explicitly marked to hide (apagar === true)
+      const visible = sorted.filter((p: any) => p?.apagar !== true);
+
+      setProjects(visible);
+      setFiltered(visible);
     }
     fetchProjects();
   }, [backendUrl]);

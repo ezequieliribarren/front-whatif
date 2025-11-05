@@ -22,6 +22,7 @@ type Project = {
   title: string;
   slug: string;
   date?: string;
+  apagar?: boolean;
   categories?: CategoryOrType[];
   types?: CategoryOrType[];
   imagenDestacada?: Media;
@@ -56,7 +57,10 @@ export default function Page() {
     async function fetchProjects() {
       const res = await fetch(`${backendUrl}/api/projects?depth=1&limit=1000`, { cache: 'no-store' });
       const data = await res.json();
-      setProjects(data.docs || []);
+      const docs: Project[] = Array.isArray(data?.docs) ? data.docs : [];
+      // Exclude projects explicitly marked to hide (apagar === true)
+      const visible = docs.filter((p: any) => p?.apagar !== true);
+      setProjects(visible);
     }
     if (backendUrl) fetchProjects();
   }, [backendUrl]);

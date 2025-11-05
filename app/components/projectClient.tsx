@@ -268,7 +268,7 @@ const settings = {
             {project.client && <p><strong>Client:</strong> {project.client}</p>}
             {hasDetail && <p><strong>{detailLabel}:</strong> {detailPlain}</p>}
             {project.area && <p><strong>Built area:</strong> {project.area}</p>}
-            {project.agency && <p><strong>Agencia:</strong> {project.agency}</p>}
+            {project.agency && <p><strong>Agency:</strong> {project.agency}</p>}
             {project.awards && <p><strong>Premios:</strong> {project.awards}</p>}
           </div>
 
