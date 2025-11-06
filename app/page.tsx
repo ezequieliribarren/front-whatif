@@ -42,34 +42,14 @@ export default function Page() {
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [visibleProjects, setVisibleProjects] = useState<string[]>([]);
 
+  // Sticky hero video state
   const [heroSrc, setHeroSrc] = useState<string | null>(null);
-  const [showHero, setShowHero] = useState(true);
-  const [videoReady, setVideoReady] = useState(false);
-  const [isFadingOut, setIsFadingOut] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const clearHideTimer = () => {
-    if (hideTimerRef.current) {
-      clearTimeout(hideTimerRef.current);
-      hideTimerRef.current = null;
-    }
-  };
-
-  const startHeroHide = () => {
-    // Avoid double-trigger
-    if (isFadingOut) return;
-    setIsFadingOut(true);
-    clearHideTimer();
-    try {
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('heroPlayed', '1');
-      }
-    } catch {}
-    // Wait for fade-out transition then remove
-    setTimeout(() => {
-      setShowHero(false);
-    }, 700);
-  };
+  const [viewportH, setViewportH] = useState<number>(typeof window !== 'undefined' ? window.innerHeight : 800);
+  const [hRatio, setHRatio] = useState<number>(1);
+  const [heroOpacity, setHeroOpacity] = useState<number>(1);
+  const [trackH, setTrackH] = useState<number>(viewportH * 2.4);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
 
   const router = useRouter();
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || '';
@@ -77,35 +57,36 @@ export default function Page() {
 
   useEffect(() => {
     async function fetchProjects() {
-      const url = `${backendUrl}/api/projects?depth=1&limit=1000&where[featured][equals]=true&sort=order`;
+      const url = `${backendUrl}/api/projects?depth=1&limit=1000&locale=all&sort=order`;
       const res = await fetch(url, { cache: 'no-store' });
       const data = await res.json();
 
       const docs: Project[] = Array.isArray(data?.docs) ? data.docs : [];
-      const sorted = [...docs].sort((a: any, b: any) => {
+
+      const isFeaturedTruthy = (val: any) => {
+        if (val === true) return true;
+        if (val === 1) return true;
+        if (typeof val === 'string') return ['true', '1', 'on', 'yes'].includes(val.toLowerCase());
+        return false;
+      };
+
+      // Keep only Featured and not apagado
+      const featured = docs.filter((p: any) => isFeaturedTruthy((p as any).featured) && p?.apagar !== true);
+
+      // Order by optional `order` field
+      const sorted = featured.sort((a: any, b: any) => {
         const ao = typeof a.order === 'number' ? a.order : 1e9;
         const bo = typeof b.order === 'number' ? b.order : 1e9;
         return ao - bo;
       });
 
-      // Exclude projects explicitly marked to hide (apagar === true)
-      const visible = sorted.filter((p: any) => p?.apagar !== true);
-
-      setProjects(visible);
-      setFiltered(visible);
+      setProjects(sorted);
+      setFiltered(sorted);
     }
     fetchProjects();
   }, [backendUrl]);
 
   useEffect(() => {
-    // Skip hero if it already played once
-    try {
-      if (typeof window !== 'undefined' && localStorage.getItem('heroPlayed') === '1') {
-        setShowHero(false);
-        return;
-      }
-    } catch {}
-
     let aborted = false;
     (async () => {
       try {
@@ -128,50 +109,63 @@ export default function Page() {
         const base =
           process.env.NEXT_PUBLIC_BACKEND_URL ||
           (process.env.PAYLOAD_API_URL ? process.env.PAYLOAD_API_URL.replace(/\/api$/, '') : undefined);
-        if (!base) {
-          setShowHero(false);
-          return;
-        }
+        if (!base) return;
         const res = await fetch(`${base}/api/globals/video-inicial`, { cache: 'no-store' });
-        if (!res.ok) {
-          setShowHero(false);
-          return;
-        }
+        if (!res.ok) return;
         const data = await res.json();
         const v = data?.video?.url ? `${base}${data.video.url}` : null;
-        if (!aborted) {
-          if (v) setHeroSrc(v);
-          else setShowHero(false);
-        }
+        if (!aborted && v) setHeroSrc(v);
       } catch {
-        if (!aborted) setShowHero(false);
+        // ignore
       }
     })();
-    return () => {
-      aborted = true;
-    };
+    return () => { aborted = true; };
   }, []);
 
+  // Track viewport height and mobile breakpoint
   useEffect(() => {
-    if (showHero) {
-      const prev = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = prev;
-      };
-    }
-  }, [showHero]);
-
-  useEffect(() => {
-    if (showHero && !hideTimerRef.current) {
-      hideTimerRef.current = setTimeout(() => {
-        startHeroHide();
-      }, 3000);
-    }
-    return () => {
-      clearHideTimer();
+    const onResize = () => {
+      setViewportH(window.innerHeight);
+      setIsMobile(window.innerWidth <= 1024);
     };
-  }, [showHero]);
+    onResize();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  // Sticky hero animation: linear shrink to 20% then fade
+  useEffect(() => {
+    const minRatio = 0.2; // 20% of viewport
+    const minH = Math.max(40, Math.round(viewportH * minRatio));
+    const shrinkDist = Math.max(80, Math.round(viewportH * 0.22)); // quick dock to 20%
+    const fadeRange = Math.round(viewportH * 0.45); // then fade to 0
+    const totalDist = shrinkDist + fadeRange;
+    setTrackH(viewportH + totalDist); // sticky track height so it stays pinned
+    let ticking = false;
+    const update = () => {
+      const y = Math.max(0, Math.min(totalDist, window.scrollY));
+      if (y <= shrinkDist) {
+        const ratio = 1 - (y / Math.max(1, shrinkDist)) * (1 - minRatio);
+        setHRatio(ratio);
+        setHeroOpacity(1);
+      } else {
+        const prog = Math.min(1, (y - shrinkDist) / Math.max(1, fadeRange));
+        const ratio = Math.max(0, minRatio * (1 - prog));
+        setHRatio(ratio);
+        setHeroOpacity(1 - prog);
+      }
+      ticking = false;
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(update);
+        ticking = true;
+      }
+    };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [viewportH, isMobile]);
 
   useEffect(() => {
     const base =
@@ -238,52 +232,51 @@ export default function Page() {
   };
 
   return (
-    <>
-      {showHero && (
-        <section
-          className={styles.heroSection}
-          style={{
-            opacity: isFadingOut ? 0 : 1,
-            transition: 'opacity 700ms ease',
-            pointerEvents: isFadingOut ? 'none' : 'auto',
-          }}
-        >
-          <div className={styles.heroVideoWrapper}>
-            {heroSrc && (
-              <video
-                ref={videoRef}
-                className={styles.heroVideo}
-                src={heroSrc}
-                muted
-                playsInline
-                autoPlay
-                preload="auto"
-                style={{ opacity: videoReady && !isFadingOut ? 1 : 0, transition: 'opacity 600ms ease' }}
-                onPlay={() => {
-                  try {
-                    if (typeof window !== 'undefined') {
-                      localStorage.setItem('heroPlayed', '1');
-                    }
-                  } catch {}
-                }}
-                onLoadedData={() => setVideoReady(true)}
-                onEnded={() => {
-                  startHeroHide();
-                }}
-                onError={() => {
-                  startHeroHide();
-                }}
-                crossOrigin="anonymous"
-              />
-            )}
-          </div>
-        </section>
+    <div className={styles.homeWrapper} style={{ ['--maskH' as any]: `${Math.round(viewportH * hRatio)}px` }}>
+      {heroSrc && (
+        <div className={styles.heroTrack} style={{ height: `${trackH}px`, ['--maskH' as any]: `${Math.round(viewportH * hRatio)}px` }}>
+          <section className={styles.stickyHero}>
+            <div className={styles.heroInner}>
+              <div
+                className={styles.heroViewport}
+                style={{ ['--maskH' as any]: `${Math.round(viewportH * hRatio)}px`, ['--heroOpacity' as any]: heroOpacity }}
+              >
+                {(() => {
+                  const useContain = hRatio < 0.8; // when container starts shrinking, scale video instead of cropping
+                  const videoClass = `${styles.stickyVideo} ${useContain ? styles.fitContain : ''}`;
+                  return (
+                    <video
+                      ref={videoRef}
+                      className={videoClass}
+                      src={heroSrc}
+                      muted
+                      playsInline
+                      autoPlay
+                      loop
+                      preload="auto"
+                      crossOrigin="anonymous"
+                    />
+                  );
+                })()}
+                {heroOpacity > 0.95 && (
+                  <button
+                    className={styles.scrollCue}
+                    aria-label="Scroll down"
+                    title="Scroll"
+                    onClick={() => window.scrollTo({ top: viewportH + 1, behavior: 'smooth' })}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+            </div>
+          </section>
+        </div>
       )}
 
-      <main
-        className={styles.projectList}
-        style={{ display: showHero && !isFadingOut ? 'none' : 'block' }}
-      >
+      <main className={styles.projectList}>
         {filtered.map((project, index) => {
           const rawUrl = project.imagenDestacada?.url || '';
           const cleanUrl = rawUrl.replace(/\?.*$/, '').replace(/ /g, '%20');
@@ -383,6 +376,6 @@ export default function Page() {
           </Link>
         </section>
       </main>
-    </>
+    </div>
   );
 }

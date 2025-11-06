@@ -11,20 +11,19 @@
 .projectList {
   display: flex;
   flex-direction: column;
-  padding-top: 30rem;
+  padding-top: 0;
 }
 
 /* Hero video section */
+/* Legacy fixed hero (no longer used) */
 .heroSection {
   position: fixed;
   inset: 0;
   z-index: 9999;
   padding-top: 0 !important;
   margin: 0;
-  background: #fff; /* bloquea contenido hasta que cargue el primer frame */
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: #fff;
+  display: none;
 }
 
 .heroVideoWrapper {
@@ -41,6 +40,93 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* New sticky hero that shrinks with scroll */
+.heroTrack {
+  position: relative;
+  width: 100%;
+  background: #fff; /* keep white behind video at all times */
+}
+
+.stickyHero {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 100001; /* above navbar (99999) and mobile menu (100000) */
+  background: transparent;
+  overflow: hidden;
+  will-change: transform, opacity;
+  padding-top: 0 !important; /* override global section padding */
+}
+
+.heroInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Visible window that crops the video height without deforming it */
+.heroViewport {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: var(--maskH, 100vh);
+  overflow: hidden;
+  opacity: var(--heroOpacity, 1);
+  transition: height 220ms ease-out, opacity 260ms ease-out;
+  background: #fff; /* ensure no black bands when video letterboxes */
+}
+
+.stickyVideo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; /* follow viewport window height */
+  object-fit: cover;
+  object-position: center top;
+  background: #fff; /* avoid grey/black when letterboxed */
+}
+
+/* Switch to contain so the full video scales down without cropping */
+.fitContain { object-fit: contain; }
+
+/* Remove default top padding so first project sticks under hero */
+.projectList > section { padding-top: 0 !important; }
+
+/* Pull project list up under the shrinking hero so first project appears immediately */
+.projectList {
+  margin-top: calc(-100vh + var(--maskH, 100vh));
+}
+
+/* Optional wrapper hook in case we need positioning */
+.homeWrapper { position: relative; }
+
+.scrollCue {
+  position: absolute;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.85);
+  color: #000;
+  border: none;
+  border-radius: 999px;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  animation: bounce 1.3s infinite ease-in-out;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, -8px); }
 }
 
 /* Removed overlay/title/flash for clean preloader */
@@ -67,14 +153,14 @@
   flex-direction: row-reverse;
   padding-left: 2rem;
   height: 100% !important;
-  margin-top: -20rem;
+  margin-top: 0;
   min-height: 50rem !important;
 }
 
 .rightImage {
   flex-direction: row;
   padding-right: 2rem;
-  margin-top: -20rem;
+  margin-top: 0;
   min-height: 50rem !important;
 
 }
