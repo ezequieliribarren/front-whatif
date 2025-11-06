@@ -37,7 +37,8 @@ type Project = {
   detailLabel_en?: string;
   detailLabel_es?: string;
   area?: string;
-  agency?: string;
+  // `agency` may arrive as a plain string or a Lexical rich-text object
+  agency?: any;
   awards?: string;
   photos?: Media[];
   drawings?: Media[];
@@ -246,6 +247,27 @@ const settings = {
   };
   const detailLabel = getDetailLabel(project, lang);
 
+  // Coerce fields that may be Lexical-rich-text or strings into plain text
+  const coerceRichToPlain = (value: any, l: Language): string => {
+    if (!value) return '';
+    if (typeof value === 'string') return value.trim();
+    const lower = l.toLowerCase();
+    // Try localized variants if the value is a map
+    if (typeof value === 'object') {
+      const localized = value[lower] ?? value[l];
+      if (localized) return coerceRichToPlain(localized, l);
+      // Try Lexical shape
+      const maybeRoot = value.root?.children ? value : value.root ? { root: value.root } : null;
+      if (maybeRoot?.root?.children) {
+        const filtered = filterLexicalByLang(maybeRoot, l) || maybeRoot;
+        return toPlainText(filtered.root.children);
+      }
+      // Fallback: array of strings
+      if (Array.isArray(value)) return value.filter(Boolean).join(' · ');
+    }
+    return '';
+  };
+
   return (
     <section className={styles.container}>
       <aside className={styles.sidebar}>
@@ -268,7 +290,10 @@ const settings = {
             {project.client && <p><strong>Client:</strong> {project.client}</p>}
             {hasDetail && <p><strong>{detailLabel}:</strong> {detailPlain}</p>}
             {project.area && <p><strong>Built area:</strong> {project.area}</p>}
-            {project.agency && <p><strong>Agency:</strong> {project.agency}</p>}
+            {(() => {
+              const agencyText = coerceRichToPlain(project.agency, lang);
+              return agencyText ? <p><strong>Agency:</strong> {agencyText}</p> : null;
+            })()}
             {project.awards && <p><strong>Premios:</strong> {project.awards}</p>}
           </div>
 
