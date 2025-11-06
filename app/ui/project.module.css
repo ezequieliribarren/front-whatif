@@ -1,18 +1,18 @@
 .container {
   display: flex;
-  height: 100vh;
-  background: white;
-  padding-top: 0 !important; /* evitar padding global del section */
-  position: fixed; /* cubrir desde el inicio, por encima del navbar */
-  top: 0;
-  left: 0;
+  min-height: 100vh;
+  background: #fff;
+  padding-top: var(--nav-height, 8rem) !important; /* deja espacio para el navbar fijo */
+  position: relative; /* contenido normal, debajo del navbar */
+  top: auto;
+  left: auto;
   width: 100%;
   z-index: 1001; /* mayor que la barra de navegación */
   }
 
 .sidebar {
   width: 30%;
-  height: 100vh;
+  height: calc(100vh - var(--nav-height, 8rem));
   padding: 3rem 2rem;
   display: flex;
   flex-direction: column;
@@ -21,12 +21,14 @@
   font-size: 14px;
   overflow: hidden; /* sin scroll interno en la página de proyecto */
   box-sizing: border-box;
-  background: #fff;
+  background: #fff;
+
   }
 
 .year {
   font-size: 13px;
-  color: #666;
+  color: #666;
+
   }
 
 .title {
@@ -37,18 +39,21 @@
 
 .category {
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 500;
+
   }
 
 .subcategory {
   font-size: 13px;
   color: #999;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+
   }
 
 
 .details p {
-  margin: 0.3rem 0;
+  margin: 0.3rem 0;
+
   }
 
 /* Estructura: details en columna; solo el rich text scrollea */
@@ -76,7 +81,8 @@
   overflow: visible;
   max-height: none;
   opacity: 1;
-  transform: none;
+  transform: none;
+
   }
 
 .description {
@@ -90,7 +96,8 @@
   }
 /* Espaciado mayor entre párrafos dentro de la descripción */
 .description p {
-  margin: 0 0 1rem;
+  margin: 0 0 1rem;
+
   }
 .description p:last-child {
   margin-bottom: 0;
@@ -111,13 +118,15 @@
   max-height: 500px;
   /* altura máxima suficiente para el texto */
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(0);
+
   }
 
 .disabledButton {
   opacity: 0.5;
   cursor: not-allowed;
-  pointer-events: none;
+  pointer-events: none;
+
   }
 
 .textToggle {
@@ -126,7 +135,8 @@
   background: none;
   font-size: 14px;
   cursor: pointer;
-  text-transform: lowercase;
+  text-transform: lowercase;
+
   }
 
 .buttonText {
@@ -136,7 +146,8 @@
   gap: 10px;
   flex-shrink: 0;
   border: 1px solid #1F2021;
-  margin-top: 10px;
+  margin-top: 10px;
+
   }
 
 /* Language toggle */
@@ -153,7 +164,8 @@
   border: 1px solid #1F2021;
   border-radius: 4px;
   overflow: hidden;
-  user-select: none;
+  user-select: none;
+
   }
 
 .langOption {
@@ -165,7 +177,8 @@
   cursor: pointer;
   z-index: 2;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 600;
+
   }
 
 .langSlider {
@@ -176,31 +189,36 @@
   height: 100%;
   background: #1F2021;
   transition: transform 0.25s ease-in-out;
-  z-index: 1;
+  z-index: 1;
+
   }
 
 .right {
-  transform: translateX(100%);
+  transform: translateX(100%);
+
   }
 
 .selected {
-  color: #fff;
+  color: #fff;
+
   }
 
 .langToggle .langOption:not(.selected) {
-  color: #1F2021;
+  color: #1F2021;
+
   }
 
 .carouselSection {
   width: 70%;
-  height: 100vh;
+  height: calc(100vh - var(--nav-height, 8rem));
   display: flex;
   flex-direction: column;
   justify-content: end;
   align-items: flex-end;
   box-sizing: border-box;
   overflow: hidden;
-  position: relative;
+  position: relative;
+
   }
 
 .media {
@@ -210,29 +228,35 @@
   object-position: center center;
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity 0.2s ease-out, transform 0.2s ease-out !important;
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out !important;
+
   }
 
 .slide.revealed .media {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(0);
+
   }
 
 /* crossfade suave entre slides */
 .slick-slide {
-  transition: opacity 0.2s ease-in-out !important;
+  transition: opacity 0.2s ease-in-out !important;
+
   }
 
 .slick-active {
-  opacity: 1 !important;
+  opacity: 1 !important;
+
   }
 .slick-slide:not(.slick-active) {
-  opacity: 0 !important;
+  opacity: 0 !important;
+
   }
 
 .slider {
   width: 80%;
-  margin-right: 4rem;
+  margin-right: 4rem;
+
   }
 
 
@@ -242,50 +266,60 @@
   gap: 1.5rem;
   margin-top: 1rem;
   font-size: 14px;
-  text-transform: lowercase;
+  text-transform: lowercase;
+
   }
 
 .tabs span {
   color: #999;
-  cursor: pointer;
+  cursor: pointer;
+
   }
 
 .activeTab {
-  font-weight: bold;
+  font-weight: bold;
+
   }
 
 .menuProject {
   margin-top: 1rem;
   margin-right: 1rem;
-
+
+
   }
 
 .menuProject ul {
   display: flex;
-  justify-content: right;
+  justify-content: right;
+
   }
 
 .menuProject ul li {
-  margin: 0 12px;
+  margin: 0 12px;
+
   }
 
 
 .menuItem.disabled {
   pointer-events: none;
-  opacity: 0.4;
+  opacity: 0.4;
+
   }
 
 .menuItem {
-  transition: all 0.3s ease;
+  transition: all 0.3s ease;
+
   }
 
 .menuItem:hover {
-  opacity: 0.8;
+  opacity: 0.8;
+
   }
 
 .active {
   font-weight: bold;
-  border-bottom: 2px solid black;
+  border-bottom: 2px solid black;
+
   }
 
 
@@ -296,40 +330,48 @@
   height: 40px;
   cursor: pointer;
   z-index: 5;
-  transform: none;
+  transform: none;
+
   }
 
 .customArrow img {
   width: 100%;
-  height: auto;
+  height: auto;
+
   }
 
 .leftArrow {
   top: 85% !important;
-  left: 30px !important;
+  left: 30px !important;
+
   }
 
 .rightArrow {
   top: 85% !important;
   right: 30px !important;
-  background: transparent !important;
+  background: transparent !important;
+
   }
 
 .rightArrow::before{
-  content: none !important;
+  content: none !important;
+
   }
 .leftArrow::before {
-  content: none !important;
+  content: none !important;
+
   }
 
 .slider {
   position: relative !important;
-  z-index: 1 !important;
+  z-index: 1 !important;
+
   }
 
 .menuProject {
   position: relative;
-  z-index: 2;
+  z-index: 2;
+
   }
 
 .backButton {
@@ -348,13 +390,15 @@
   transform: translateX(-50%);
   z-index: 3;
   opacity: 1; /* estático, siempre visible */
-  pointer-events: none;
+  pointer-events: none;
+
   }
 .logoOverlay img {
   width: 220px;
   max-width: 40vw;
   height: auto;
-  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25));
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25));
+
   }
 
 .backContent {
@@ -368,16 +412,19 @@
   transition: opacity 0.3s ease;
   font-family: fustat;
   font-size: 26px !important; 
-  text-decoration: none !important;
+  text-decoration: none !important;
+
   }
 
 .backContent:hover {
-  opacity: 0.7;
+  opacity: 0.7;
+
   }
 
 .backContent img {
   width: 20px;
-  filter: invert(1);
+  filter: invert(1);
+
   }
 
 @media screen and (max-width: 1024px) {
@@ -438,7 +485,8 @@
     display: flex;
     justify-content: center;
     margin-top: 1rem;
-  }
+  }
+
   }
 
 

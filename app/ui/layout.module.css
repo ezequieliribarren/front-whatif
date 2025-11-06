@@ -217,7 +217,7 @@
 }
 
 /* Overrides for project detail (no scroll; navbar hidden above screen) */
-.noScrollNav { height: 100vh; overflow: hidden; }
+.noScrollNav { height: auto; overflow: auto; }
 .noScrollNav .navLinks {
   top: 0;
 }

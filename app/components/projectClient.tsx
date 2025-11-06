@@ -146,7 +146,35 @@ const settings = {
     models3D: project.models3D,
   };
 
+  // Choose first available media when current type is empty
+  useEffect(() => {
+    const hasItems = (t: 'photos' | 'drawings' | 'renders' | 'videos' | 'models3D') =>
+      Array.isArray(mediaMap[t]) && (mediaMap[t] as any[])?.length > 0;
+
+    if (!hasItems(activeType)) {
+      // Preferred fallback order prioritizing image-like content
+      const order: Array<'photos' | 'renders' | 'drawings' | 'videos' | 'models3D'> = [
+        'photos',
+        'renders',
+        'drawings',
+        'videos',
+        'models3D',
+      ];
+      const first = order.find((t) => hasItems(t));
+      if (first && first !== activeType) setActiveType(first);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [project.photos, project.renders, project.drawings, project.videos, project.models3D]);
+
   const filteredMedia = mediaMap[activeType] || [];
+  // Render-time safety: if current tab is empty, show the first available set
+  const safeMedia = (Array.isArray(filteredMedia) && filteredMedia.length > 0)
+    ? filteredMedia
+    : (mediaMap['photos']?.length ? mediaMap['photos']
+      : mediaMap['renders']?.length ? mediaMap['renders']
+      : mediaMap['drawings']?.length ? mediaMap['drawings']
+      : mediaMap['videos']?.length ? mediaMap['videos']
+      : mediaMap['models3D'] || []);
 
   // Filter a Lexical node tree by paragraph-level `textFormat` (0=ES, 1=EN)
   const filterLexicalByLang = (root: any, l: Language) => {
@@ -365,9 +393,9 @@ const settings = {
           </button>
         </div>
 
-        {filteredMedia.length > 0 && (
+        {(safeMedia as any[])?.length > 0 && (
           <Slider {...settings} className={styles.slider}>
-            {filteredMedia.map((media: any, index: number) => (
+            {(safeMedia as any[]).map((media: any, index: number) => (
               <div
                 key={index}
                 className={`${styles.slide} ${
@@ -421,6 +449,7 @@ const settings = {
         <div className={styles.menuProject}>
           <ul>
             {(() => {
+              // Keep this display order, but default selection is handled above
               const order = ['models3D', 'videos', 'drawings', 'renders', 'photos'] as const;
               const available = order.filter(
                 (type) => mediaMap[type] && (mediaMap[type] as any[])?.length > 0

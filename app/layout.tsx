@@ -44,7 +44,8 @@ function NavLinksWithCursor({ disableNavScroll, isScrollingDown }: { disableNavS
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const disableNavScroll = pathname?.startsWith('/work/') === true;
+  // Enable navbar scroll behavior on all pages, including /work/[id]
+  const disableNavScroll = false;
   const [isScrollingDown, setIsScrollingDown] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);

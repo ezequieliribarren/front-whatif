@@ -52,8 +52,16 @@ function CursorOverlay({ state, isTouch }: { state: CursorState; isTouch: boolea
 export function CursorProvider({ children }: { children: React.ReactNode }) {
   const [isTouch, setIsTouch] = useState(false);
   useEffect(() => {
-    const hasTouch = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
-    setIsTouch(Boolean(hasTouch));
+    const computeIsTouch = () => {
+      if (typeof window === 'undefined') return false;
+      const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      const isSmallViewport = window.innerWidth <= 1024; // treat mobile/tablet as touch for cursor behavior
+      return hasTouch || isSmallViewport;
+    };
+    setIsTouch(computeIsTouch());
+    const onResize = () => setIsTouch(computeIsTouch());
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
   }, []);
 
   const [state, setState] = useState<CursorState>({ x: 0, y: 0, visible: false, text: 'WHAT IF', align: 'right', variant: 'default' });
@@ -77,7 +85,7 @@ export function CursorProvider({ children }: { children: React.ReactNode }) {
     [isTouch]
   );
 
-  // Global mouse tracking so the cursor is consistent across the site
+  // Global mouse tracking so the cursor is consistent across the site (disabled on mobile/tablet)
   useEffect(() => {
     if (isTouch || typeof window === 'undefined') return;
 
@@ -117,7 +125,7 @@ export function CursorProvider({ children }: { children: React.ReactNode }) {
     };
   }, [isTouch]);
 
-  // Hide native cursor globally on non-touch devices for consistency
+  // Hide native cursor globally on non-touch desktop only
   useEffect(() => {
     if (typeof document === 'undefined') return;
     const styleId = 'custom-cursor-hide-style';

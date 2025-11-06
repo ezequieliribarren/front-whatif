@@ -235,7 +235,14 @@ export default function Page() {
     <div className={styles.homeWrapper} style={{ ['--maskH' as any]: `${Math.round(viewportH * hRatio)}px` }}>
       {heroSrc && (
         <div className={styles.heroTrack} style={{ height: `${trackH}px`, ['--maskH' as any]: `${Math.round(viewportH * hRatio)}px` }}>
-          <section className={styles.stickyHero}>
+          <section
+            className={styles.stickyHero}
+            style={{
+              // Allow clicks to pass through when hero is gone
+              pointerEvents: heroOpacity < 0.05 ? 'none' as const : 'auto',
+              zIndex: heroOpacity < 0.05 ? 1 : 100001,
+            }}
+          >
             <div className={styles.heroInner}>
               <div
                 className={styles.heroViewport}
