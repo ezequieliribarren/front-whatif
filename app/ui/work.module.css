@@ -60,6 +60,8 @@
 
 .colType {
   width: 20rem;
+  /* Desplazar levemente la columna de Types hacia la derecha */
+  padding-left: 0.5rem;
 }
 
 .colCategory {

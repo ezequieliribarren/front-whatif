@@ -125,8 +125,8 @@ const settings = {
   slidesToShow: 1,
   slidesToScroll: 1,
   arrows: true,
-  fade: true,
-  adaptiveHeight: true,
+  fade: !isTouch,
+  adaptiveHeight: !isTouch,
   cssEase: 'ease-out', // 👈 suaviza la salida
   prevArrow: <CustomPrevArrow />,
   nextArrow: <CustomNextArrow />,

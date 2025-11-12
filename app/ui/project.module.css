@@ -238,6 +238,10 @@
 
   }
 
+/* Clases explícitas para CSS Modules */
+.slide {}
+.revealed {}
+
 /* crossfade suave entre slides */
 .slick-slide {
   transition: opacity 0.2s ease-in-out !important;
@@ -376,7 +380,8 @@
 
 .backButton {
   position: absolute;
-  top: calc(var(--nav-height, 90px) + 20px);
+  /* Colocar el botón por debajo del navbar con una separación del 20% del alto de la pantalla */
+  top: 20vh;
   right: 40px;
   z-index: 9999;
   mix-blend-mode: difference;
@@ -441,13 +446,27 @@
 
   .carouselSection {
     width: 100%;
-    height: auto;
+    min-height: 60vh; /* altura fija para evitar saltos del menú */
     align-items: center;
   }
 
   .slider {
     width: 100%;
     margin: 0;
+    height: 60vh; /* fijar altura del carrusel en mobile/tablet */
+  }
+
+  /* Forzar altura estable dentro de slick en mobile/tablet */
+  :global(.slick-list),
+  :global(.slick-track),
+  :global(.slick-slide) {
+    height: 60vh !important;
+    min-height: 60vh !important;
+  }
+  :global(.slick-slide) {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
   }
 
   .logoOverlay img {
@@ -457,8 +476,12 @@
 
 
   .media {
-    height: auto;
-    max-height: 60vh;
+    width: 100%;
+    height: 60vh; /* que todas las imágenes/videos ocupen la altura fija */
+    max-height: none;
+    object-fit: contain;
+    opacity: 1 !important; /* evitar blanco por transiciones */
+    transform: none !important;
   }
 
   .menuProject {

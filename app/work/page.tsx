@@ -5,6 +5,7 @@ import Link from 'next/link';
 // Removed Next.js Image; using native <img>
 import { useMediaQuery } from 'react-responsive';
 import styles from '../ui/work.module.css';
+import { useCursor } from '../components/CursorProvider';
 import FilterBar from '../components/filterBar';
 
 type Media = {
@@ -34,6 +35,7 @@ type SortState = {
 };
 
 export default function Page() {
+  const { show, hide, move, isTouch } = useCursor();
   const [projects, setProjects] = useState<Project[]>([]);
   const [filtered, setFiltered] = useState<Project[]>([]);
   const [selectedType, setSelectedType] = useState<string | null>(null);
@@ -135,6 +137,11 @@ export default function Page() {
                 }))
               }
               className={styles.sortableHeader}
+              data-cursor-clickable="true"
+              onMouseEnter={(e) => { if (!isTouch) { show('', { variant: 'arrow' }); move(e.clientX, e.clientY); } }}
+              onMouseMove={(e) => { if (!isTouch) move(e.clientX, e.clientY); }}
+              onMouseLeave={() => { if (!isTouch) hide(); }}
+              style={{ cursor: isTouch ? 'pointer' : 'none' }}
             >
               date{getSortIndicator('date')}
             </h4>
@@ -148,6 +155,11 @@ export default function Page() {
                 }))
               }
               className={styles.sortableHeader}
+              data-cursor-clickable="true"
+              onMouseEnter={(e) => { if (!isTouch) { show('', { variant: 'arrow' }); move(e.clientX, e.clientY); } }}
+              onMouseMove={(e) => { if (!isTouch) move(e.clientX, e.clientY); }}
+              onMouseLeave={() => { if (!isTouch) hide(); }}
+              style={{ cursor: isTouch ? 'pointer' : 'none' }}
             >
               title{getSortIndicator('title')}
             </h4>
@@ -161,6 +173,11 @@ export default function Page() {
                 }))
               }
               className={styles.sortableHeader}
+              data-cursor-clickable="true"
+              onMouseEnter={(e) => { if (!isTouch) { show('', { variant: 'arrow' }); move(e.clientX, e.clientY); } }}
+              onMouseMove={(e) => { if (!isTouch) move(e.clientX, e.clientY); }}
+              onMouseLeave={() => { if (!isTouch) hide(); }}
+              style={{ cursor: isTouch ? 'pointer' : 'none' }}
             >
               types{getSortIndicator('types')}
             </h4>
@@ -174,6 +191,11 @@ export default function Page() {
                 }))
               }
               className={styles.sortableHeader}
+              data-cursor-clickable="true"
+              onMouseEnter={(e) => { if (!isTouch) { show('', { variant: 'arrow' }); move(e.clientX, e.clientY); } }}
+              onMouseMove={(e) => { if (!isTouch) move(e.clientX, e.clientY); }}
+              onMouseLeave={() => { if (!isTouch) hide(); }}
+              style={{ cursor: isTouch ? 'pointer' : 'none' }}
             >
               categories{getSortIndicator('categories')}
             </h4>
