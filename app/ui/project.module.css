@@ -457,17 +457,18 @@
   }
 
   /* Forzar altura estable dentro de slick en mobile/tablet */
-  :global(.slick-list),
-  :global(.slick-track),
-  :global(.slick-slide) {
-    height: 60vh !important;
-    min-height: 60vh !important;
-  }
-  :global(.slick-slide) {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-  }
+  .slickContainer :global(.slick-list),
+.slickContainer :global(.slick-track),
+.slickContainer :global(.slick-slide) {
+  height: 60vh !important;
+  min-height: 60vh !important;
+}
+
+.slickContainer :global(.slick-slide) {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
 
   .logoOverlay img {
     width: 160px;
