@@ -8,11 +8,8 @@ function getBackendBase() {
   return fromPublic || fromPayload;
 }
 
-export async function GET(
-  req: NextRequest,
-  context: { params: { path: string[] } }
-) {
-  const { path } = context.params;
+export async function GET(req: NextRequest, context: any) {
+  const path = context?.params?.path || [];
 
   const base = getBackendBase();
   if (!base) {
