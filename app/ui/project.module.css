@@ -7,19 +7,18 @@
   top: auto;
   left: auto;
   width: 100%;
-  z-index: 1001; /* mayor que la barra de navegación */
+  z-index: 1001; /* mayor que la barra de navegaci├│n */
   }
 
 .sidebar {
   width: 30%;
-  height: calc(100vh - var(--nav-height, 8rem));
+  min-height: calc(100vh - var(--nav-height, 8rem));
   padding: 3rem 2rem;
   display: flex;
   flex-direction: column;
   justify-content: flex-start; /* info debajo del logo */
   gap: 1rem;
   font-size: 14px;
-  overflow: hidden; /* sin scroll interno en la página de proyecto */
   box-sizing: border-box;
   background: #fff;
 
@@ -75,7 +74,7 @@
   }
 .descriptionScroll::-webkit-scrollbar { display: none; } /* WebKit */
 
-/* Asegura que la descripción no esté colapsada dentro del contenedor scrolleable */
+/* Asegura que la descripci├│n no est├⌐ colapsada dentro del contenedor scrolleable */
 .descriptionScroll .description,
 .descriptionScroll .description.open {
   overflow: visible;
@@ -94,7 +93,7 @@
   text-align: justify;
   padding-left: 0;
   }
-/* Espaciado mayor entre párrafos dentro de la descripción */
+/* Espaciado mayor entre p├írrafos dentro de la descripci├│n */
 .description p {
   margin: 0 0 1rem;
 
@@ -116,7 +115,7 @@
 
 .description.open {
   max-height: 500px;
-  /* altura máxima suficiente para el texto */
+  /* altura m├íxima suficiente para el texto */
   opacity: 1;
   transform: translateY(0);
 
@@ -142,7 +141,7 @@
 .buttonText {
   height: 35px;
   padding: 2px 15px;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   flex-shrink: 0;
   border: 1px solid #1F2021;
@@ -158,7 +157,7 @@
 .langToggle {
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   width: 120px;
   height: 35px;
   border: 1px solid #1F2021;
@@ -210,13 +209,12 @@
 
 .carouselSection {
   width: 70%;
-  height: calc(100vh - var(--nav-height, 8rem));
+  min-height: calc(100vh - var(--nav-height, 8rem));
   display: flex;
   flex-direction: column;
   justify-content: end;
   align-items: flex-end;
   box-sizing: border-box;
-  overflow: hidden;
   position: relative;
 
   }
@@ -238,7 +236,7 @@
 
   }
 
-/* Clases explícitas para CSS Modules */
+/* Clases expl├¡citas para CSS Modules */
 .slide {}
 .revealed {}
 
@@ -335,13 +333,19 @@
   cursor: pointer;
   z-index: 5;
   transform: none;
+  border-radius: 9999px;
+  background: #ff7a00;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
 
   }
 
 .customArrow img {
-  width: 100%;
+  width: 60%;
   height: auto;
-
+  mix-blend-mode: normal;
+  filter: invert(1);
   }
 
 .leftArrow {
@@ -380,21 +384,21 @@
 
 .backButton {
   position: absolute;
-  /* Colocar el botón por debajo del navbar con una separación del 20% del alto de la pantalla */
-  top: 20vh;
-  right: 40px;
+  /* Botón pegado al final del navbar y alineado con el título */
+  top: 0;
+  right: 3rem;
   z-index: 9999;
   mix-blend-mode: difference;
   }
 
-/* Logo overlay animado en la sección de proyecto */
+/* Logo overlay animado en la secci├│n de proyecto */
 .logoOverlay {
   position: absolute;
   top: 10%;
   left: 50%;
   transform: translateX(-50%);
   z-index: 3;
-  opacity: 1; /* estático, siempre visible */
+  opacity: 1; /* est├ítico, siempre visible */
   pointer-events: none;
 
   }
@@ -408,7 +412,7 @@
 
 .backContent {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
   cursor: pointer;
   background: transparent;
@@ -436,18 +440,20 @@
   .container {
     flex-direction: column-reverse;
     height: auto;
-    position: static; /* en móvil no fijar la sección completa */
+    position: static; /* en m├│vil no fijar la secci├│n completa */
   }
 
-  /* Ocultar botón Back en móviles/tablet */
+  /* Ocultar bot├│n Back en m├│viles/tablet */
   .backButton {
     display: none !important;
   }
 
   .carouselSection {
     width: 100%;
-    min-height: 60vh; /* altura fija para evitar saltos del menú */
-    align-items: center;
+    min-height: auto;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding-top: 1rem;
   }
 
   .slider {
@@ -466,7 +472,7 @@
 
 .slickContainer :global(.slick-slide) {
   display: flex !important;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
 }
 
@@ -478,7 +484,7 @@
 
   .media {
     width: 100%;
-    height: 60vh; /* que todas las imágenes/videos ocupen la altura fija */
+    height: 60vh; /* que todas las im├ígenes/videos ocupen la altura fija */
     max-height: none;
     object-fit: contain;
     opacity: 1 !important; /* evitar blanco por transiciones */
@@ -498,11 +504,17 @@
   }
 
   .sidebar {
-    width: 100%;
-    padding: 2rem;
-    box-sizing: border-box;
-    height: auto;
-    overflow: visible; /* allow inner scroll areas to function */
+  width: 30%;
+  min-height: calc(100vh - var(--nav-height, 8rem));
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* info debajo del logo */
+  gap: 1rem;
+  font-size: 14px;
+  box-sizing: border-box;
+  background: #fff;
+
   }
 
   .buttonTextContainer {
@@ -516,9 +528,12 @@
 
 
 
-/* Mantener el tamaño del título en móvil/tablet */
+/* Mantener el tama├▒o del t├¡tulo en m├│vil/tablet */
 @media (max-width: 1024px) {
   .title {
     font-size: 26px;
   }
 }
+
+
+

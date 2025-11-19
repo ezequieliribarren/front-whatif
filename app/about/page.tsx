@@ -87,13 +87,9 @@ export default function Page() {
 
   // Fetch footer info
   useEffect(() => {
-    const base =
-      process.env.NEXT_PUBLIC_BACKEND_URL ||
-      (process.env.PAYLOAD_API_URL ? process.env.PAYLOAD_API_URL.replace(/\/api$/, '') : undefined);
-    if (!base) return;
     (async () => {
       try {
-        const res = await fetch(`${base}/api/footer`, { cache: 'no-store' });
+        const res = await fetch('/api/payload/footer', { cache: 'no-store' });
         if (!res.ok) return;
         const data = await res.json();
         const doc = Array.isArray(data?.docs) && data.docs.length > 0 ? data.docs[0] : null;
@@ -124,10 +120,10 @@ export default function Page() {
 
       // Lanza todas las requests en paralelo y maneja cada una por separado
       const [activeRes, formerRes, clientsRes, dossierRes] = await Promise.allSettled([
-        fetch(`${backendBase}/api/team-members?sort=order&locale=all`),
-        fetch(`${backendBase}/api/former-members?limit=100&sort=order`),
-        fetch(`${backendBase}/api/selected-clients?limit=100&sort=name`),
-        fetch(`${backendBase}/api/dossier?limit=1`),
+        fetch(`/api/payload/team-members?sort=order&locale=all`),
+        fetch(`/api/payload/former-members?limit=100&sort=order`),
+        fetch(`/api/payload/selected-clients?limit=100&sort=name`),
+        fetch(`/api/payload/dossier?limit=1`),
       ]);
 
       if (activeRes.status === 'fulfilled') {

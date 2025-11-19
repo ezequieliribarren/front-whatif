@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
@@ -42,32 +42,33 @@ export default function Page() {
   const [sortState, setSortState] = useState<SortState>({ column: 'date', direction: 'desc' });
   const [visibleCount, setVisibleCount] = useState<number>(10);
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
-
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const isTabletOrMobile = useMediaQuery({ maxWidth: 1024 });
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || '';
 
-  // 🧠 Normaliza URL de imagen + genera versión optimizada (webp)
+  // Normaliza URL de imagen y genera versión optimizada (webp)
   const buildImageUrl = (u?: string | null, width = 800) => {
     if (!u) return null;
-    const base = (backendUrl || '').replace(/\/$/, '');
+    const base = backendUrl.replace(/\/$/, '');
     const path = u.startsWith('/') ? u : `/${u}`;
     return `${base}${path}?width=${width}&format=webp`;
   };
 
-  // 🔹 Cargar proyectos desde Payload
+  // Cargar proyectos desde Payload (vía proxy interno para evitar CORS)
   useEffect(() => {
     async function fetchProjects() {
-      const res = await fetch(`${backendUrl}/api/projects?depth=1&limit=1000`, { cache: 'no-store' });
+      const res = await fetch('/api/payload/projects?depth=1&limit=1000', {
+        cache: 'no-store',
+      });
       const data = await res.json();
       const docs: Project[] = Array.isArray(data?.docs) ? data.docs : [];
       // Exclude projects explicitly marked to hide (apagar === true)
       const visible = docs.filter((p: any) => p?.apagar !== true);
       setProjects(visible);
     }
-    if (backendUrl) fetchProjects();
-  }, [backendUrl]);
+    fetchProjects();
+  }, []);
 
-  // 🔹 Filtrar y ordenar proyectos
+  // Filtrar y ordenar proyectos
   useEffect(() => {
     let filteredProjects = selectedType
       ? projects.filter((p) => p.types?.some((t) => t.slug === selectedType))
@@ -82,10 +83,14 @@ export default function Page() {
             // Ordenar por fecha completa (más preciso que por año)
             return p.date ? new Date(p.date).getTime() : Number.NEGATIVE_INFINITY;
           }
-          case 'title': return p.title.toLowerCase();
-          case 'types': return p.types?.map((t) => t.name).join(',').toLowerCase() || '';
-          case 'categories': return p.categories?.map((c) => c.name).join(',').toLowerCase() || '';
-          default: return '';
+          case 'title':
+            return p.title.toLowerCase();
+          case 'types':
+            return p.types?.map((t) => t.name).join(',').toLowerCase() || '';
+          case 'categories':
+            return p.categories?.map((c) => c.name).join(',').toLowerCase() || '';
+          default:
+            return '';
         }
       };
       return val(a) < val(b) ? -dir : val(a) > val(b) ? dir : 0;
@@ -95,7 +100,7 @@ export default function Page() {
     setVisibleCount(10);
   }, [projects, selectedType, sortState]);
 
-  // 🔁 Scroll infinito
+  // Scroll infinito
   useEffect(() => {
     const sentinel = document.getElementById('infinite-scroll-sentinel');
     if (!sentinel) return;
@@ -118,9 +123,12 @@ export default function Page() {
   }, [filtered, visibleCount]);
 
   const getSortIndicator = (column: SortState['column']) =>
-    sortState.column === column ? (sortState.direction === 'asc' ? ' ↑' : ' ↓') : '';
+    sortState.column === column ? (sortState.direction === 'asc' ? ' ' : ' ') : '';
 
-  const visibleProjects = useMemo(() => filtered.slice(0, visibleCount), [filtered, visibleCount]);
+  const visibleProjects = useMemo(
+    () => filtered.slice(0, visibleCount),
+    [filtered, visibleCount]
+  );
 
   return (
     <main className={styles.container}>
@@ -138,9 +146,18 @@ export default function Page() {
               }
               className={styles.sortableHeader}
               data-cursor-clickable="true"
-              onMouseEnter={(e) => { if (!isTouch) { show('', { variant: 'arrow' }); move(e.clientX, e.clientY); } }}
-              onMouseMove={(e) => { if (!isTouch) move(e.clientX, e.clientY); }}
-              onMouseLeave={() => { if (!isTouch) hide(); }}
+              onMouseEnter={(e) => {
+                if (!isTouch) {
+                  show('', { variant: 'arrow' });
+                  move(e.clientX, e.clientY);
+                }
+              }}
+              onMouseMove={(e) => {
+                if (!isTouch) move(e.clientX, e.clientY);
+              }}
+              onMouseLeave={() => {
+                if (!isTouch) hide();
+              }}
               style={{ cursor: isTouch ? 'pointer' : 'none' }}
             >
               date{getSortIndicator('date')}
@@ -156,9 +173,18 @@ export default function Page() {
               }
               className={styles.sortableHeader}
               data-cursor-clickable="true"
-              onMouseEnter={(e) => { if (!isTouch) { show('', { variant: 'arrow' }); move(e.clientX, e.clientY); } }}
-              onMouseMove={(e) => { if (!isTouch) move(e.clientX, e.clientY); }}
-              onMouseLeave={() => { if (!isTouch) hide(); }}
+              onMouseEnter={(e) => {
+                if (!isTouch) {
+                  show('', { variant: 'arrow' });
+                  move(e.clientX, e.clientY);
+                }
+              }}
+              onMouseMove={(e) => {
+                if (!isTouch) move(e.clientX, e.clientY);
+              }}
+              onMouseLeave={() => {
+                if (!isTouch) hide();
+              }}
               style={{ cursor: isTouch ? 'pointer' : 'none' }}
             >
               title{getSortIndicator('title')}
@@ -174,9 +200,18 @@ export default function Page() {
               }
               className={styles.sortableHeader}
               data-cursor-clickable="true"
-              onMouseEnter={(e) => { if (!isTouch) { show('', { variant: 'arrow' }); move(e.clientX, e.clientY); } }}
-              onMouseMove={(e) => { if (!isTouch) move(e.clientX, e.clientY); }}
-              onMouseLeave={() => { if (!isTouch) hide(); }}
+              onMouseEnter={(e) => {
+                if (!isTouch) {
+                  show('', { variant: 'arrow' });
+                  move(e.clientX, e.clientY);
+                }
+              }}
+              onMouseMove={(e) => {
+                if (!isTouch) move(e.clientX, e.clientY);
+              }}
+              onMouseLeave={() => {
+                if (!isTouch) hide();
+              }}
               style={{ cursor: isTouch ? 'pointer' : 'none' }}
             >
               types{getSortIndicator('types')}
@@ -192,9 +227,18 @@ export default function Page() {
               }
               className={styles.sortableHeader}
               data-cursor-clickable="true"
-              onMouseEnter={(e) => { if (!isTouch) { show('', { variant: 'arrow' }); move(e.clientX, e.clientY); } }}
-              onMouseMove={(e) => { if (!isTouch) move(e.clientX, e.clientY); }}
-              onMouseLeave={() => { if (!isTouch) hide(); }}
+              onMouseEnter={(e) => {
+                if (!isTouch) {
+                  show('', { variant: 'arrow' });
+                  move(e.clientX, e.clientY);
+                }
+              }}
+              onMouseMove={(e) => {
+                if (!isTouch) move(e.clientX, e.clientY);
+              }}
+              onMouseLeave={() => {
+                if (!isTouch) hide();
+              }}
               style={{ cursor: isTouch ? 'pointer' : 'none' }}
             >
               categories{getSortIndicator('categories')}
@@ -280,3 +324,4 @@ export default function Page() {
     </main>
   );
 }
+

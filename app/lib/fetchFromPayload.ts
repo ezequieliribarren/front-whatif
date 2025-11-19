@@ -1,20 +1,14 @@
 // lib/fetchFromPayload.ts
-// Unifica las llamadas al backend usando NEXT_PUBLIC_BACKEND_URL
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+// Unifica las llamadas al backend pasando siempre por el proxy interno de Next (/api/payload)
 
 export async function fetchFromPayload<T>(path: string): Promise<T> {
-  if (!BASE_URL) {
-    throw new Error('NEXT_PUBLIC_BACKEND_URL no está definida');
-  }
-
-  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-  const url = `${BASE_URL}/api${normalizedPath}`;
+  const normalizedPath = path.startsWith('/') ? path.slice(1) : path;
+  const url = `/api/payload/${normalizedPath}`;
 
   const res = await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
     },
-    next: { revalidate: 60 },
   });
 
   if (!res.ok) {

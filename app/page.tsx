@@ -45,7 +45,7 @@ export default function Page() {
   // Sticky hero video state
   const [heroSrc, setHeroSrc] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [viewportH, setViewportH] = useState<number>(typeof window !== 'undefined' ? window.innerHeight : 800);
+  const [viewportH, setViewportH] = useState<number>(800);
   const [hRatio, setHRatio] = useState<number>(1);
   const [heroOpacity, setHeroOpacity] = useState<number>(1);
   const [trackH, setTrackH] = useState<number>(viewportH * 2.4);
@@ -57,7 +57,7 @@ export default function Page() {
 
   useEffect(() => {
     async function fetchProjects() {
-      const url = `${backendUrl}/api/projects?depth=1&limit=1000&locale=all&sort=order`;
+      const url = `/api/payload/projects?depth=1&limit=1000&locale=all&sort=order`;
       const res = await fetch(url, { cache: 'no-store' });
       const data = await res.json();
 
@@ -110,7 +110,7 @@ export default function Page() {
           process.env.NEXT_PUBLIC_BACKEND_URL ||
           (process.env.PAYLOAD_API_URL ? process.env.PAYLOAD_API_URL.replace(/\/api$/, '') : undefined);
         if (!base) return;
-        const res = await fetch(`${base}/api/globals/video-inicial`, { cache: 'no-store' });
+        const res = await fetch(`/api/payload/globals/video-inicial`, { cache: 'no-store' });
         if (!res.ok) return;
         const data = await res.json();
         const v = data?.video?.url ? `${base}${data.video.url}` : null;
