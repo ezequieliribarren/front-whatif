@@ -10,8 +10,10 @@ function getBackendBase() {
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { path?: string[] } }
+  context: { params: { path: string[] } }
 ) {
+  const { path } = context.params;
+
   const base = getBackendBase();
   if (!base) {
     return NextResponse.json(
@@ -20,8 +22,7 @@ export async function GET(
     );
   }
 
-  const segments = params.path || [];
-  const joined = segments.join('/');
+  const joined = path.join('/');
   const search = req.nextUrl.search || '';
   const targetUrl = `${base}/api/${joined}${search}`;
 
@@ -44,4 +45,3 @@ export async function GET(
     );
   }
 }
-
