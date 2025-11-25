@@ -24,6 +24,8 @@ type Project = {
   id: string;
   title: string;
   slug: string;
+  date?: string | number;
+  year?: number | string;
   featured?: boolean;
   apagar?: boolean;
   categories?: ProjectCategory[];
@@ -50,6 +52,22 @@ export default function Page() {
   const [heroOpacity, setHeroOpacity] = useState<number>(1);
   const [trackH, setTrackH] = useState<number>(viewportH * 2.4);
   const [isMobile, setIsMobile] = useState<boolean>(false);
+  const projectsRef = useRef<HTMLElement | null>(null);
+  const introRef = useRef<HTMLElement | null>(null);
+  const [heroDismissed, setHeroDismissed] = useState<boolean>(false); // hero removed from view
+  const [heroEndRequested, setHeroEndRequested] = useState<boolean>(false); // start scroll + hide flow
+  const [hasAutoScrolled, setHasAutoScrolled] = useState<boolean>(false);
+
+  // Only show/play hero on the first load of the site per session
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const seen = window.sessionStorage.getItem('heroSeen') === '1';
+    if (seen) {
+      setHeroDismissed(true);
+      setHasAutoScrolled(true);
+      setHeroEndRequested(true);
+    }
+  }, []);
 
   const router = useRouter();
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || '';
@@ -231,9 +249,80 @@ export default function Page() {
     router.push(`/work/${id}`);
   };
 
+  const getProjectYear = (p: any): string | number | undefined => {
+    const candidates = [p?.date, p?.year, p?.fecha, p?.publishedAt, p?.createdAt];
+    for (const c of candidates) {
+      if (!c) continue;
+      if (typeof c === 'number' && c > 999) return c;
+      if (typeof c === 'string' && /^\d{4}$/.test(c.trim())) return c.trim();
+      const d = new Date(c as any);
+      if (!isNaN(d.getTime())) return d.getFullYear();
+    }
+    return undefined;
+  };
+
+  const scrollProjectsSmooth = () => {
+    if (typeof window === 'undefined') return;
+    // Two rAF ticks to ensure layout has settled after hiding the hero
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        const target = projectsRef.current;
+        const introTarget = introRef.current || document.getElementById('selected-works');
+        const rawTop = introTarget
+          ? introTarget.getBoundingClientRect().top + window.scrollY
+          : target
+            ? target.getBoundingClientRect().top + window.scrollY
+            : viewportH + 1;
+        const navH =
+          typeof window !== 'undefined'
+            ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-height')) || 0
+            : 0;
+        // Scroll directly to the intro (Selected Works) under the navbar
+        const desiredTop = Math.max(0, rawTop - navH + 4);
+        window.scrollTo({ top: desiredTop, behavior: 'smooth' });
+        setHasAutoScrolled(true);
+      });
+    });
+  };
+
+  // Request to hide hero after the first downward scroll so only navbar + projects remain
+  useEffect(() => {
+    if (heroDismissed || heroEndRequested) return;
+    const onScroll = () => {
+      if (window.scrollY > 10) {
+        setHeroEndRequested(true);
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [heroDismissed, heroEndRequested]);
+
+  // When the hero is requested to disappear, auto-scroll to projects once, then remove hero
+  useEffect(() => {
+    if (!heroEndRequested || hasAutoScrolled) return;
+    // First hide hero so layout settles, then scroll to intro
+    setHeroDismissed(true);
+    scrollProjectsSmooth();
+    if (typeof window !== 'undefined') {
+      window.sessionStorage.setItem('heroSeen', '1');
+    }
+  }, [heroEndRequested, hasAutoScrolled, viewportH]);
+
+  // Hide navbar while hero is active, show after it is dismissed
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const root = document.documentElement;
+    if (!heroDismissed) {
+      root.classList.add('heroPlaying');
+    } else {
+      root.classList.remove('heroPlaying');
+    }
+    return () => root.classList.remove('heroPlaying');
+  }, [heroDismissed]);
+
   return (
     <div className={styles.homeWrapper} style={{ ['--maskH' as any]: `${Math.round(viewportH * hRatio)}px` }}>
-      {heroSrc && (
+      {heroSrc && !heroDismissed && (
         <div className={styles.heroTrack} style={{ height: `${trackH}px`, ['--maskH' as any]: `${Math.round(viewportH * hRatio)}px` }}>
           <section
             className={styles.stickyHero}
@@ -259,9 +348,9 @@ export default function Page() {
                       muted
                       playsInline
                       autoPlay
-                      loop
                       preload="auto"
                       crossOrigin="anonymous"
+                      onEnded={() => setHeroEndRequested(true)}
                     />
                   );
                 })()}
@@ -270,7 +359,7 @@ export default function Page() {
                     className={styles.scrollCue}
                     aria-label="Scroll down"
                     title="Scroll"
-                    onClick={() => window.scrollTo({ top: viewportH + 1, behavior: 'smooth' })}
+                    onClick={() => setHeroEndRequested(true)}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="6 9 12 15 18 9" />
@@ -283,7 +372,20 @@ export default function Page() {
         </div>
       )}
 
-      <main className={styles.projectList}>
+      <main
+        className={styles.projectList}
+        ref={projectsRef}
+        style={
+          heroDismissed
+            ? { marginTop: 0, paddingTop: 'calc(var(--nav-height, 10rem) + 4rem)', visibility: 'visible', opacity: 1 }
+            : { marginTop: 0, visibility: 'hidden', opacity: 0, pointerEvents: 'none' }
+        }
+      >
+        <section className={styles.introSection} id="selected-works" ref={introRef}>
+          <h2 className={styles.introTitle}>SELECTED WORKS</h2>
+          <p className={styles.introText}>Somos un estudio de arquitectura.</p>
+        </section>
+
         {filtered.map((project, index) => {
           const rawUrl = project.imagenDestacada?.url || '';
           const cleanUrl = rawUrl.replace(/\?.*$/, '').replace(/ /g, '%20');
@@ -349,7 +451,7 @@ export default function Page() {
 
                       <div className={styles.projectDetails}>
                         <div className={styles.projectDate}>
-                          <h3>{new Date().getFullYear()}</h3>
+                          <h3>{getProjectYear(project) || ''}</h3>
                         </div>
                         <div className={styles.projectCategory}>
                           <h3 className={styles.h3Category}>
@@ -374,10 +476,18 @@ export default function Page() {
             </section>
           );
         })}
-        <section className="flex justify-center py-10">
+        <section className={`${styles.desktopCtaSection} flex justify-center`}>
           <Link
             href="/work"
-            className={`flex items-center gap-2.5 px-4 py-1 border border-black text-black font-serif hover:bg-black hover:text-white transition-colors rounded ${aboutStyles.buttonSelected} ${aboutStyles.mobileOnly}`}
+            className={`flex items-center gap-2.5 px-4 py-1 border border-black text-black font-serif hover:bg-black hover:text-white transition-colors rounded ${aboutStyles.buttonSelected}`}
+          >
+            <span className="text-lg font-normal">Our Work</span>
+          </Link>
+        </section>
+        <section className={`${aboutStyles.mobileOnly} flex justify-center py-10`}>
+          <Link
+            href="/work"
+            className={`flex items-center gap-2.5 px-4 py-1 border border-black text-black font-serif hover:bg-black hover:text-white transition-colors rounded ${aboutStyles.buttonSelected}`}
           >
             <span className="text-lg font-normal">Our Work</span>
           </Link>

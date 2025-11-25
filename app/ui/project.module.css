@@ -535,5 +535,18 @@
   }
 }
 
+/* Ajustes móviles extra para usar el ancho completo */
+@media (max-width: 1024px) {
+  .container {
+    padding: var(--nav-height, 8rem) 1.5rem 2rem !important;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-height: auto;
+    padding: 1.5rem 0 1rem;
+  }
+}
+
 
 

@@ -4,6 +4,7 @@
   align-items: flex-start;
   width: 100%;
   padding: 2rem 4rem;
+  min-height: 10rem;
   background-color: transparent;
   transition: all 0.3s ease;
   z-index: 99999 !important;
@@ -105,6 +106,11 @@
   top: -105px;
 }
 
+.heroPlaying .navbar {
+  opacity: 0;
+  pointer-events: none;
+}
+
 
 /* Ocultar icono por defecto */
 .menuIcon {
@@ -195,6 +201,7 @@
 
   .navbar {
     padding: 2rem 2rem;
+    min-height: 8rem;
   }
 }
 

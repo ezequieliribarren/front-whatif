@@ -118,7 +118,7 @@ export default function ProjectClient({ project }: Props) {
     }
   };
 
-const settings = {
+const baseSettings = {
   dots: false,
   infinite: true,
   speed: 200, // ⚡ más rápido (coincide con tu transición CSS)
@@ -175,6 +175,23 @@ const settings = {
       : mediaMap['drawings']?.length ? mediaMap['drawings']
       : mediaMap['videos']?.length ? mediaMap['videos']
       : mediaMap['models3D'] || []);
+
+  const mediaCount = Array.isArray(safeMedia) ? safeMedia.length : 0;
+  const sliderSettings = {
+    ...baseSettings,
+    infinite: mediaCount > 1,
+    arrows: mediaCount > 1,
+    fade: !isTouch && mediaCount > 1,
+    autoplay: mediaCount > 1,
+    prevArrow: mediaCount > 1 ? <CustomPrevArrow /> : undefined,
+    nextArrow: mediaCount > 1 ? <CustomNextArrow /> : undefined,
+    afterChange: (index: number) => setCurrentSlide(index),
+  };
+
+  // Reset slider position when changing media type to avoid stale clones/positions
+  useEffect(() => {
+    setCurrentSlide(0);
+  }, [activeType]);
 
   // Filter a Lexical node tree by paragraph-level `textFormat` (0=ES, 1=EN)
   const filterLexicalByLang = (root: any, l: Language) => {
@@ -394,7 +411,7 @@ const settings = {
         </div>
 
         {(safeMedia as any[])?.length > 0 && (
-          <Slider {...settings} className={styles.slider}>
+          <Slider {...sliderSettings} className={styles.slider}>
             {(safeMedia as any[]).map((media: any, index: number) => (
               <div
                 key={index}

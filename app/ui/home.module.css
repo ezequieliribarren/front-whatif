@@ -14,6 +14,36 @@
   padding-top: 0;
 }
 
+.introSection {
+  display: none;
+  padding: 0 4rem 3rem;
+  margin: 0;
+}
+
+.introTitle {
+  font-size: 60px;
+  letter-spacing: 0.06em;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #1f2021;
+  margin: 0 0 0.35rem 0;
+  font-family: fustat-bold, fustat-semi-bold, sans-serif;
+}
+
+.introText {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.6;
+  color: #3a3b3c;
+  max-width: 720px;
+  font-family: fustat-regular;
+}
+
+.desktopCtaSection {
+  display: none;
+  padding: 6rem 0 4rem;
+}
+
 /* Hero video section */
 /* Legacy fixed hero (no longer used) */
 .heroSection {
@@ -54,7 +84,7 @@
   top: 0;
   width: 100%;
   height: 100vh;
-  z-index: 100001; /* above navbar (99999) and mobile menu (100000) */
+  z-index: 200000; /* above navbar (99999) and mobile menu (100000) */
   background: transparent;
   overflow: hidden;
   will-change: transform, opacity;
@@ -133,6 +163,11 @@
 
 @media (max-width: 1024px) {
   .heroVideoWrapper { height: 100vh; }
+}
+
+@media (min-width: 1025px) {
+  .introSection { display: block; }
+  .desktopCtaSection { display: flex; }
 }
 
 .projectCard {

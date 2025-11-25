@@ -123,7 +123,7 @@ export default function Page() {
   }, [filtered, visibleCount]);
 
   const getSortIndicator = (column: SortState['column']) =>
-    sortState.column === column ? (sortState.direction === 'asc' ? ' ' : ' ') : '';
+    sortState.column === column ? (sortState.direction === 'asc' ? ' ^' : ' v') : '';
 
   const visibleProjects = useMemo(
     () => filtered.slice(0, visibleCount),
@@ -324,4 +324,3 @@ export default function Page() {
     </main>
   );
 }
-

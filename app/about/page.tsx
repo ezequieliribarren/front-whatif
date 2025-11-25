@@ -71,6 +71,12 @@ export default function Page() {
   const boxHeight = 486;
   const isTabletOrMobile = useMediaQuery({ maxWidth: 1024 });
   const { show, hide, move, isTouch } = useCursor();
+  const email = footerInfo?.mail || 'hi@whatif-arch.com';
+  const instagramUrl = (() => {
+    if (footerInfo?.instagram) return footerInfo.instagram;
+    const found = selectedClients.find((c) => (c.name || '').toLowerCase().includes('instagram'));
+    return found?.link || '';
+  })();
 
   useEffect(() => {
     const SCROLL_THRESHOLD = 120;
@@ -142,7 +148,9 @@ export default function Page() {
       if (formerRes.status === 'fulfilled') {
         try {
           const dataFormer = await formerRes.value.json();
-          setFormerMembers(dataFormer.docs || []);
+          const docs: TeamMember[] = Array.isArray(dataFormer?.docs) ? dataFormer.docs : [];
+          const sorted = [...docs].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+          setFormerMembers(sorted);
         } catch (e) {
           console.error('Error parseando former-members:', e);
         }
@@ -431,10 +439,15 @@ export default function Page() {
           </section>
 
           <section className={styles.sectionFormer}>
-            <h2>Former team members</h2>
+            <h2>They’ve worked with us</h2>
             <div style={{ position: 'relative' }} className={styles.formerNamesContainer}>
               {formerMembers.map((m, i) => (
-                <div key={m.id} style={{ display: 'inline-block', position: 'relative', marginRight: '8px' }} onMouseEnter={() => m.image?.url && setHoverFormerId(m.id)} onMouseLeave={() => m.image?.url && setHoverFormerId(null)}>
+                <div
+                  key={m.id}
+                  style={{ display: 'inline-block', position: 'relative', marginRight: '8px' }}
+                  onMouseEnter={() => m.image?.url && setHoverFormerId(m.id)}
+                  onMouseLeave={() => m.image?.url && setHoverFormerId(null)}
+                >
                   <h4 className={styles.formerName} style={{ cursor: m.image?.url ? 'pointer' : 'default' }}>
                     {m.name}
                     {i < formerMembers.length - 1 && ','}
@@ -508,6 +521,22 @@ export default function Page() {
       <div className={styles.footer}>
         <div className={styles.footerHeader}>
           <h2>Contact</h2>
+          <div className={styles.footerHeaderRow}>
+            <a className={styles.footerEmail} href={`mailto:${email}`}>{email}</a>
+            {instagramUrl ? (
+              <a
+                href={instagramUrl.startsWith('http') ? instagramUrl : `https://${instagramUrl}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className={styles.footerInstagramIcon}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H7zm5 2.75A4.25 4.25 0 1 1 7.75 12 4.25 4.25 0 0 1 12 7.75zm0 2A2.25 2.25 0 1 0 14.25 12 2.25 2.25 0 0 0 12 9.75zM17.5 6a.75.75 0 1 1-.75.75A.75.75 0 0 1 17.5 6z" />
+                </svg>
+              </a>
+            ) : null}
+          </div>
         </div>
         <div className={styles.footerTop}>
           <div className={styles.footerLeft}>
@@ -544,28 +573,12 @@ export default function Page() {
             </div>
           </div>
           <div className={styles.footerRight}>
-              {(() => {
-              let url = footerInfo?.instagram || '';
-              if (!url) {
-                const found = selectedClients.find((c) => (c.name || '').toLowerCase().includes('instagram'));
-                url = found?.link || '';
-              }
-              if (!url) return null;
-              const handle = url
-                .replace(/^https?:\/\/(www\.)?instagram\.com\/?/i, '')
-                .replace(/\/?$/, '');
-              return (
-                <p className={styles.footerInstagram}>
-                  <a href={url} target="_blank" rel="noopener noreferrer">@{handle}</a>
-                </p>
-              );
-            })()}
           </div>
         </div>
         <div className={styles.footerBottom}>
           <p>
             <Link href="/politicas-de-privacidad">
-              {`Todos los derechos reservados What if ${new Date().getFullYear()}`}
+              {`Todos los derechos reservados WHAT IF ARCHITECTURE SL 2025`}
             </Link>
           </p>
         </div>
