@@ -338,6 +338,7 @@ padding: 3rem;
   background: transparent;
   color: #fff;
   transition: transform 0.2s ease, opacity 0.2s ease;
+  margin-top: 8px;
 }
 
 .footerInstagramIcon:hover {
@@ -351,7 +352,7 @@ padding: 3rem;
 }
 
 /* Footer contact spacing tweaks */
-.footerEmail { margin-top: 12px !important; }
+.footerEmail { margin: 0; font-size: 16px; font-weight: 500; }
 .footerInstagram { margin-top: 6px; }
 
 /* layout superior del footer */
@@ -379,7 +380,16 @@ padding: 3rem;
 .footerRight p + p { margin-top: 6px; }
 
 .footerEmail {
-  margin-top: 6px; /* pequeño espacio bajo la dirección */
+  margin: 0;
+}
+
+.footerContactCol {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-self: end;
+  text-align: right;
+  align-items: flex-end;
 }
 
 .footerLeft { justify-self: start; }
@@ -487,6 +497,7 @@ padding: 3rem;
   .footerCenter { display: none !important; }
   .footerTagline { display: none !important; }
   .footerTagline h3 { font-size: 14px; }
+  .footerContactCol { align-items: flex-end; text-align: right; }
 
   /* Alinear todo el contenido del footer con el título Contact (a la derecha) */
   .footerLeft { justify-self: end; text-align: right; }

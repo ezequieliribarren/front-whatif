@@ -43,6 +43,10 @@ export default function Page() {
   const [filtered, setFiltered] = useState<Project[]>([]);
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [visibleProjects, setVisibleProjects] = useState<string[]>([]);
+  const defaultTitle = 'SELECTED WORKS';
+  const defaultSubtitle = 'Somos un estudio de arquitectura.';
+  const [homeTitle, setHomeTitle] = useState<string>(defaultTitle);
+  const [homeSubtitle, setHomeSubtitle] = useState<string>(defaultSubtitle);
 
   // Sticky hero video state
   const [heroSrc, setHeroSrc] = useState<string | null>(null);
@@ -206,6 +210,30 @@ export default function Page() {
       l2 && document.head.removeChild(l2);
     };
   }, []);
+
+  // Fetch home title/subtitle from code-home endpoint
+  useEffect(() => {
+    let aborted = false;
+    const fetchHomeCopy = async () => {
+      // Usa el proxy interno de Next para evitar CORS y mantener la misma origin
+      const target = '/api/payload/code-home?limit=1';
+      try {
+        const res = await fetch(target, { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        const doc = Array.isArray(data?.docs) ? data.docs[0] : null;
+        if (!doc || aborted) return;
+        setHomeTitle(doc.titulo || defaultTitle);
+        setHomeSubtitle(doc.subtitulo || defaultSubtitle);
+      } catch {
+        // ignore
+      }
+    };
+    fetchHomeCopy();
+    return () => {
+      aborted = true;
+    };
+  }, [backendUrl, defaultTitle, defaultSubtitle]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -382,8 +410,8 @@ export default function Page() {
         }
       >
         <section className={styles.introSection} id="selected-works" ref={introRef}>
-          <h2 className={styles.introTitle}>SELECTED WORKS</h2>
-          <p className={styles.introText}>Somos un estudio de arquitectura.</p>
+          <h2 className={styles.introTitle}>{homeTitle}</h2>
+          <p className={styles.introText}>{homeSubtitle}</p>
         </section>
 
         {filtered.map((project, index) => {
@@ -484,7 +512,7 @@ export default function Page() {
             <span className="text-lg font-normal">Our Work</span>
           </Link>
         </section>
-        <section className={`${aboutStyles.mobileOnly} flex justify-center py-10`}>
+        <section className={`${aboutStyles.mobileOnly} ${styles.mobileCtaSection} flex justify-center py-10`}>
           <Link
             href="/work"
             className={`flex items-center gap-2.5 px-4 py-1 border border-black text-black font-serif hover:bg-black hover:text-white transition-colors rounded ${aboutStyles.buttonSelected}`}

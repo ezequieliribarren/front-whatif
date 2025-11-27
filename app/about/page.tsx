@@ -518,10 +518,37 @@ export default function Page() {
         </div>
       </div>
 
-      <div className={styles.footer}>
-        <div className={styles.footerHeader}>
-          <h2>Contact</h2>
-          <div className={styles.footerHeaderRow}>
+        <div className={styles.footer}>
+          <div className={styles.footerHeader}>
+            <h2>Contact</h2>
+          </div>
+          <div className={styles.footerTop}>
+            <div className={styles.footerLeft}>
+              {footerInfo?.direccion && (
+                <p className={styles.apiAddress}>
+                  {footerInfo?.mapsLink ? (
+                    <a
+                    href={footerInfo.mapsLink.startsWith('http') ? footerInfo.mapsLink : `https://${footerInfo.mapsLink}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {footerInfo.direccion}
+                  </a>
+                ) : (
+                  footerInfo.direccion
+                )}
+              </p>
+            )}
+            <p>C/ Matilde Hernández, 28025, Madrid</p>
+          </div>
+          <div className={styles.footerCenter}>
+            <div className={styles.footerTagline}>
+              <h3>e x p l o r e<br /> p r e s e n t(s)</h3>
+              <span>/</span>
+              <h3>b u i l d<br /> f u t u r e s</h3>
+            </div>
+          </div>
+          <div className={styles.footerContactCol}>
             <a className={styles.footerEmail} href={`mailto:${email}`}>{email}</a>
             {instagramUrl ? (
               <a
@@ -536,43 +563,6 @@ export default function Page() {
                 </svg>
               </a>
             ) : null}
-          </div>
-        </div>
-        <div className={styles.footerTop}>
-          <div className={styles.footerLeft}>
-            {footerInfo?.direccion && (
-              <p className={styles.apiAddress}>
-                {footerInfo?.mapsLink ? (
-                  <a
-                    href={footerInfo.mapsLink.startsWith('http') ? footerInfo.mapsLink : `https://${footerInfo.mapsLink}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {footerInfo.direccion}
-                  </a>
-                ) : (
-                  footerInfo.direccion
-                )}
-              </p>
-            )}
-            <p>C/ Matilde Hernández, 28025, Madrid</p>
-            <p className={styles.footerEmail}>
-              {footerInfo?.mail ? (
-                <a href={`mailto:${footerInfo.mail}`}>{footerInfo.mail}</a>
-              ) : (
-                <a href={`mailto:hi@whatif-arch.com`}>hi@whatif-arch.com</a>
-              )}
-            </p>
-        
-          </div>
-          <div className={styles.footerCenter}>
-            <div className={styles.footerTagline}>
-              <h3>e x p l o r e<br /> p r e s e n t(s)</h3>
-              <span>/</span>
-              <h3>b u i l d<br /> f u t u r e s</h3>
-            </div>
-          </div>
-          <div className={styles.footerRight}>
           </div>
         </div>
         <div className={styles.footerBottom}>

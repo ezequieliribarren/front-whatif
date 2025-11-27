@@ -122,8 +122,10 @@ export default function Page() {
     return () => observer.disconnect();
   }, [filtered, visibleCount]);
 
-  const getSortIndicator = (column: SortState['column']) =>
-    sortState.column === column ? (sortState.direction === 'asc' ? ' ^' : ' v') : '';
+  const getSortIndicator = (column: SortState['column']) => {
+    if (sortState.column !== column) return '';
+    return sortState.direction === 'asc' ? ' ↑' : ' ↓';
+  };
 
   const visibleProjects = useMemo(
     () => filtered.slice(0, visibleCount),
