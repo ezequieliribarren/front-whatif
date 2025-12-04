@@ -2,6 +2,7 @@
 
 import './ui/global.css';
 import Link from 'next/link';
+import Head from 'next/head';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styles from './ui/layout.module.css';
 import { useEffect, useRef, useState } from 'react';
@@ -119,6 +120,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="en">
+      <Head>
+        <title>WHAT IF Architecture</title>
+        <meta
+          name="description"
+          content="Somos un estudio de arquitectura donde construimos imaginarios colectivos que configuran nuestro cotidiano."
+        />
+        <meta property="og:title" content="WHAT IF Architecture" />
+        <meta
+          property="og:description"
+          content="Somos un estudio de arquitectura donde construimos imaginarios colectivos que configuran nuestro cotidiano."
+        />
+        <meta property="og:type" content="website" />
+      </Head>
       <body className={disableNavScroll ? styles.noScrollNav : ''}>
         <CursorProvider>
         <div ref={navRef} className={`${styles.navbar} ${!disableNavScroll && scrollY > 5 ? styles.navbarScrolled : styles.navbarInitial}`}>

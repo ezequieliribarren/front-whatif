@@ -55,9 +55,9 @@
   display: inline-flex;
   align-items: center;
   gap: 1rem;
-  font-size: 38px;
+  font-size: 40px;
   letter-spacing: 0.06em;
-  font-weight: 700; /* mismo peso que el título SELECTED WORKS */
+  font-weight: 800; /* mismo peso que el título SELECTED WORKS */
   text-transform: uppercase;
   color: #1f2021;
   text-decoration: none;
