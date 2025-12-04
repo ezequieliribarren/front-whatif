@@ -2,14 +2,26 @@
 
 import './ui/global.css';
 import Link from 'next/link';
-import Head from 'next/head';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styles from './ui/layout.module.css';
 import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { HiOutlineMenu, HiOutlineX } from 'react-icons/hi';
-import ContactModal from './components/contactModal'; // Importa el componente ContactModal
+import ContactModal from './components/contactModal';
 import { CursorProvider, useCursor } from './components/CursorProvider';
+
+// ✅ SEO – Metadatos globales (funcionan en App Router)
+export const metadata = {
+  title: 'WHAT IF Architecture',
+  description:
+    'Somos un estudio de arquitectura donde construimos imaginarios colectivos que configuran nuestro cotidiano.',
+  openGraph: {
+    title: 'WHAT IF Architecture',
+    description:
+      'Somos un estudio de arquitectura donde construimos imaginarios colectivos que configuran nuestro cotidiano.',
+    type: 'website',
+  },
+};
 
 function NavLinksWithCursor({ disableNavScroll, isScrollingDown }: { disableNavScroll: boolean; isScrollingDown: boolean }) {
   const { show, move, isTouch, hide } = useCursor();
@@ -19,7 +31,12 @@ function NavLinksWithCursor({ disableNavScroll, isScrollingDown }: { disableNavS
         <Link
           className={styles.link}
           href="/work"
-          onMouseEnter={(e) => { if (!isTouch) { show('', { variant: 'arrow' }); move((e as any).clientX, (e as any).clientY); } }}
+          onMouseEnter={(e) => {
+            if (!isTouch) {
+              show('', { variant: 'arrow' });
+              move((e as any).clientX, (e as any).clientY);
+            }
+          }}
           onMouseMove={(e) => { if (!isTouch) move((e as any).clientX, (e as any).clientY); }}
           onMouseLeave={() => { if (!isTouch) hide(); }}
           style={{ cursor: isTouch ? 'pointer' : 'none' }}
@@ -31,7 +48,12 @@ function NavLinksWithCursor({ disableNavScroll, isScrollingDown }: { disableNavS
         <Link
           className={styles.link}
           href="/about"
-          onMouseEnter={(e) => { if (!isTouch) { show('', { variant: 'arrow' }); move((e as any).clientX, (e as any).clientY); } }}
+          onMouseEnter={(e) => {
+            if (!isTouch) {
+              show('', { variant: 'arrow' });
+              move((e as any).clientX, (e as any).clientY);
+            }
+          }}
           onMouseMove={(e) => { if (!isTouch) move((e as any).clientX, (e as any).clientY); }}
           onMouseLeave={() => { if (!isTouch) hide(); }}
           style={{ cursor: isTouch ? 'pointer' : 'none' }}
@@ -45,24 +67,25 @@ function NavLinksWithCursor({ disableNavScroll, isScrollingDown }: { disableNavS
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  // Aplicar el mismo comportamiento de scroll (ocultar/mostrar) en todas las páginas, incluidos proyectos
   const disableNavScroll = false;
+
   const [isScrollingDown, setIsScrollingDown] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [contactModalOpen, setContactModalOpen] = useState(false);
+
   const navRef = useRef<HTMLDivElement | null>(null);
 
+  // Detecta mobile
   useEffect(() => {
     const checkIsMobile = () => setIsMobile(window.innerWidth <= 1024);
     checkIsMobile();
-
     window.addEventListener('resize', checkIsMobile);
     return () => window.removeEventListener('resize', checkIsMobile);
   }, []);
 
-  // Expose navbar height as a CSS variable so pages can offset content
+  // Calcula altura navbar
   useEffect(() => {
     const updateNavHeight = () => {
       const h = navRef.current?.getBoundingClientRect().height ?? 0;
@@ -73,19 +96,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return () => window.removeEventListener('resize', updateNavHeight);
   }, []);
 
-  // Recompute when layout-affecting states change
   useEffect(() => {
     const h = navRef.current?.getBoundingClientRect().height ?? 0;
     document.documentElement.style.setProperty('--nav-height', `${h}px`);
   }, [disableNavScroll, isMobile]);
 
-  // Footer se muestra solo en /about; no se renderiza aquí
-
+  // Scroll behavior
   useEffect(() => {
     if (disableNavScroll || isMobile) {
       setScrollY(0);
       setIsScrollingDown(false);
-      return; // Do not attach scroll listeners on project pages or on mobile/tablet
+      return;
     }
 
     setScrollY(window.scrollY);
@@ -99,11 +120,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         window.requestAnimationFrame(() => {
           const currentScrollY = window.scrollY;
 
-          if (currentScrollY > lastScrollY + 5) {
-            setIsScrollingDown(true);
-          } else if (currentScrollY < lastScrollY - 5) {
-            setIsScrollingDown(false);
-          }
+          if (currentScrollY > lastScrollY + 5) setIsScrollingDown(true);
+          else if (currentScrollY < lastScrollY - 5) setIsScrollingDown(false);
 
           setScrollY(currentScrollY);
           lastScrollY = currentScrollY;
@@ -120,68 +138,72 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="en">
-      <Head>
-        <title>WHAT IF Architecture</title>
-        <meta
-          name="description"
-          content="Somos un estudio de arquitectura donde construimos imaginarios colectivos que configuran nuestro cotidiano."
-        />
-        <meta property="og:title" content="WHAT IF Architecture" />
-        <meta
-          property="og:description"
-          content="Somos un estudio de arquitectura donde construimos imaginarios colectivos que configuran nuestro cotidiano."
-        />
-        <meta property="og:type" content="website" />
-      </Head>
+      {/* ❗YA NO NECESITÁS <Head> → Next genera el SEO automáticamente */}
       <body className={disableNavScroll ? styles.noScrollNav : ''}>
         <CursorProvider>
-        <div ref={navRef} className={`${styles.navbar} ${!disableNavScroll && scrollY > 5 ? styles.navbarScrolled : styles.navbarInitial}`}>
-          <div className={`${styles.logoWrapper} ${!disableNavScroll && isScrollingDown ? styles.logoUp : ''}`}>
-            <Link href="/">
-              <img
-                className={`${styles.logo} ${isMobile ? styles.logoMobile : ''}`}
-                src={isMobile ? '/logo-simple.png' : '/logo.png'}
-                alt="Logo"
-              />
-            </Link>
+          <div
+            ref={navRef}
+            className={`${styles.navbar} ${
+              !disableNavScroll && scrollY > 5 ? styles.navbarScrolled : styles.navbarInitial
+            }`}
+          >
+            <div className={`${styles.logoWrapper} ${!disableNavScroll && isScrollingDown ? styles.logoUp : ''}`}>
+              <Link href="/">
+                <img
+                  className={`${styles.logo} ${isMobile ? styles.logoMobile : ''}`}
+                  src={isMobile ? '/logo-simple.png' : '/logo.png'}
+                  alt="Logo"
+                />
+              </Link>
+            </div>
+
+            {/* Nav Desktop */}
+            <NavLinksWithCursor disableNavScroll={disableNavScroll} isScrollingDown={isScrollingDown} />
+
+            {/* Icono hamburguesa */}
+            {!menuOpen && (
+              <div className={styles.menuIcon} onClick={() => setMenuOpen(true)}>
+                <HiOutlineMenu size={40} />
+              </div>
+            )}
           </div>
 
-          {/* Nav desktop */}
-          <NavLinksWithCursor disableNavScroll={disableNavScroll} isScrollingDown={isScrollingDown} />
+          {/* Menú Mobile */}
+          <div className={`${styles.mobileMenu} ${menuOpen ? styles.menuOpen : ''}`}>
+            <button className={styles.closeButton} onClick={() => setMenuOpen(false)}>
+              <HiOutlineX size={36} />
+            </button>
 
-          {/* Icono hamburguesa (oculto cuando el menú está abierto para evitar doble 'X') */}
-          {!menuOpen && (
-            <div className={styles.menuIcon} onClick={() => setMenuOpen(true)}>
-              <HiOutlineMenu size={40} />
-            </div>
-          )}
-        </div>
+            <ul>
+              <li>
+                <Link className={styles.link} href="/work" onClick={() => setMenuOpen(false)}>
+                  WORK
+                </Link>
+              </li>
+              <li>
+                <Link className={styles.link} href="/about" onClick={() => setMenuOpen(false)}>
+                  ABOUT
+                </Link>
+              </li>
+              <li>
+                <button
+                  className={styles.link}
+                  onClick={() => {
+                    setContactModalOpen(true);
+                    setMenuOpen(false);
+                  }}
+                >
+                  CONTACT
+                </button>
+              </li>
+            </ul>
+          </div>
 
-        {/* Menú lateral mobile */}
-        <div className={`${styles.mobileMenu} ${menuOpen ? styles.menuOpen : ''}`}>
-          <button className={styles.closeButton} onClick={() => setMenuOpen(false)}>
-            <HiOutlineX size={36} />
-          </button>
+          {children}
 
-          <ul>
-            <li><Link className={styles.link} href="/work" onClick={() => setMenuOpen(false)}>WORK</Link></li>
-            <li><Link className={styles.link} href="/about" onClick={() => setMenuOpen(false)}>ABOUT</Link></li>
-            <li>
-              <button className={styles.link} onClick={() => { setContactModalOpen(true); setMenuOpen(false); }}>
-                CONTACT
-              </button>
-            </li>
-          </ul>
-        </div>
-
-        {children}
-
-        <ContactModal isOpen={contactModalOpen} onClose={() => setContactModalOpen(false)} />
-
-        {/* Sin footer global */}
+          <ContactModal isOpen={contactModalOpen} onClose={() => setContactModalOpen(false)} />
         </CursorProvider>
       </body>
     </html>
   );
 }
-
