@@ -10,21 +10,9 @@ import { HiOutlineMenu, HiOutlineX } from 'react-icons/hi';
 import ContactModal from './components/contactModal';
 import { CursorProvider, useCursor } from './components/CursorProvider';
 
-// ✅ SEO – Metadatos globales (funcionan en App Router)
-export const metadata = {
-  title: 'WHAT IF Architecture',
-  description:
-    'Somos un estudio de arquitectura donde construimos imaginarios colectivos que configuran nuestro cotidiano.',
-  openGraph: {
-    title: 'WHAT IF Architecture',
-    description:
-      'Somos un estudio de arquitectura donde construimos imaginarios colectivos que configuran nuestro cotidiano.',
-    type: 'website',
-  },
-};
-
 function NavLinksWithCursor({ disableNavScroll, isScrollingDown }: { disableNavScroll: boolean; isScrollingDown: boolean }) {
   const { show, move, isTouch, hide } = useCursor();
+
   return (
     <nav className={`${styles.navLinks} ${!disableNavScroll && isScrollingDown ? styles.linksUp : styles.linksDown}`}>
       <li>
@@ -37,13 +25,18 @@ function NavLinksWithCursor({ disableNavScroll, isScrollingDown }: { disableNavS
               move((e as any).clientX, (e as any).clientY);
             }
           }}
-          onMouseMove={(e) => { if (!isTouch) move((e as any).clientX, (e as any).clientY); }}
-          onMouseLeave={() => { if (!isTouch) hide(); }}
+          onMouseMove={(e) => {
+            if (!isTouch) move((e as any).clientX, (e as any).clientY);
+          }}
+          onMouseLeave={() => {
+            if (!isTouch) hide();
+          }}
           style={{ cursor: isTouch ? 'pointer' : 'none' }}
         >
           WORK
         </Link>
       </li>
+
       <li>
         <Link
           className={styles.link}
@@ -54,8 +47,12 @@ function NavLinksWithCursor({ disableNavScroll, isScrollingDown }: { disableNavS
               move((e as any).clientX, (e as any).clientY);
             }
           }}
-          onMouseMove={(e) => { if (!isTouch) move((e as any).clientX, (e as any).clientY); }}
-          onMouseLeave={() => { if (!isTouch) hide(); }}
+          onMouseMove={(e) => {
+            if (!isTouch) move((e as any).clientX, (e as any).clientY);
+          }}
+          onMouseLeave={() => {
+            if (!isTouch) hide();
+          }}
           style={{ cursor: isTouch ? 'pointer' : 'none' }}
         >
           ABOUT
@@ -67,6 +64,7 @@ function NavLinksWithCursor({ disableNavScroll, isScrollingDown }: { disableNavS
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+
   const disableNavScroll = false;
 
   const [isScrollingDown, setIsScrollingDown] = useState(false);
@@ -77,20 +75,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   const navRef = useRef<HTMLDivElement | null>(null);
 
-  // Detecta mobile
+  // Detect mobile
   useEffect(() => {
     const checkIsMobile = () => setIsMobile(window.innerWidth <= 1024);
     checkIsMobile();
+
     window.addEventListener('resize', checkIsMobile);
     return () => window.removeEventListener('resize', checkIsMobile);
   }, []);
 
-  // Calcula altura navbar
+  // Set navbar height CSS variable
   useEffect(() => {
     const updateNavHeight = () => {
       const h = navRef.current?.getBoundingClientRect().height ?? 0;
       document.documentElement.style.setProperty('--nav-height', `${h}px`);
     };
+
     updateNavHeight();
     window.addEventListener('resize', updateNavHeight);
     return () => window.removeEventListener('resize', updateNavHeight);
@@ -118,13 +118,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          const currentScrollY = window.scrollY;
+          const current = window.scrollY;
 
-          if (currentScrollY > lastScrollY + 5) setIsScrollingDown(true);
-          else if (currentScrollY < lastScrollY - 5) setIsScrollingDown(false);
+          if (current > lastScrollY + 5) {
+            setIsScrollingDown(true);
+          } else if (current < lastScrollY - 5) {
+            setIsScrollingDown(false);
+          }
 
-          setScrollY(currentScrollY);
-          lastScrollY = currentScrollY;
+          setScrollY(current);
+          lastScrollY = current;
           ticking = false;
         });
 
@@ -138,9 +141,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="en">
-      {/* ❗YA NO NECESITÁS <Head> → Next genera el SEO automáticamente */}
+      {/* No Head aquí — SEO está en layout.server.tsx */}
       <body className={disableNavScroll ? styles.noScrollNav : ''}>
         <CursorProvider>
+          {/* NAVBAR */}
           <div
             ref={navRef}
             className={`${styles.navbar} ${
@@ -157,10 +161,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </Link>
             </div>
 
-            {/* Nav Desktop */}
+            {/* Desktop nav */}
             <NavLinksWithCursor disableNavScroll={disableNavScroll} isScrollingDown={isScrollingDown} />
 
-            {/* Icono hamburguesa */}
+            {/* Mobile menu icon */}
             {!menuOpen && (
               <div className={styles.menuIcon} onClick={() => setMenuOpen(true)}>
                 <HiOutlineMenu size={40} />
@@ -168,7 +172,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             )}
           </div>
 
-          {/* Menú Mobile */}
+          {/* Mobile menu */}
           <div className={`${styles.mobileMenu} ${menuOpen ? styles.menuOpen : ''}`}>
             <button className={styles.closeButton} onClick={() => setMenuOpen(false)}>
               <HiOutlineX size={36} />
@@ -180,11 +184,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   WORK
                 </Link>
               </li>
+
               <li>
                 <Link className={styles.link} href="/about" onClick={() => setMenuOpen(false)}>
                   ABOUT
                 </Link>
               </li>
+
               <li>
                 <button
                   className={styles.link}
@@ -199,8 +205,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </ul>
           </div>
 
+          {/* Content */}
           {children}
 
+          {/* Contact modal */}
           <ContactModal isOpen={contactModalOpen} onClose={() => setContactModalOpen(false)} />
         </CursorProvider>
       </body>
