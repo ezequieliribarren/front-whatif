@@ -74,7 +74,7 @@ async function getProject(identifier: string) {
 export default async function ProjectPage({
   params,
 }: {
-  params: Promise<{ id: string }> | { id: string }
+  params: Promise<{ id: string }>
 }) {
   const resolved = await params
   const identifier = decodeURIComponent(resolved.id || '')
