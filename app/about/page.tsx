@@ -10,6 +10,11 @@ type TeamMember = {
   id: string;
   name: string;
   role: string;
+  link?: string;
+  website?: string;
+  instagram?: string;
+  linkedin?: string;
+  url?: string;
   image?: { url: string };
   detail?: any;
   studies?: any;
@@ -222,32 +227,73 @@ export default function Page() {
     setHoveredId(null);
   };
 
-  const CellImage = ({ member }: { member: TeamMember }) => (
-    <div
-      className={styles.imageContainer}
-      style={{ width: boxWidth, height: boxHeight }}
-      onMouseEnter={() => !isTabletOrMobile && setHoveredId(member.id)}
-      onMouseLeave={handleMemberMouseLeave(member.id)}
-      data-member-id={member.id}
-      key={member.id + '-img'}
-    >
-      {member.image?.url ? (
-        <>
-          <img
-            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${member.image.url}`}
-            alt={member.name}
-            className={styles.image}
-          />
-          {!isTabletOrMobile && (
-            <>
-              <div className={styles.svgOverlay}><img src="/plus.png" alt="Overlay" /></div>
-              <div className={styles.overlay}></div>
-            </>
-          )}
-        </>
-      ) : <div className={styles.noImage}>Sin imagen</div>}
-    </div>
-  );
+  const getMemberLink = (member: TeamMember): string | null => {
+    const candidates = [
+      member.link,
+      member.website,
+      member.instagram,
+      member.linkedin,
+      member.url,
+      (member as any).social,
+      (member as any).socialLink,
+    ];
+    for (const c of candidates) {
+      if (typeof c === 'string' && c.trim()) {
+        const val = c.trim();
+        if (/^https?:\/\//i.test(val)) return val;
+        // assume https if missing protocol
+        return `https://${val}`;
+      }
+    }
+    return null;
+  };
+
+  const CellImage = ({ member }: { member: TeamMember }) => {
+    const imageNode = (
+      <div
+        className={styles.imageContainer}
+        style={{ width: boxWidth, height: boxHeight }}
+        onMouseEnter={() => !isTabletOrMobile && setHoveredId(member.id)}
+        onMouseLeave={handleMemberMouseLeave(member.id)}
+        data-member-id={member.id}
+        key={member.id + '-img'}
+      >
+        {member.image?.url ? (
+          <>
+            <img
+              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${member.image.url}`}
+              alt={member.name}
+              className={styles.image}
+            />
+            {!isTabletOrMobile && (
+              <>
+                <div className={styles.svgOverlay}><img src="/plus.png" alt="Overlay" /></div>
+                <div className={styles.overlay}></div>
+              </>
+            )}
+          </>
+        ) : <div className={styles.noImage}>Sin imagen</div>}
+      </div>
+    );
+
+    const memberHref = getMemberLink(member);
+    if (memberHref) {
+      return (
+        <a
+          href={memberHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.imageLink}
+          style={{ width: boxWidth, height: boxHeight }}
+          data-cursor-clickable="true"
+        >
+          {imageNode}
+        </a>
+      );
+    }
+
+    return imageNode;
+  };
 
   const CellInfo = ({ member, arrowDirection, alwaysVisible = false }: { member: TeamMember; arrowDirection: 'left' | 'right'; alwaysVisible?: boolean }) => (
     <div

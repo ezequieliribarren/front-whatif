@@ -44,9 +44,8 @@ function NavLinksWithCursor({ disableNavScroll, isScrollingDown }: { disableNavS
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isProjectPage = pathname?.startsWith('/work/');
-  // En páginas de proyecto mantenemos el logo fijo y sin efecto de scroll
-  const disableNavScroll = !!isProjectPage;
+  // Aplicar el mismo comportamiento de scroll (ocultar/mostrar) en todas las páginas, incluidos proyectos
+  const disableNavScroll = false;
   const [isScrollingDown, setIsScrollingDown] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);

@@ -327,35 +327,33 @@
 
 .customArrow {
   position: absolute;
-  bottom: 0;
-  width: 40px;
-  height: 40px;
+  width: 64px;
+  height: 64px;
   cursor: pointer;
   z-index: 5;
-  transform: none;
+  top: 50%;
+  transform: translateY(-50%);
   border-radius: 9999px;
   background: #ff7a00;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
 
   }
 
 .customArrow img {
-  width: 60%;
+  width: 72%;
   height: auto;
   mix-blend-mode: normal;
   filter: invert(1);
   }
 
 .leftArrow {
-  top: 85% !important;
   left: 30px !important;
 
   }
 
 .rightArrow {
-  top: 85% !important;
   right: 30px !important;
   background: transparent !important;
 

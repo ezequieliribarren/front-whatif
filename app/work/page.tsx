@@ -53,6 +53,20 @@ export default function Page() {
     return `${base}${path}?width=${width}&format=webp`;
   };
 
+  const slugify = (text: string) =>
+    text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+  const buildProjectHref = (proj: Project) => {
+    const slug = proj.slug || slugify(proj.title || 'project');
+    return `/work/${slug}`;
+  };
+
   // Cargar proyectos desde Payload (vía proxy interno para evitar CORS)
   useEffect(() => {
     async function fetchProjects() {
@@ -256,7 +270,7 @@ export default function Page() {
 
         return isTabletOrMobile ? (
           <div key={proj.slug} className={styles.cardMobile}>
-            <Link href={`/work/${proj.id}`} className={styles.cardImgMobile} aria-label={proj.title}>
+            <Link href={buildProjectHref(proj)} className={styles.cardImgMobile} aria-label={proj.title}>
               {imgSmall && (
                 <img
                   src={imgSmall}
@@ -282,7 +296,7 @@ export default function Page() {
           </div>
         ) : (
           <div key={proj.slug} className={styles.row}>
-            <Link href={`/work/${proj.id}`} className={styles.rowOverlay} aria-label={proj.title} />
+            <Link href={buildProjectHref(proj)} className={styles.rowOverlay} aria-label={proj.title} />
 
             <div className={`${styles.col} ${styles.colYear}`}>
               <h3>{proj.date ? new Date(proj.date).getFullYear() : ''}</h3>

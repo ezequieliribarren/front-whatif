@@ -273,8 +273,18 @@ export default function Page() {
     });
   }, [filtered]);
 
-  const goToProject = (id: string) => {
-    router.push(`/work/${id}`);
+  const slugify = (text: string) =>
+    text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+  const goToProject = (project: Project) => {
+    const slug = project.slug || slugify(project.title || 'project');
+    router.push(`/work/${slug}`);
   };
 
   const getProjectYear = (p: any): string | number | undefined => {
@@ -430,15 +440,19 @@ export default function Page() {
                   <div>
                     <div
                       className={`${styles.imageContainer} fade-img`}
+                      data-cursor-clickable="true"
                       style={{ cursor: isTouch ? 'pointer' : 'none' }}
                       onMouseEnter={() => {
-                        if (!isTouch) show('SEE\nPROJECT', { align: 'right' });
+                        if (!isTouch) show('', { variant: 'arrow' });
                       }}
                       onMouseLeave={() => hide()}
                       onMouseMove={(e) => {
-                        if (!isTouch) move(e.clientX, e.clientY);
+                        if (!isTouch) {
+                          show('', { variant: 'arrow' });
+                          move(e.clientX, e.clientY);
+                        }
                       }}
-                      onClick={() => goToProject(project.id)}
+                      onClick={() => goToProject(project)}
                       title={`${project.title}`}
                     >
                       <div className={styles.overlay}>
@@ -504,12 +518,24 @@ export default function Page() {
             </section>
           );
         })}
-        <section className={`${styles.desktopCtaSection} flex justify-center`}>
-          <Link
-            href="/work"
-            className={`flex items-center gap-2.5 px-4 py-1 border border-black text-black font-serif hover:bg-black hover:text-white transition-colors rounded ${aboutStyles.buttonSelected}`}
-          >
-            <span className="text-lg font-normal">Our Work</span>
+        <section className={`${styles.desktopCtaSection} ${styles.ourWorkCta}`}>
+          <Link href="/work" className={styles.ourWorkLink}>
+            <span>OUR WORK</span>
+            <svg
+              className={styles.diagonalArrow}
+              viewBox="0 0 32 32"
+              role="presentation"
+              aria-hidden="true"
+            >
+              <path
+                d="M8 24 L24 8 M18 8 H24 V14"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </Link>
         </section>
         <section className={`${aboutStyles.mobileOnly} ${styles.mobileCtaSection} flex justify-center py-10`}>

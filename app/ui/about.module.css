@@ -76,6 +76,11 @@
   transition: filter 0.3s ease;
 }
 
+.imageLink {
+  display: block;
+  text-decoration: none;
+}
+
 .imageContainer:not(:hover) .image {
   filter: blur(8px);
 }
