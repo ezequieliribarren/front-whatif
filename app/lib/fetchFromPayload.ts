@@ -1,9 +1,9 @@
 // lib/fetchFromPayload.ts
-// Unifica las llamadas al backend pasando siempre por el proxy interno de Next (/api/payload)
+// Unifica las llamadas al backend usando el proxy /api (rewrite o reverse proxy).
 
 export async function fetchFromPayload<T>(path: string): Promise<T> {
   const normalizedPath = path.startsWith('/') ? path.slice(1) : path;
-  const url = `/api/payload/${normalizedPath}`;
+  const url = `/api/${normalizedPath}`;
 
   const res = await fetch(url, {
     headers: {
@@ -18,4 +18,3 @@ export async function fetchFromPayload<T>(path: string): Promise<T> {
 
   return res.json();
 }
-

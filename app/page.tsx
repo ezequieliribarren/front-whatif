@@ -132,7 +132,7 @@ export default function Page() {
           process.env.NEXT_PUBLIC_BACKEND_URL ||
           (process.env.PAYLOAD_API_URL ? process.env.PAYLOAD_API_URL.replace(/\/api$/, '') : undefined);
         if (!base) return;
-        const res = await fetch(`/api/payload/globals/video-inicial`, { cache: 'no-store' });
+        const res = await fetch(`/api/globals/video-inicial`, { cache: 'no-store' });
         if (!res.ok) return;
         const data = await res.json();
         const v = data?.video?.url ? `${base}${data.video.url}` : null;
@@ -216,7 +216,7 @@ export default function Page() {
     let aborted = false;
     const fetchHomeCopy = async () => {
       // Usa el proxy interno de Next para evitar CORS y mantener la misma origin
-      const target = '/api/payload/code-home?limit=1';
+      const target = '/api/code-home?limit=1';
       try {
         const res = await fetch(target, { cache: 'no-store' });
         if (!res.ok) return;
