@@ -79,7 +79,7 @@ export default function Page() {
 
   useEffect(() => {
     async function fetchProjects() {
-      const url = `/api/payload/projects?depth=1&limit=1000&locale=all&sort=order`;
+      const url = `/api/projects`;
       const res = await fetch(url, { cache: 'no-store' });
       const data = await res.json();
 

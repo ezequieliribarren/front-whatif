@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
@@ -70,7 +70,7 @@ export default function Page() {
   // Cargar proyectos desde Payload (vía proxy interno para evitar CORS)
   useEffect(() => {
     async function fetchProjects() {
-      const res = await fetch('/api/payload/projects?depth=1&limit=1000', {
+      const res = await fetch('/api/projects', {
         cache: 'no-store',
       });
       const data = await res.json();

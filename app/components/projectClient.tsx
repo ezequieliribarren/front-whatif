@@ -22,6 +22,7 @@ type Project = {
   title: string;
   date?: string;
   galeria?: Media[];
+  imagenDestacada?: Media;
   categories?: { name: string }[];
   types?: { name: string }[];
   location?: string;
@@ -110,6 +111,19 @@ export default function ProjectClient({ project }: Props) {
   const [firstLoaded, setFirstLoaded] = useState(false);
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || '';
 
+  const normalizeUrl = (url?: string) => {
+    if (!url) return '';
+    const noQuery = url.split('?')[0];
+    return noQuery.replace(/^https?:\/\/[^/]+/i, '');
+  };
+
+  const featuredUrl = normalizeUrl(project.imagenDestacada?.url);
+  const filterFeatured = <T extends { url?: string }>(items?: T[]) => {
+    if (!Array.isArray(items)) return [] as T[];
+    if (!featuredUrl) return items;
+    return items.filter((item) => normalizeUrl(item.url) !== featuredUrl);
+  };
+
   const handleBack = () => {
     if (typeof window !== 'undefined' && window.history.length > 1) {
       router.back();
@@ -118,32 +132,32 @@ export default function ProjectClient({ project }: Props) {
     }
   };
 
-const baseSettings = {
-  dots: false,
-  infinite: true,
-  speed: 200, // ⚡ más rápido (coincide con tu transición CSS)
-  slidesToShow: 1,
-  slidesToScroll: 1,
-  arrows: true,
-  fade: !isTouch,
-  adaptiveHeight: !isTouch,
-  cssEase: 'ease-out', // 👈 suaviza la salida
-  prevArrow: <CustomPrevArrow />,
-  nextArrow: <CustomNextArrow />,
-  afterChange: (index: number) => setCurrentSlide(index),
-  autoplay: true,
-  autoplaySpeed: 4000,
-  pauseOnHover: true,
-  pauseOnFocus: true,
-};
+  const baseSettings = {
+    dots: false,
+    infinite: true,
+    speed: 200, // ⚡ más rápido (coincide con tu transición CSS)
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: true,
+    fade: !isTouch,
+    adaptiveHeight: !isTouch,
+    cssEase: 'ease-out', // 👈 suaviza la salida
+    prevArrow: <CustomPrevArrow />,
+    nextArrow: <CustomNextArrow />,
+    afterChange: (index: number) => setCurrentSlide(index),
+    autoplay: true,
+    autoplaySpeed: 4000,
+    pauseOnHover: true,
+    pauseOnFocus: true,
+  };
 
 
   const mediaMap: Record<string, Media[] | { url: string }[] | undefined> = {
-    photos: project.photos,
-    drawings: project.drawings,
-    renders: project.renders,
-    videos: project.videos,
-    models3D: project.models3D,
+    photos: filterFeatured(project.photos),
+    drawings: filterFeatured(project.drawings),
+    renders: filterFeatured(project.renders),
+    videos: filterFeatured(project.videos),
+    models3D: filterFeatured(project.models3D),
   };
 
   // Choose first available media when current type is empty
