@@ -67,14 +67,38 @@ export default function Page() {
     return `/work/${slug}`;
   };
 
-  // Cargar proyectos desde Payload (vía proxy interno para evitar CORS)
+  // Cargar proyectos desde Payload (v?a proxy interno para evitar CORS)
   useEffect(() => {
     async function fetchProjects() {
-      const res = await fetch('/api/projects', {
-        cache: 'no-store',
-      });
-      const data = await res.json();
-      const docs: Project[] = Array.isArray(data?.docs) ? data.docs : [];
+      const limit = 100;
+      const fetchPage = async (page: number) => {
+        const res = await fetch(`/api/projects?limit=${limit}&page=${page}`, {
+          cache: 'no-store',
+        });
+        if (!res.ok) {
+          throw new Error(`Failed to fetch projects page ${page}`);
+        }
+        return res.json();
+      };
+
+      const first = await fetchPage(1);
+      const docs: Project[] = Array.isArray(first?.docs) ? first.docs : [];
+      const totalPages = typeof first?.totalPages === 'number' ? first.totalPages : 1;
+
+      if (totalPages > 1) {
+        const rest = await Promise.allSettled(
+          Array.from({ length: totalPages - 1 }, (_, i) => fetchPage(i + 2))
+        );
+        rest.forEach((r, idx) => {
+          if (r.status === 'fulfilled') {
+            const pageDocs: Project[] = Array.isArray(r.value?.docs) ? r.value.docs : [];
+            docs.push(...pageDocs);
+          } else {
+            console.error(`Error fetching projects page ${idx + 2}:`, r.reason);
+          }
+        });
+      }
+
       // Exclude projects explicitly marked to hide (apagar === true)
       const visible = docs.filter((p: any) => p?.apagar !== true);
       setProjects(visible);

@@ -60,6 +60,8 @@
   font-weight: 800; /* igual que SELECTED WORKS */
   text-transform: uppercase;
   color: #1f2021;
+  font-family: fustat-bold, fustat-semi-bold, sans-serif;
+  line-height: normal;
   text-decoration: none;
   position: relative;
   transition: color 0.3s ease;

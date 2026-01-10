@@ -78,12 +78,36 @@ export default function Page() {
   const { show, hide, move, isTouch } = useCursor();
 
   useEffect(() => {
+    let aborted = false;
     async function fetchProjects() {
-      const url = `/api/projects`;
-      const res = await fetch(url, { cache: 'no-store' });
-      const data = await res.json();
+      const limit = 100;
+      const fetchPage = async (page: number) => {
+        const res = await fetch(`/api/projects?limit=${limit}&page=${page}`, { cache: 'no-store' });
+        if (!res.ok) {
+          throw new Error(`Failed to fetch projects page ${page}`);
+        }
+        return res.json();
+      };
 
-      const docs: Project[] = Array.isArray(data?.docs) ? data.docs : [];
+      const first = await fetchPage(1);
+      const docs: Project[] = Array.isArray(first?.docs) ? first.docs : [];
+      const totalPages = typeof first?.totalPages === 'number' ? first.totalPages : 1;
+
+      if (totalPages > 1) {
+        const rest = await Promise.allSettled(
+          Array.from({ length: totalPages - 1 }, (_, i) => fetchPage(i + 2))
+        );
+        rest.forEach((r, idx) => {
+          if (r.status === 'fulfilled') {
+            const pageDocs: Project[] = Array.isArray(r.value?.docs) ? r.value.docs : [];
+            docs.push(...pageDocs);
+          } else {
+            console.error(`Error fetching projects page ${idx + 2}:`, r.reason);
+          }
+        });
+      }
+
+      if (aborted) return;
 
       const isFeaturedTruthy = (val: any) => {
         if (val === true) return true;
@@ -96,16 +120,25 @@ export default function Page() {
       const featured = docs.filter((p: any) => isFeaturedTruthy((p as any).featured) && p?.apagar !== true);
 
       // Order by optional `order` field
-      const sorted = featured.sort((a: any, b: any) => {
-        const ao = typeof a.order === 'number' ? a.order : 1e9;
-        const bo = typeof b.order === 'number' ? b.order : 1e9;
-        return ao - bo;
-      });
+      const getOrderValue = (val: any) => {
+        if (typeof val === 'number' && Number.isFinite(val)) return val;
+        if (typeof val === 'string') {
+          const num = Number(val);
+          if (!Number.isNaN(num)) return num;
+        }
+        return 1e9;
+      };
 
+      const sorted = featured.sort((a: any, b: any) => getOrderValue((a as any).order) - getOrderValue((b as any).order));
+
+      if (aborted) return;
       setProjects(sorted);
       setFiltered(sorted);
     }
-    fetchProjects();
+    fetchProjects().catch((e) => console.error('Error fetching projects:', e));
+    return () => {
+      aborted = true;
+    };
   }, [backendUrl]);
 
   useEffect(() => {
