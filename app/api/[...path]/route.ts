@@ -8,13 +8,10 @@ function getBackendBase() {
   return fromPublic || fromPayload
 }
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { path?: string[] } }
-) {
-  const path = params.path || []
-  const base = getBackendBase()
+export async function GET(req: NextRequest, context: any) {
+  const path = context.params?.path || []
 
+  const base = getBackendBase()
   if (!base) {
     return NextResponse.json(
       { ok: false, error: "BACKEND_URL not configured" },
@@ -23,18 +20,16 @@ export async function GET(
   }
 
   const joined = path.join("/")
-  const search = req.nextUrl.search || ""
-  const targetUrl = `${base}/api/${joined}${search}`
+  const targetUrl = `${base}/api/${joined}${req.nextUrl.search || ""}`
 
   try {
     const upstream = await fetch(targetUrl, { cache: "no-store" })
-    const contentType = upstream.headers.get("content-type") || "application/json"
     const text = await upstream.text()
 
     return new NextResponse(text, {
       status: upstream.status,
       headers: {
-        "content-type": contentType
+        "content-type": upstream.headers.get("content-type") || "application/json"
       }
     })
   } catch (e: any) {
@@ -44,3 +39,4 @@ export async function GET(
     )
   }
 }
+
