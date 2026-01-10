@@ -8,8 +8,9 @@ function getBackendBase() {
   return fromPublic || fromPayload;
 }
 
-export async function GET(req: NextRequest, context: any) {
-  const path = context?.params?.path || [];
+export async function GET(req: NextRequest, context: { params?: Promise<{ path?: string[] }> }) {
+  const params = await context.params;
+  const path = params?.path || [];
 
   const base = getBackendBase();
   if (!base) {
